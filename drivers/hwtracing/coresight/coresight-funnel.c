@@ -676,6 +676,7 @@ static struct amba_driver dynamic_funnel_driver = {
 
 static int __init funnel_init(void)
 {
+<<<<<<< HEAD
 	int ret;
 
 	ret = funnel_pm_setup();
@@ -698,6 +699,10 @@ static int __init funnel_init(void)
 pm_clear:
 	funnel_pm_clear();
 	return ret;
+=======
+	return coresight_init_driver("funnel", &dynamic_funnel_driver, &funnel_driver,
+				     THIS_MODULE);
+>>>>>>> 1183a72221d5 (coresight: Fixes device's owner field for registered using coresight_init_driver())
 }
 
 static void __exit funnel_exit(void)
