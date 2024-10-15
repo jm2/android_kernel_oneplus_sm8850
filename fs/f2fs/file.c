@@ -1879,6 +1879,7 @@ static int f2fs_expand_inode_data(struct inode *inode, loff_t offset,
 
 		map.m_len = sec_blks;
 next_alloc:
+<<<<<<< HEAD
 		f2fs_down_write(&sbi->pin_sem);
 
 		if (unlikely(is_sbi_flag_set(sbi, SBI_CP_DISABLED))) {
@@ -1895,6 +1896,11 @@ next_alloc:
 
 		if (has_not_enough_free_secs(sbi, 0,
 				sbi->reserved_pin_section)) {
+=======
+		if (has_not_enough_free_secs(sbi, 0, f2fs_sb_has_blkzoned(sbi) ?
+			ZONED_PIN_SEC_REQUIRED_COUNT :
+			GET_SEC_FROM_SEG(sbi, overprovision_segments(sbi)))) {
+>>>>>>> 58330262213a (f2fs: decrease spare area for pinned files for zoned devices)
 			f2fs_down_write(&sbi->gc_lock);
 			stat_inc_gc_call_count(sbi, FOREGROUND);
 			err = f2fs_gc(sbi, &gc_control);
