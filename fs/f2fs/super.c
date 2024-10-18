@@ -4801,10 +4801,13 @@ try_onemore:
 	/* get segno of first zoned block device */
 	sbi->first_zoned_segno = get_first_zoned_segno(sbi);
 
+<<<<<<< HEAD
 	sbi->reserved_pin_section = f2fs_sb_has_blkzoned(sbi) ?
 			ZONED_PIN_SEC_REQUIRED_COUNT :
 			GET_SEC_FROM_SEG(sbi, overprovision_segments(sbi));
 
+=======
+>>>>>>> ffbbe11577b7 (f2fs: zone: introduce first_zoned_segno in f2fs_sb_info)
 	/* Read accumulated write IO statistics if exists */
 	seg_i = CURSEG_I(sbi, CURSEG_HOT_NODE);
 	if (__exist_node_summaries(sbi))
