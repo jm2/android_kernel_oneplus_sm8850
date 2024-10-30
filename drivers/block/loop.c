@@ -718,8 +718,14 @@ static void loop_get_discard_config(struct loop_device *lo,
 	if (S_ISBLK(inode->i_mode)) {
 		struct block_device *bdev = I_BDEV(inode);
 
+<<<<<<< HEAD
 		*max_discard_sectors = bdev_write_zeroes_sectors(bdev);
 		*granularity = bdev_discard_granularity(bdev);
+=======
+		max_discard_sectors = bdev_write_zeroes_sectors(bdev);
+		granularity = bdev_discard_granularity(bdev) ?:
+			bdev_physical_block_size(bdev);
+>>>>>>> 02a77b3020a2 (loop: Use bdev limit helpers for configuring discard)
 
 	/*
 	 * We use punch hole to reclaim the free space used by the
