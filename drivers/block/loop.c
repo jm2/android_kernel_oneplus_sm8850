@@ -723,9 +723,13 @@ static void loop_get_discard_config(struct loop_device *lo,
 		*granularity = bdev_discard_granularity(bdev);
 =======
 		max_discard_sectors = bdev_write_zeroes_sectors(bdev);
+<<<<<<< HEAD
 		granularity = bdev_discard_granularity(bdev) ?:
 			bdev_physical_block_size(bdev);
 >>>>>>> 02a77b3020a2 (loop: Use bdev limit helpers for configuring discard)
+=======
+		granularity = bdev_discard_granularity(bdev);
+>>>>>>> 722f6dece719 (loop: Simplify discard granularity calc)
 
 	/*
 	 * We use punch hole to reclaim the free space used by the
