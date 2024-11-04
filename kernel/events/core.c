@@ -5361,6 +5361,56 @@ static void __free_event(struct perf_event *event)
 	call_rcu(&event->rcu_head, free_event_rcu);
 }
 
+<<<<<<< HEAD
+=======
+/* vs perf_event_alloc() error */
+static void __free_event(struct perf_event *event)
+{
+	if (event->attach_state & PERF_ATTACH_CALLCHAIN)
+		put_callchain_buffers();
+
+	kfree(event->addr_filter_ranges);
+
+	if (event->attach_state & PERF_ATTACH_EXCLUSIVE)
+		exclusive_event_destroy(event);
+
+	if (is_cgroup_event(event))
+		perf_detach_cgroup(event);
+
+	if (event->destroy)
+		event->destroy(event);
+
+	/*
+	 * Must be after ->destroy(), due to uprobe_perf_close() using
+	 * hw.target.
+	 */
+	if (event->hw.target)
+		put_task_struct(event->hw.target);
+
+	if (event->pmu_ctx) {
+		/*
+		 * put_pmu_ctx() needs an event->ctx reference, because of
+		 * epc->ctx.
+		 */
+		WARN_ON_ONCE(!event->ctx);
+		WARN_ON_ONCE(event->pmu_ctx->ctx != event->ctx);
+		put_pmu_ctx(event->pmu_ctx);
+	}
+
+	/*
+	 * perf_event_free_task() relies on put_ctx() being 'last', in
+	 * particular all task references must be cleaned up.
+	 */
+	if (event->ctx)
+		put_ctx(event->ctx);
+
+	if (event->pmu)
+		module_put(event->pmu->module);
+
+	call_rcu(&event->rcu_head, free_event_rcu);
+}
+
+>>>>>>> 7ef5aa081f98 (perf/core: Simplify the perf_event_alloc() error path)
 /* vs perf_event_alloc() success */
 static void _free_event(struct perf_event *event)
 {
@@ -11974,10 +12024,16 @@ static int perf_try_init_event(struct pmu *pmu, struct perf_event *event)
 		goto err_destroy;
 	}
 
+<<<<<<< HEAD
 	if (pmu->capabilities & PERF_PMU_CAP_NO_EXCLUDE &&
 	    event_has_any_exclude_flag(event)) {
 		ret = -EINVAL;
 		goto err_destroy;
+=======
+	if (ret) {
+		event->pmu = NULL;
+		module_put(pmu->module);
+>>>>>>> 7ef5aa081f98 (perf/core: Simplify the perf_event_alloc() error path)
 	}
 
 	if (pmu->scope != PERF_PMU_SCOPE_NONE && event->cpu >= 0) {
@@ -12361,6 +12417,7 @@ perf_event_alloc(struct perf_event_attr *attr, int cpu,
 	     event->attr.aux_pause || event->attr.aux_resume)) {
 		err = -EOPNOTSUPP;
 		goto err;
+<<<<<<< HEAD
 	}
 
 	if (event->attr.aux_pause && event->attr.aux_resume) {
@@ -12374,17 +12431,19 @@ perf_event_alloc(struct perf_event_attr *attr, int cpu,
 			goto err;
 		}
 		event->hw.aux_paused = 1;
+=======
+>>>>>>> 7ef5aa081f98 (perf/core: Simplify the perf_event_alloc() error path)
 	}
 
 	if (event->attr.aux_pause && event->attr.aux_resume) {
 		err = -EINVAL;
-		goto err_pmu;
+		goto err;
 	}
 
 	if (event->attr.aux_start_paused) {
 		if (!(pmu->capabilities & PERF_PMU_CAP_AUX_PAUSE)) {
 			err = -EOPNOTSUPP;
-			goto err_pmu;
+			goto err;
 		}
 		event->hw.aux_paused = 1;
 	}
