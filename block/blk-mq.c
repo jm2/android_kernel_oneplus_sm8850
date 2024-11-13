@@ -1392,7 +1392,11 @@ static void blk_add_rq_to_plug(struct blk_plug *plug, struct request *rq)
 	 */
 	if (!plug->has_elevator && (rq->rq_flags & RQF_SCHED_TAGS))
 		plug->has_elevator = true;
+<<<<<<< HEAD
 	rq_list_add_tail(&plug->mq_list, rq);
+=======
+	rq_list_add_head(&plug->mq_list, rq);
+>>>>>>> 2ad0f19a4e99 (block: add a rq_list type)
 	plug->rq_count++;
 }
 
