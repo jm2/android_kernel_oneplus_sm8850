@@ -1384,11 +1384,16 @@ static struct attribute *f2fs_feat_attrs[] = {
 	BASE_ATTR_LIST(readonly),
 #ifdef CONFIG_F2FS_FS_COMPRESSION
 	BASE_ATTR_LIST(compression),
+<<<<<<< HEAD
 #endif
 	BASE_ATTR_LIST(pin_file),
 #ifdef CONFIG_UNICODE
 	BASE_ATTR_LIST(linear_lookup),
 #endif
+=======
+#endif
+	BASE_ATTR_LIST(pin_file),
+>>>>>>> 1d15319323d8 (f2fs: introduce f2fs_base_attr for global sysfs entries)
 	NULL,
 };
 ATTRIBUTE_GROUPS(f2fs_feat);
