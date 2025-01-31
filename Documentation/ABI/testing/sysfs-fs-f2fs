@@ -836,6 +836,7 @@ Contact:	"Jaegeuk Kim" <jaegeuk@kernel.org>
 Description:	It reclaims the given KBs of file-backed pages registered by
 		ioctl(F2FS_IOC_DONATE_RANGE).
 		For example, writing N tries to drop N KBs spaces in LRU.
+<<<<<<< HEAD
 
 What:		/sys/fs/f2fs/<disk>/carve_out
 Date:		March 2025
@@ -883,3 +884,5 @@ Description:
 		- "compat": Hash-based lookup with a linear search fallback enabled
 		- "auto:perf": lookup_mode is auto and fallback is disabled on-disk
 		- "auto:compat": lookup_mode is auto and fallback is enabled on-disk
+=======
+>>>>>>> 9933e05f508e (f2fs: add a sysfs entry to reclaim POSIX_FADV_NOREUSE pages)
