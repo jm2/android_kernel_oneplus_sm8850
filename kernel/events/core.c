@@ -12025,15 +12025,21 @@ static int perf_try_init_event(struct pmu *pmu, struct perf_event *event)
 	}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> f29c876d72d7 (perf/core: Clean up perf_try_init_event())
 	if (pmu->capabilities & PERF_PMU_CAP_NO_EXCLUDE &&
 	    event_has_any_exclude_flag(event)) {
 		ret = -EINVAL;
 		goto err_destroy;
+<<<<<<< HEAD
 =======
 	if (ret) {
 		event->pmu = NULL;
 		module_put(pmu->module);
 >>>>>>> 7ef5aa081f98 (perf/core: Simplify the perf_event_alloc() error path)
+=======
+>>>>>>> f29c876d72d7 (perf/core: Clean up perf_try_init_event())
 	}
 
 	if (pmu->scope != PERF_PMU_SCOPE_NONE && event->cpu >= 0) {
