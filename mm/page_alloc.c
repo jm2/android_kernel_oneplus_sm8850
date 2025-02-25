@@ -2148,6 +2148,7 @@ static inline bool boost_watermark(struct zone *zone)
 }
 
 /*
+<<<<<<< HEAD
  * When we are falling back to another migratetype during allocation, should we
  * try to claim an entire block to satisfy further allocations, instead of
  * polluting multiple pageblocks?
@@ -2235,6 +2236,31 @@ try_to_claim_block(struct zone *zone, struct page *page,
 {
 	int free_pages, movable_pages, alike_pages;
 	unsigned long start_pfn;
+=======
+ * This function implements actual steal behaviour. If order is large enough, we
+ * can claim the whole pageblock for the requested migratetype. If not, we check
+ * the pageblock for constituent pages; if at least half of the pages are free
+ * or compatible, we can still claim the whole block, so pages freed in the
+ * future will be put on the correct free list.
+ */
+static struct page *
+try_to_steal_block(struct zone *zone, struct page *page,
+		   int current_order, int order, int start_type,
+		   unsigned int alloc_flags)
+{
+	int free_pages, movable_pages, alike_pages;
+	unsigned long start_pfn;
+	int block_type;
+
+	block_type = get_pageblock_migratetype(page);
+
+	/*
+	 * This can happen due to races and we want to prevent broken
+	 * highatomic accounting.
+	 */
+	if (is_migrate_highatomic(block_type))
+		return NULL;
+>>>>>>> 564d25b1a6a0 (mm: page_alloc: don't steal single pages from biggest buddy)
 
 	/* Take ownership for orders >= pageblock_order */
 	if (current_order >= pageblock_order) {
@@ -2296,12 +2322,168 @@ try_to_claim_block(struct zone *zone, struct page *page,
 
 
 /*
+<<<<<<< HEAD
  * Try to allocate from some fallback migratetype by claiming the entire block,
  * i.e. converting it to the allocation's start migratetype.
+=======
+ * Reserve the pageblock(s) surrounding an allocation request for
+ * exclusive use of high-order atomic allocations if there are no
+ * empty page blocks that contain a page with a suitable order
+ */
+static void reserve_highatomic_pageblock(struct page *page, int order,
+					 struct zone *zone)
+{
+	int mt;
+	unsigned long max_managed, flags;
+
+	/*
+	 * The number reserved as: minimum is 1 pageblock, maximum is
+	 * roughly 1% of a zone. But if 1% of a zone falls below a
+	 * pageblock size, then don't reserve any pageblocks.
+	 * Check is race-prone but harmless.
+	 */
+	if ((zone_managed_pages(zone) / 100) < pageblock_nr_pages)
+		return;
+	max_managed = ALIGN((zone_managed_pages(zone) / 100), pageblock_nr_pages);
+	if (zone->nr_reserved_highatomic >= max_managed)
+		return;
+
+	spin_lock_irqsave(&zone->lock, flags);
+
+	/* Recheck the nr_reserved_highatomic limit under the lock */
+	if (zone->nr_reserved_highatomic >= max_managed)
+		goto out_unlock;
+
+	/* Yoink! */
+	mt = get_pageblock_migratetype(page);
+	/* Only reserve normal pageblocks (i.e., they can merge with others) */
+	if (!migratetype_is_mergeable(mt))
+		goto out_unlock;
+
+	if (order < pageblock_order) {
+		if (move_freepages_block(zone, page, mt, MIGRATE_HIGHATOMIC) == -1)
+			goto out_unlock;
+		zone->nr_reserved_highatomic += pageblock_nr_pages;
+	} else {
+		change_pageblock_range(page, order, MIGRATE_HIGHATOMIC);
+		zone->nr_reserved_highatomic += 1 << order;
+	}
+
+out_unlock:
+	spin_unlock_irqrestore(&zone->lock, flags);
+}
+
+/*
+ * Used when an allocation is about to fail under memory pressure. This
+ * potentially hurts the reliability of high-order allocations when under
+ * intense memory pressure but failed atomic allocations should be easier
+ * to recover from than an OOM.
+ *
+ * If @force is true, try to unreserve pageblocks even though highatomic
+ * pageblock is exhausted.
+ */
+static bool unreserve_highatomic_pageblock(const struct alloc_context *ac,
+						bool force)
+{
+	struct zonelist *zonelist = ac->zonelist;
+	unsigned long flags;
+	struct zoneref *z;
+	struct zone *zone;
+	struct page *page;
+	int order;
+	int ret;
+
+	for_each_zone_zonelist_nodemask(zone, z, zonelist, ac->highest_zoneidx,
+								ac->nodemask) {
+		/*
+		 * Preserve at least one pageblock unless memory pressure
+		 * is really high.
+		 */
+		if (!force && zone->nr_reserved_highatomic <=
+					pageblock_nr_pages)
+			continue;
+
+		spin_lock_irqsave(&zone->lock, flags);
+		for (order = 0; order < NR_PAGE_ORDERS; order++) {
+			struct free_area *area = &(zone->free_area[order]);
+			int mt;
+
+			page = get_page_from_free_area(area, MIGRATE_HIGHATOMIC);
+			if (!page)
+				continue;
+
+			mt = get_pageblock_migratetype(page);
+			/*
+			 * In page freeing path, migratetype change is racy so
+			 * we can counter several free pages in a pageblock
+			 * in this loop although we changed the pageblock type
+			 * from highatomic to ac->migratetype. So we should
+			 * adjust the count once.
+			 */
+			if (is_migrate_highatomic(mt)) {
+				unsigned long size;
+				/*
+				 * It should never happen but changes to
+				 * locking could inadvertently allow a per-cpu
+				 * drain to add pages to MIGRATE_HIGHATOMIC
+				 * while unreserving so be safe and watch for
+				 * underflows.
+				 */
+				size = max(pageblock_nr_pages, 1UL << order);
+				size = min(size, zone->nr_reserved_highatomic);
+				zone->nr_reserved_highatomic -= size;
+			}
+
+			/*
+			 * Convert to ac->migratetype and avoid the normal
+			 * pageblock stealing heuristics. Minimally, the caller
+			 * is doing the work and needs the pages. More
+			 * importantly, if the block was always converted to
+			 * MIGRATE_UNMOVABLE or another type then the number
+			 * of pageblocks that cannot be completely freed
+			 * may increase.
+			 */
+			if (order < pageblock_order)
+				ret = move_freepages_block(zone, page, mt,
+							   ac->migratetype);
+			else {
+				move_to_free_list(page, zone, order, mt,
+						  ac->migratetype);
+				change_pageblock_range(page, order,
+						       ac->migratetype);
+				ret = 1;
+			}
+			/*
+			 * Reserving the block(s) already succeeded,
+			 * so this should not fail on zone boundaries.
+			 */
+			WARN_ON_ONCE(ret == -1);
+			if (ret > 0) {
+				spin_unlock_irqrestore(&zone->lock, flags);
+				return ret;
+			}
+		}
+		spin_unlock_irqrestore(&zone->lock, flags);
+	}
+
+	return false;
+}
+
+/*
+ * Try finding a free buddy page on the fallback list.
+ *
+ * This will attempt to steal a whole pageblock for the requested type
+ * to ensure grouping of such requests in the future.
+ *
+ * If a whole block cannot be stolen, regress to __rmqueue_smallest()
+ * logic to at least break up as little contiguity as possible.
+>>>>>>> 564d25b1a6a0 (mm: page_alloc: don't steal single pages from biggest buddy)
  *
  * The use of signed ints for order and current_order is a deliberate
  * deviation from the rest of this file, to make the for loop
  * condition simpler.
+ *
+ * Return the stolen page, or NULL if none can be found.
  */
 static __always_inline struct page *
 __rmqueue_claim(struct zone *zone, int order, int start_migratetype,
@@ -2336,6 +2518,7 @@ __rmqueue_claim(struct zone *zone, int order, int start_migratetype,
 		if (fallback_mt == -1)
 			continue;
 
+<<<<<<< HEAD
 		/* Advanced into orders too low to claim, abort */
 		if (fallback_mt == -2)
 			break;
@@ -2370,17 +2553,50 @@ __rmqueue_steal(struct zone *zone, int order, int start_migratetype)
 		area = &(zone->free_area[current_order]);
 		fallback_mt = find_suitable_fallback(area, current_order,
 						     start_migratetype, false);
+=======
+		if (!can_steal)
+			break;
+
+		page = get_page_from_free_area(area, fallback_mt);
+		page = try_to_steal_block(zone, page, current_order, order,
+					  start_migratetype, alloc_flags);
+		if (page)
+			goto got_one;
+	}
+
+	if (alloc_flags & ALLOC_NOFRAGMENT)
+		return NULL;
+
+	/* No luck stealing blocks. Find the smallest fallback page */
+	for (current_order = order; current_order < NR_PAGE_ORDERS; current_order++) {
+		area = &(zone->free_area[current_order]);
+		fallback_mt = find_suitable_fallback(area, current_order,
+				start_migratetype, false, &can_steal);
+>>>>>>> 564d25b1a6a0 (mm: page_alloc: don't steal single pages from biggest buddy)
 		if (fallback_mt == -1)
 			continue;
 
 		page = get_page_from_free_area(area, fallback_mt);
 		page_del_and_expand(zone, page, order, current_order, fallback_mt);
+<<<<<<< HEAD
 		trace_mm_page_alloc_extfrag(page, order, current_order,
 					    start_migratetype, fallback_mt);
 		return page;
 	}
 
 	return NULL;
+=======
+		goto got_one;
+	}
+
+	return NULL;
+
+got_one:
+	trace_mm_page_alloc_extfrag(page, order, current_order,
+		start_migratetype, fallback_mt);
+
+	return page;
+>>>>>>> 564d25b1a6a0 (mm: page_alloc: don't steal single pages from biggest buddy)
 }
 
 enum rmqueue_mode {
