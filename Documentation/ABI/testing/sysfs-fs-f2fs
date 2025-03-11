@@ -837,6 +837,9 @@ Description:	It reclaims the given KBs of file-backed pages registered by
 		ioctl(F2FS_IOC_DONATE_RANGE).
 		For example, writing N tries to drop N KBs spaces in LRU.
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7cc6b80df66f (f2fs: add carve_out sysfs node)
 
 What:		/sys/fs/f2fs/<disk>/carve_out
 Date:		March 2025
@@ -847,6 +850,7 @@ Description:	For several zoned storage devices, vendors will provide extra space
 		reserved_blocks. However, it is not enough, since this extra space should
 		not be shown to users. So, with this new sysfs node, we can hide the space
 		by substracting reserved_blocks from total bytes.
+<<<<<<< HEAD
 
 What:		/sys/fs/f2fs/<disk>/encoding_flags
 Date:		April 2025
@@ -886,3 +890,5 @@ Description:
 		- "auto:compat": lookup_mode is auto and fallback is enabled on-disk
 =======
 >>>>>>> 9933e05f508e (f2fs: add a sysfs entry to reclaim POSIX_FADV_NOREUSE pages)
+=======
+>>>>>>> 7cc6b80df66f (f2fs: add carve_out sysfs node)
