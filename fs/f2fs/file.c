@@ -1907,6 +1907,7 @@ next_alloc:
 			}
 		}
 
+<<<<<<< HEAD
 		if (has_not_enough_free_secs(sbi, 0,
 				sbi->reserved_pin_section)) {
 =======
@@ -1914,6 +1915,8 @@ next_alloc:
 		f2fs_down_write(&sbi->pin_sem);
 
 >>>>>>> 2dda0930fb79 (f2fs: fix to avoid panic once fallocation fails for pinfile)
+=======
+>>>>>>> 65e42a7084d1 (f2fs: fix to avoid running out of free segments)
 		if (has_not_enough_free_secs(sbi, 0, f2fs_sb_has_blkzoned(sbi) ?
 			ZONED_PIN_SEC_REQUIRED_COUNT :
 			GET_SEC_FROM_SEG(sbi, overprovision_segments(sbi)))) {
