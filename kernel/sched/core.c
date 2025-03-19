@@ -7129,12 +7129,18 @@ pick_next_task(struct rq *rq, struct task_struct *prev, struct rq_flags *rf)
  * Otherwise marks the task's __state as RUNNING
  */
 static bool try_to_block_task(struct rq *rq, struct task_struct *p,
+<<<<<<< HEAD
 			      unsigned long task_state, bool deactivate_cond)
+=======
+			      unsigned long *task_state_p)
+>>>>>>> 623074162b88 (sched: Fix trace_sched_switch(.prev_state))
 {
+	unsigned long task_state = *task_state_p;
 	int flags = DEQUEUE_NOCLOCK;
 
 	if (signal_pending_state(task_state, p)) {
 		WRITE_ONCE(p->__state, TASK_RUNNING);
+		*task_state_p = TASK_RUNNING;
 		return false;
 	}
 
@@ -7668,7 +7674,11 @@ static void __sched notrace __schedule(int sched_mode)
 			goto picked;
 		}
 	} else if (!preempt && prev_state) {
+<<<<<<< HEAD
 		block = try_to_block_task(rq, prev, prev_state, !task_is_blocked(prev));
+=======
+		try_to_block_task(rq, prev, &prev_state);
+>>>>>>> 623074162b88 (sched: Fix trace_sched_switch(.prev_state))
 		switch_count = &prev->nvcsw;
 	}
 
