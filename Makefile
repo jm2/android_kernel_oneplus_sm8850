@@ -493,7 +493,11 @@ export rust_common_flags := --edition=2021 \
 			    -Wclippy::all \
 			    -Wclippy::mut_mut \
 			    -Wclippy::needless_bitwise_bool \
+<<<<<<< HEAD
 			    -Wclippy::needless_continue \
+=======
+			    -Aclippy::needless_lifetimes \
+>>>>>>> baf02dd01e75 (rust: disable `clippy::needless_continue`)
 			    -Wclippy::no_mangle_with_rust_abi \
 			    -Wclippy::dbg_macro
 
