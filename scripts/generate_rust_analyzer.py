@@ -86,6 +86,7 @@ def generate_crates(srctree, objtree, sysroot_src, external_src, cfgs):
     )
 
     append_crate(
+<<<<<<< HEAD
         "bindings",
         srctree / "rust"/ "bindings" / "lib.rs",
         ["core"],
@@ -106,6 +107,35 @@ def generate_crates(srctree, objtree, sysroot_src, external_src, cfgs):
         ],
         "exclude_dirs": [],
     }
+=======
+        "ffi",
+        srctree / "rust" / "ffi.rs",
+        ["core", "compiler_builtins"],
+    )
+
+    def append_crate_with_generated(
+        display_name,
+        deps,
+    ):
+        append_crate(
+            display_name,
+            srctree / "rust"/ display_name / "lib.rs",
+            deps,
+            cfg=cfg,
+        )
+        crates[-1]["env"]["OBJTREE"] = str(objtree.resolve(True))
+        crates[-1]["source"] = {
+            "include_dirs": [
+                str(srctree / "rust" / display_name),
+                str(objtree / "rust")
+            ],
+            "exclude_dirs": [],
+        }
+
+    append_crate_with_generated("bindings", ["core", "ffi"])
+    append_crate_with_generated("uapi", ["core", "ffi"])
+    append_crate_with_generated("kernel", ["core", "macros", "build_error", "ffi", "bindings", "uapi"])
+>>>>>>> 0f1ee79b0fea (scripts: generate_rust_analyzer: Add ffi crate)
 
     def is_root_crate(build_file, target):
         try:
