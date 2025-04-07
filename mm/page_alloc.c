@@ -2470,6 +2470,7 @@ static bool unreserve_highatomic_pageblock(const struct alloc_context *ac,
 }
 
 /*
+<<<<<<< HEAD
  * Try finding a free buddy page on the fallback list.
  *
  * This will attempt to steal a whole pageblock for the requested type
@@ -2478,12 +2479,14 @@ static bool unreserve_highatomic_pageblock(const struct alloc_context *ac,
  * If a whole block cannot be stolen, regress to __rmqueue_smallest()
  * logic to at least break up as little contiguity as possible.
 >>>>>>> 564d25b1a6a0 (mm: page_alloc: don't steal single pages from biggest buddy)
+=======
+ * Try to allocate from some fallback migratetype by claiming the entire block,
+ * i.e. converting it to the allocation's start migratetype.
+>>>>>>> 16bae58f7355 (mm: page_alloc: speed up fallbacks in rmqueue_bulk())
  *
  * The use of signed ints for order and current_order is a deliberate
  * deviation from the rest of this file, to make the for loop
  * condition simpler.
- *
- * Return the stolen page, or NULL if none can be found.
  */
 static __always_inline struct page *
 __rmqueue_claim(struct zone *zone, int order, int start_migratetype,
@@ -2560,14 +2563,29 @@ __rmqueue_steal(struct zone *zone, int order, int start_migratetype)
 		page = get_page_from_free_area(area, fallback_mt);
 		page = try_to_steal_block(zone, page, current_order, order,
 					  start_migratetype, alloc_flags);
-		if (page)
-			goto got_one;
+		if (page) {
+			trace_mm_page_alloc_extfrag(page, order, current_order,
+						    start_migratetype, fallback_mt);
+			return page;
+		}
 	}
 
-	if (alloc_flags & ALLOC_NOFRAGMENT)
-		return NULL;
+	return NULL;
+}
 
-	/* No luck stealing blocks. Find the smallest fallback page */
+/*
+ * Try to steal a single page from some fallback migratetype. Leave the rest of
+ * the block as its current migratetype, potentially causing fragmentation.
+ */
+static __always_inline struct page *
+__rmqueue_steal(struct zone *zone, int order, int start_migratetype)
+{
+	struct free_area *area;
+	int current_order;
+	struct page *page;
+	int fallback_mt;
+	bool can_steal;
+
 	for (current_order = order; current_order < NR_PAGE_ORDERS; current_order++) {
 		area = &(zone->free_area[current_order]);
 		fallback_mt = find_suitable_fallback(area, current_order,
@@ -2578,6 +2596,7 @@ __rmqueue_steal(struct zone *zone, int order, int start_migratetype)
 
 		page = get_page_from_free_area(area, fallback_mt);
 		page_del_and_expand(zone, page, order, current_order, fallback_mt);
+<<<<<<< HEAD
 <<<<<<< HEAD
 		trace_mm_page_alloc_extfrag(page, order, current_order,
 					    start_migratetype, fallback_mt);
@@ -2597,6 +2616,14 @@ got_one:
 
 	return page;
 >>>>>>> 564d25b1a6a0 (mm: page_alloc: don't steal single pages from biggest buddy)
+=======
+		trace_mm_page_alloc_extfrag(page, order, current_order,
+					    start_migratetype, fallback_mt);
+		return page;
+	}
+
+	return NULL;
+>>>>>>> 16bae58f7355 (mm: page_alloc: speed up fallbacks in rmqueue_bulk())
 }
 
 enum rmqueue_mode {
@@ -2651,7 +2678,11 @@ __rmqueue(struct zone *zone, unsigned int order, int migratetype,
 			return page;
 		fallthrough;
 	case RMQUEUE_CMA:
+<<<<<<< HEAD
 		if (!cma_redirect_restricted() && alloc_flags & ALLOC_CMA) {
+=======
+		if (alloc_flags & ALLOC_CMA) {
+>>>>>>> 16bae58f7355 (mm: page_alloc: speed up fallbacks in rmqueue_bulk())
 			page = __rmqueue_cma_fallback(zone, order);
 			if (page) {
 				*mode = RMQUEUE_CMA;
@@ -2676,6 +2707,10 @@ __rmqueue(struct zone *zone, unsigned int order, int migratetype,
 			}
 		}
 	}
+<<<<<<< HEAD
+=======
+
+>>>>>>> 16bae58f7355 (mm: page_alloc: speed up fallbacks in rmqueue_bulk())
 	return NULL;
 }
 
@@ -2694,6 +2729,7 @@ static int rmqueue_bulk(struct zone *zone, unsigned int order,
 
 	spin_lock_irqsave(&zone->lock, flags);
 	for (i = 0; i < count; ++i) {
+<<<<<<< HEAD
 		struct page *page;
 
 		/*
@@ -2706,6 +2742,10 @@ static int rmqueue_bulk(struct zone *zone, unsigned int order,
 		else
 			page = __rmqueue(zone, order, migratetype, alloc_flags, &rmqm);
 
+=======
+		struct page *page = __rmqueue(zone, order, migratetype,
+					      alloc_flags, &rmqm);
+>>>>>>> 16bae58f7355 (mm: page_alloc: speed up fallbacks in rmqueue_bulk())
 		if (unlikely(page == NULL))
 			break;
 
@@ -3324,9 +3364,15 @@ struct page *rmqueue_buddy(struct zone *preferred_zone, struct zone *zone,
 		if (alloc_flags & ALLOC_HIGHATOMIC)
 			page = __rmqueue_smallest(zone, order, MIGRATE_HIGHATOMIC);
 		if (!page) {
+<<<<<<< HEAD
 			if (cma_redirect_restricted() &&
 			    alloc_flags & ALLOC_CMA)
 				page = __rmqueue_cma_fallback(zone, order);
+=======
+			enum rmqueue_mode rmqm = RMQUEUE_NORMAL;
+
+			page = __rmqueue(zone, order, migratetype, alloc_flags, &rmqm);
+>>>>>>> 16bae58f7355 (mm: page_alloc: speed up fallbacks in rmqueue_bulk())
 
 			if (!page) {
 				enum rmqueue_mode rmqm = RMQUEUE_NORMAL;
