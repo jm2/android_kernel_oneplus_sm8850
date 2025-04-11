@@ -378,11 +378,18 @@ static int qfprom_reg_read(void *context,
 			unsigned int reg, void *_val, size_t bytes)
 {
 	struct qfprom_priv *priv = context;
+<<<<<<< HEAD
 	u8 *val = _val;
 	int buf_start, buf_end, index, i = 0;
 	void __iomem *base = priv->qfpcorrected;
 	char *buffer = NULL;
 	u32 read_val;
+=======
+	u32 *val = _val;
+	void __iomem *base = priv->qfpcorrected;
+	int words = DIV_ROUND_UP(bytes, sizeof(u32));
+	int i;
+>>>>>>> 1603a34b80ff (nvmem: qfprom: switch to 4-byte aligned reads)
 
 	if (read_raw_data && priv->qfpraw)
 		base = priv->qfpraw;
@@ -394,14 +401,31 @@ static int qfprom_reg_read(void *context,
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	for (index = buf_start; index < buf_end; index += 4, i += 4) {
 		read_val = readl_relaxed(base + index);
 		memcpy(buffer + i, &read_val, 4);
 	}
+=======
+	for (i = 0; i < words; i++)
+		*val++ = readl(base + reg + i * sizeof(u32));
+>>>>>>> 1603a34b80ff (nvmem: qfprom: switch to 4-byte aligned reads)
 
 	memcpy(val, buffer + reg % 4, bytes);
 	kfree(buffer);
 	return 0;
+}
+
+/* Align reads to word boundary */
+static void qfprom_fixup_dt_cell_info(struct nvmem_device *nvmem,
+				      struct nvmem_cell_info *cell)
+{
+	unsigned int byte_offset = cell->offset % sizeof(u32);
+
+	cell->bit_offset += byte_offset * BITS_PER_BYTE;
+	cell->offset -= byte_offset;
+	if (byte_offset && !cell->nbits)
+		cell->nbits = cell->bytes * BITS_PER_BYTE;
 }
 
 static void qfprom_runtime_disable(void *data)
@@ -428,10 +452,11 @@ static int qfprom_probe(struct platform_device *pdev)
 	struct nvmem_config econfig = {
 		.name = "qfprom",
 		.add_legacy_fixed_of_cells = true,
-		.stride = 1,
-		.word_size = 1,
+		.stride = 4,
+		.word_size = 4,
 		.id = NVMEM_DEVID_AUTO,
 		.reg_read = qfprom_reg_read,
+		.fixup_dt_cell_info = qfprom_fixup_dt_cell_info,
 	};
 	struct device *dev = &pdev->dev;
 	struct resource *res;
