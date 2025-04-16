@@ -5061,7 +5061,18 @@ restart:
 	}
 
 retry:
+<<<<<<< HEAD
 	retry_loop_count++;
+=======
+	/*
+	 * Deal with possible cpuset update races or zonelist updates to avoid
+	 * infinite retries.
+	 */
+	if (check_retry_cpuset(cpuset_mems_cookie, ac) ||
+	    check_retry_zonelist(zonelist_iter_cookie))
+		goto restart;
+
+>>>>>>> 9da33ce1142b (mm/page_alloc.c: avoid infinite retries caused by cpuset race)
 	/* Ensure kswapd doesn't accidentally go to sleep as long as we loop */
 	if (alloc_flags & ALLOC_KSWAPD)
 		wake_all_kswapds(order, gfp_mask, ac);
