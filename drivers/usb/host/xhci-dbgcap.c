@@ -963,6 +963,7 @@ static void xhci_dbc_handle_events(struct work_struct *work)
 
 		if (!list_empty(&dbc->eps[BULK_OUT].list_pending) ||
 <<<<<<< HEAD
+<<<<<<< HEAD
 		    time_is_after_jiffies(busypoll_timelimit))
 			poll_interval = 0;
 		break;
@@ -971,8 +972,15 @@ static void xhci_dbc_handle_events(struct work_struct *work)
 		poll_interval = 0;
 =======
 		    !list_empty(&dbc->eps[BULK_IN].list_pending))
+=======
+		    time_is_after_jiffies(busypoll_timelimit))
+>>>>>>> b9e0997f2e84 (xhci: dbc: Avoid event polling busyloop if pending rx transfers are inactive.)
 			poll_interval = 0;
 >>>>>>> 651eaaae6baa (xhci: dbc: Improve performance by removing delay in transfer event polling.)
+		break;
+	case EVT_XFER_DONE:
+		dbc->xfer_timestamp = jiffies;
+		poll_interval = 0;
 		break;
 	default:
 		dev_info(dbc->dev, "stop handling dbc events\n");
