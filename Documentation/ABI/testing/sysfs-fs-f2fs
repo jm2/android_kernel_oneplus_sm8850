@@ -851,6 +851,9 @@ Description:	For several zoned storage devices, vendors will provide extra space
 		not be shown to users. So, with this new sysfs node, we can hide the space
 		by substracting reserved_blocks from total bytes.
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> d4a4abba4584 (f2fs: sysfs: add encoding_flags entry)
 
 What:		/sys/fs/f2fs/<disk>/encoding_flags
 Date:		April 2025
@@ -864,6 +867,7 @@ Description:	This is a read-only entry to show the value of sb.s_encoding_flags,
 		SB_ENC_STRICT_MODE_FL            0x00000001
 		SB_ENC_NO_COMPAT_FALLBACK_FL     0x00000002
 		============================     ==========
+<<<<<<< HEAD
 
 What:		/sys/fs/f2fs/<disk>/reserved_pin_section
 Date:		June 2025
@@ -892,3 +896,5 @@ Description:
 >>>>>>> 9933e05f508e (f2fs: add a sysfs entry to reclaim POSIX_FADV_NOREUSE pages)
 =======
 >>>>>>> 7cc6b80df66f (f2fs: add carve_out sysfs node)
+=======
+>>>>>>> d4a4abba4584 (f2fs: sysfs: add encoding_flags entry)
