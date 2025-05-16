@@ -39,6 +39,7 @@ mark_mt(const struct sk_buff *skb, struct xt_action_param *par)
 	return ((skb->mark & info->mask) == info->mark) ^ info->invert;
 }
 
+<<<<<<< HEAD
 static struct xt_target mark_tg_reg __read_mostly = {
 	.name           = "MARK",
 	.revision       = 2,
@@ -46,6 +47,37 @@ static struct xt_target mark_tg_reg __read_mostly = {
 	.target         = mark_tg,
 	.targetsize     = sizeof(struct xt_mark_tginfo2),
 	.me             = THIS_MODULE,
+=======
+static struct xt_target mark_tg_reg[] __read_mostly = {
+	{
+		.name           = "MARK",
+		.revision       = 2,
+		.family         = NFPROTO_IPV4,
+		.target         = mark_tg,
+		.targetsize     = sizeof(struct xt_mark_tginfo2),
+		.me             = THIS_MODULE,
+	},
+#if IS_ENABLED(CONFIG_IP_NF_ARPTABLES) || IS_ENABLED(CONFIG_NFT_COMPAT_ARP)
+	{
+		.name           = "MARK",
+		.revision       = 2,
+		.family         = NFPROTO_ARP,
+		.target         = mark_tg,
+		.targetsize     = sizeof(struct xt_mark_tginfo2),
+		.me             = THIS_MODULE,
+	},
+#endif
+#if IS_ENABLED(CONFIG_IP6_NF_IPTABLES)
+	{
+		.name           = "MARK",
+		.revision       = 2,
+		.family         = NFPROTO_IPV6,
+		.target         = mark_tg,
+		.targetsize     = sizeof(struct xt_mark_tginfo2),
+		.me             = THIS_MODULE,
+	},
+#endif
+>>>>>>> c4c18cf58910 (netfilter: xtables: support arpt_mark and ipv6 optstrip for iptables-nft only builds)
 };
 
 static struct xt_match mark_mt_reg __read_mostly = {
