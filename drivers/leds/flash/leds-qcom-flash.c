@@ -135,6 +135,7 @@ enum {
 	REG_MAX_COUNT,
 };
 
+<<<<<<< HEAD
 static const struct reg_field mvflash_3ch_pmi8998_regs[REG_MAX_COUNT] = {
 	REG_FIELD(0x08, 0, 7),			/* status1	*/
 	REG_FIELD(0x09, 0, 7),			/* status2	*/
@@ -152,6 +153,8 @@ static const struct reg_field mvflash_3ch_pmi8998_regs[REG_MAX_COUNT] = {
 	REG_FIELD(0x58, 0, 2),			/* therm_thrsh3 */
 };
 
+=======
+>>>>>>> 12c4d55dd0bd (leds: flash: leds-qcom-flash: Fix registry access after re-bind)
 static const struct reg_field mvflash_3ch_regs[REG_MAX_COUNT] = {
 	REG_FIELD(0x08, 0, 7),			/* status1	*/
 	REG_FIELD(0x09, 0, 7),                  /* status2	*/
@@ -1074,6 +1077,7 @@ static int qcom_flash_led_probe(struct platform_device *pdev)
 				    GFP_KERNEL);
 		if (!regs)
 			return -ENOMEM;
+<<<<<<< HEAD
 	} else if (val == FLASH_SUBTYPE_3CH_PMI8998_VAL) {
 		flash_data->hw_type = QCOM_MVFLASH_3CH;
 		flash_data->max_channels = 3;
@@ -1081,6 +1085,8 @@ static int qcom_flash_led_probe(struct platform_device *pdev)
 				    sizeof(mvflash_3ch_pmi8998_regs), GFP_KERNEL);
 		if (!regs)
 			return -ENOMEM;
+=======
+>>>>>>> 12c4d55dd0bd (leds: flash: leds-qcom-flash: Fix registry access after re-bind)
 	} else if (val == FLASH_SUBTYPE_4CH_VAL) {
 		flash_data->hw_type = QCOM_MVFLASH_4CH;
 		flash_data->max_channels = 4;
