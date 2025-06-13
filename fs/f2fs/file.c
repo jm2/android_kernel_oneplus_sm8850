@@ -1908,6 +1908,7 @@ next_alloc:
 		}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 		if (has_not_enough_free_secs(sbi, 0,
 				sbi->reserved_pin_section)) {
 =======
@@ -1921,6 +1922,10 @@ next_alloc:
 			ZONED_PIN_SEC_REQUIRED_COUNT :
 			GET_SEC_FROM_SEG(sbi, overprovision_segments(sbi)))) {
 >>>>>>> 58330262213a (f2fs: decrease spare area for pinned files for zoned devices)
+=======
+		if (has_not_enough_free_secs(sbi, 0,
+				sbi->reserved_pin_section)) {
+>>>>>>> 4c5181b9e1a9 (f2fs: introduce reserved_pin_section sysfs entry)
 			f2fs_down_write(&sbi->gc_lock);
 			stat_inc_gc_call_count(sbi, FOREGROUND);
 			err = f2fs_gc(sbi, &gc_control);

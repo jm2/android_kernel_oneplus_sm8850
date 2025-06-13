@@ -868,6 +868,9 @@ Description:	This is a read-only entry to show the value of sb.s_encoding_flags,
 		SB_ENC_NO_COMPAT_FALLBACK_FL     0x00000002
 		============================     ==========
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 4c5181b9e1a9 (f2fs: introduce reserved_pin_section sysfs entry)
 
 What:		/sys/fs/f2fs/<disk>/reserved_pin_section
 Date:		June 2025
@@ -877,6 +880,7 @@ Description:	This threshold is used to control triggering garbage collection whi
 		reserved section before preallocating on pinned file.
 		By default, the value is ovp_sections, especially, for zoned ufs, the
 		value is 1.
+<<<<<<< HEAD
 
 What:		/sys/fs/f2fs/<disk>/effective_lookup_mode
 Date:		August 2025
@@ -898,3 +902,5 @@ Description:
 >>>>>>> 7cc6b80df66f (f2fs: add carve_out sysfs node)
 =======
 >>>>>>> d4a4abba4584 (f2fs: sysfs: add encoding_flags entry)
+=======
+>>>>>>> 4c5181b9e1a9 (f2fs: introduce reserved_pin_section sysfs entry)

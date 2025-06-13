@@ -1178,9 +1178,13 @@ F2FS_SBI_GENERAL_RW_ATTR(blkzone_alloc_policy);
 #endif
 F2FS_SBI_GENERAL_RW_ATTR(carve_out);
 <<<<<<< HEAD
+<<<<<<< HEAD
 F2FS_SBI_GENERAL_RW_ATTR(reserved_pin_section);
 =======
 >>>>>>> 7cc6b80df66f (f2fs: add carve_out sysfs node)
+=======
+F2FS_SBI_GENERAL_RW_ATTR(reserved_pin_section);
+>>>>>>> 4c5181b9e1a9 (f2fs: introduce reserved_pin_section sysfs entry)
 
 /* STAT_INFO ATTR */
 #ifdef CONFIG_F2FS_STAT_FS
@@ -1383,9 +1387,13 @@ static struct attribute *f2fs_attrs[] = {
 	ATTR_LIST(max_read_extent_count),
 	ATTR_LIST(carve_out),
 <<<<<<< HEAD
+<<<<<<< HEAD
 	ATTR_LIST(reserved_pin_section),
 =======
 >>>>>>> 7cc6b80df66f (f2fs: add carve_out sysfs node)
+=======
+	ATTR_LIST(reserved_pin_section),
+>>>>>>> 4c5181b9e1a9 (f2fs: introduce reserved_pin_section sysfs entry)
 	NULL,
 };
 ATTRIBUTE_GROUPS(f2fs);
