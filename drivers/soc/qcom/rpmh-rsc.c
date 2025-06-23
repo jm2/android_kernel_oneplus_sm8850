@@ -1763,6 +1763,10 @@ static int rpmh_rsc_probe(struct platform_device *pdev)
 	rsc_top->dev = &pdev->dev;
 	scnprintf(rsc_top->name, sizeof(rsc_top->name), "%s", name);
 
+	if (drv->ver.major >= 3)
+		drv->regs = rpmh_rsc_reg_offset_ver_3_0;
+	else
+		drv->regs = rpmh_rsc_reg_offset_ver_2_7;
 	for_each_child_of_node(dn, np) {
 		struct device *drv_dev;
 
