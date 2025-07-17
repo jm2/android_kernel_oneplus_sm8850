@@ -4448,9 +4448,15 @@ out_unlock:
 	mutex_unlock(&hba->uic_cmd_mutex);
 
 	/*
+<<<<<<< HEAD
 	 * If the h8 exit fails during the runtime resume process,
 	 * it becomes stuck and cannot be recovered through the error handler.
 	 * To fix this, use link recovery instead of the error handler.
+=======
+	 * If the h8 exit fails during the runtime resume process, it becomes
+	 * stuck and cannot be recovered through the error handler.  To fix
+	 * this, use link recovery instead of the error handler.
+>>>>>>> d710ed68c54a (scsi: ufs: core: Use link recovery when h8 exit fails during runtime resume)
 	 */
 	if (ret && hba->pm_op_in_progress)
 		ret = ufshcd_link_recovery(hba);
