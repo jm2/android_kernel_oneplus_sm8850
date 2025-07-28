@@ -1104,8 +1104,18 @@ LDFLAGS_vmlinux += --orphan-handling=$(CONFIG_LD_ORPHAN_WARN_LEVEL)
 endif
 
 # Align the bit size of userspace programs with the kernel
+<<<<<<< HEAD
 KBUILD_USERCFLAGS  += $(filter -m32 -m64 --target=%, $(KBUILD_CFLAGS))
 KBUILD_USERLDFLAGS += $(filter -m32 -m64 --target=%, $(KBUILD_CFLAGS))
+=======
+KBUILD_USERCFLAGS  += $(filter -m32 -m64 --target=%, $(KBUILD_CPPFLAGS) $(KBUILD_CFLAGS))
+KBUILD_USERLDFLAGS += $(filter -m32 -m64 --target=%, $(KBUILD_CPPFLAGS) $(KBUILD_CFLAGS))
+
+# userspace programs are linked via the compiler, use the correct linker
+ifdef CONFIG_CC_IS_CLANG
+KBUILD_USERLDFLAGS += --ld-path=$(LD)
+endif
+>>>>>>> 033b3d0e4175 (kbuild: userprogs: use correct linker when mixing clang and GNU ld)
 
 # make the checker run with the right architecture
 CHECKFLAGS += --arch=$(ARCH)
