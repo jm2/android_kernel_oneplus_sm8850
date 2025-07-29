@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
+<<<<<<< HEAD
  * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+=======
+ * Copyright (c) 2022, 2024-2025 Qualcomm Innovation Center, Inc. All rights reserved.
+>>>>>>> e1ce777fbcbd (leds: flash: leds-qcom-flash: Update torch current clamp setting)
  */
 
 #include <linux/bitfield.h>
@@ -132,6 +136,7 @@ enum {
 	REG_THERM_THRSH1,
 	REG_THERM_THRSH2,
 	REG_THERM_THRSH3,
+	REG_TORCH_CLAMP,
 	REG_MAX_COUNT,
 };
 
@@ -156,6 +161,7 @@ static const struct reg_field mvflash_3ch_pmi8998_regs[REG_MAX_COUNT] = {
 =======
 >>>>>>> 12c4d55dd0bd (leds: flash: leds-qcom-flash: Fix registry access after re-bind)
 static const struct reg_field mvflash_3ch_regs[REG_MAX_COUNT] = {
+<<<<<<< HEAD
 	REG_FIELD(0x08, 0, 7),			/* status1	*/
 	REG_FIELD(0x09, 0, 7),                  /* status2	*/
 	REG_FIELD(0x0a, 0, 7),                  /* status3	*/
@@ -186,6 +192,36 @@ static const struct reg_field mvflash_4ch_regs[REG_MAX_COUNT] = {
 	REG_FIELD(0x65, 0, 1),			/* mitigation_sw */
 	REG_FIELD(0x7a, 0, 2),			/* therm_thrsh1 */
 	REG_FIELD(0x78, 0, 2),			/* therm_thrsh2 */
+=======
+	[REG_STATUS1]		= REG_FIELD(0x08, 0, 7),
+	[REG_STATUS2]		= REG_FIELD(0x09, 0, 7),
+	[REG_STATUS3]		= REG_FIELD(0x0a, 0, 7),
+	[REG_CHAN_TIMER]	= REG_FIELD_ID(0x40, 0, 7, 3, 1),
+	[REG_ITARGET]		= REG_FIELD_ID(0x43, 0, 6, 3, 1),
+	[REG_MODULE_EN]		= REG_FIELD(0x46, 7, 7),
+	[REG_IRESOLUTION]	= REG_FIELD(0x47, 0, 5),
+	[REG_CHAN_STROBE]	= REG_FIELD_ID(0x49, 0, 2, 3, 1),
+	[REG_CHAN_EN]		= REG_FIELD(0x4c, 0, 2),
+	[REG_THERM_THRSH1]	= REG_FIELD(0x56, 0, 2),
+	[REG_THERM_THRSH2]	= REG_FIELD(0x57, 0, 2),
+	[REG_THERM_THRSH3]	= REG_FIELD(0x58, 0, 2),
+	[REG_TORCH_CLAMP]	= REG_FIELD(0xec, 0, 6),
+};
+
+static const struct reg_field mvflash_4ch_regs[REG_MAX_COUNT] = {
+	[REG_STATUS1]		= REG_FIELD(0x06, 0, 7),
+	[REG_STATUS2]		= REG_FIELD(0x07, 0, 6),
+	[REG_STATUS3]		= REG_FIELD(0x09, 0, 7),
+	[REG_CHAN_TIMER]	= REG_FIELD_ID(0x3e, 0, 7, 4, 1),
+	[REG_ITARGET]		= REG_FIELD_ID(0x42, 0, 6, 4, 1),
+	[REG_MODULE_EN]		= REG_FIELD(0x46, 7, 7),
+	[REG_IRESOLUTION]	= REG_FIELD(0x49, 0, 3),
+	[REG_CHAN_STROBE]	= REG_FIELD_ID(0x4a, 0, 6, 4, 1),
+	[REG_CHAN_EN]		= REG_FIELD(0x4e, 0, 3),
+	[REG_THERM_THRSH1]	= REG_FIELD(0x7a, 0, 2),
+	[REG_THERM_THRSH2]	= REG_FIELD(0x78, 0, 2),
+	[REG_TORCH_CLAMP]	= REG_FIELD(0xed, 0, 6),
+>>>>>>> e1ce777fbcbd (leds: flash: leds-qcom-flash: Update torch current clamp setting)
 };
 
 struct qcom_flash_data {
@@ -200,8 +236,11 @@ struct qcom_flash_data {
 	u8			chan_en_bits;
 	u8			revision;
 	u8			torch_clamp;
+<<<<<<< HEAD
 	bool			trigger_lmh;
 	bool			debug_board_present;
+=======
+>>>>>>> e1ce777fbcbd (leds: flash: leds-qcom-flash: Update torch current clamp setting)
 };
 
 struct qcom_flash_led {
