@@ -163,7 +163,11 @@
 #define TRCIDR4_NUMVMIDC_MASK			GENMASK(31, 28)
 
 #define TRCIDR5_NUMEXTIN_MASK			GENMASK(8, 0)
+<<<<<<< HEAD
 #define TRCIDR5_NUMEXTINSEL_MASK		GENMASK(11, 9)
+=======
+#define TRCIDR5_NUMEXTINSEL_MASK               GENMASK(11, 9)
+>>>>>>> a1b2c8b7af21 (coresight-etm4x: Conditionally access register TRCEXTINSELR)
 #define TRCIDR5_TRACEIDSIZE_MASK		GENMASK(21, 16)
 #define TRCIDR5_ATBTRIG				BIT(22)
 #define TRCIDR5_LPOVERRIDE			BIT(23)
@@ -1001,6 +1005,7 @@ struct etmv4_drvdata {
 	u8				ext_inp_sel;
 	u8				nr_ext_inp;
 	u8				numcidc;
+	u8				numextinsel;
 	u8				numvmidc;
 	u8				nrseqstate;
 	u8				nr_event;
