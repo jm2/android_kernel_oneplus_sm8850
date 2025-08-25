@@ -574,13 +574,15 @@ static irqreturn_t tcs_tx_done(int irq, void *p)
 		ipc_log_string(drv->ipc_log_ctx, "IRQ response: m=%d", i);
 #endif
 
-		/*
-		 * If wake tcs was re-purposed for sending active
-		 * votes, clear AMC trigger & enable modes and
+		/* Clear AMC trigger & enable modes and
 		 * disable interrupt for this TCS
 		 */
+<<<<<<< HEAD
 		if (!drv->ch[ch].tcs[ACTIVE_TCS].num_tcs)
 			__tcs_set_trigger(drv, i, false);
+=======
+		__tcs_set_trigger(drv, i, false);
+>>>>>>> 11df3ff2b4d0 (soc: qcom: rpmh-rsc: Unconditionally clear _TRIGGER bit for TCS)
 skip:
 		/* Reclaim the TCS */
 		write_tcs_reg(drv, drv->regs[RSC_DRV_CMD_ENABLE], i, 0);
