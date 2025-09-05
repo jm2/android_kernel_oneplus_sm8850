@@ -195,7 +195,6 @@ void mhi_deinit_free_irq(struct mhi_controller *mhi_cntrl)
 int mhi_init_irq_setup(struct mhi_controller *mhi_cntrl)
 {
 	struct mhi_event *mhi_event = mhi_cntrl->mhi_event;
-	struct device *dev = &mhi_cntrl->mhi_dev->dev;
 	unsigned long irq_flags = IRQF_SHARED | IRQF_NO_SUSPEND;
 	int i, ret;
 
@@ -222,7 +221,11 @@ int mhi_init_irq_setup(struct mhi_controller *mhi_cntrl)
 			continue;
 
 		if (mhi_event->irq >= mhi_cntrl->nr_irqs) {
+<<<<<<< HEAD
 			MHI_ERR(dev, "irq %d not available for event ring\n",
+=======
+			dev_err(mhi_cntrl->cntrl_dev, "irq %d not available for event ring\n",
+>>>>>>> 61a60c45ebd6 (bus: mhi: host: Do not use uninitialized 'dev' pointer in mhi_init_irq_setup())
 				mhi_event->irq);
 			ret = -EINVAL;
 			goto error_request;
@@ -233,7 +236,11 @@ int mhi_init_irq_setup(struct mhi_controller *mhi_cntrl)
 				  irq_flags,
 				  "mhi", mhi_event);
 		if (ret) {
+<<<<<<< HEAD
 			MHI_ERR(dev, "Error requesting irq:%d for ev:%d\n",
+=======
+			dev_err(mhi_cntrl->cntrl_dev, "Error requesting irq:%d for ev:%d\n",
+>>>>>>> 61a60c45ebd6 (bus: mhi: host: Do not use uninitialized 'dev' pointer in mhi_init_irq_setup())
 				mhi_cntrl->irq[mhi_event->irq], i);
 			goto error_request;
 		}
