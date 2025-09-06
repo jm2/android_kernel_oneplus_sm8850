@@ -1239,7 +1239,11 @@ static void restore_bytes(struct kmem_cache *s, const char *message, u8 data,
 
 static pad_check_attributes int
 check_bytes_and_report(struct kmem_cache *s, struct slab *slab,
+<<<<<<< HEAD
 		       u8 *object, const char *what, u8 *start, unsigned int value,
+=======
+		       u8 *object, char *what, u8 *start, unsigned int value,
+>>>>>>> 20a54a8db4dd (mm: slub: Print the broken data before restoring them)
 		       unsigned int bytes, bool slab_obj_print)
 {
 	u8 *fault;
