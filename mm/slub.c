@@ -1187,10 +1187,14 @@ static __printf(3, 4) void slab_err(struct kmem_cache *s, struct slab *slab,
 	__slab_bug(s, fmt, args);
 	va_end(args);
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 	slab_bug(s, "%s", buf);
 >>>>>>> d06b739f41dc (mm: slub: call WARN() when detecting a slab corruption)
+=======
+
+>>>>>>> 9cd3206f0126 (mm, slab: cleanup slab_bug() parameters)
 	__slab_err(slab);
 }
 
@@ -1244,10 +1248,14 @@ static void restore_bytes(struct kmem_cache *s, const char *message, u8 data,
 static pad_check_attributes int
 check_bytes_and_report(struct kmem_cache *s, struct slab *slab,
 <<<<<<< HEAD
+<<<<<<< HEAD
 		       u8 *object, const char *what, u8 *start, unsigned int value,
 =======
 		       u8 *object, char *what, u8 *start, unsigned int value,
 >>>>>>> 20a54a8db4dd (mm: slub: Print the broken data before restoring them)
+=======
+		       u8 *object, const char *what, u8 *start, unsigned int value,
+>>>>>>> 9cd3206f0126 (mm, slab: cleanup slab_bug() parameters)
 		       unsigned int bytes, bool slab_obj_print)
 {
 	u8 *fault;
