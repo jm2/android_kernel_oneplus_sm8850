@@ -643,13 +643,19 @@ static void hidinput_update_battery(struct hid_device *dev, unsigned int usage,
 	}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 560024035fe7 (HID: hid-input: only ignore 0 battery events for digitizers)
 	if ((usage & HID_USAGE_PAGE) == HID_UP_DIGITIZER && value == 0)
 		return;
 
 	if (value < dev->battery_min || value > dev->battery_max)
+<<<<<<< HEAD
 =======
 	if (value == 0 || value < dev->battery_min || value > dev->battery_max)
 >>>>>>> 8ac194ad5254 (HID: input: report battery status changes immediately)
+=======
+>>>>>>> 560024035fe7 (HID: hid-input: only ignore 0 battery events for digitizers)
 		return;
 
 	capacity = hidinput_scale_battery_capacity(dev, value);
