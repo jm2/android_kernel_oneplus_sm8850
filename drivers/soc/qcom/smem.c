@@ -1227,11 +1227,17 @@ static int qcom_smem_probe(struct platform_device *pdev)
 			goto release;
 	}
 
+<<<<<<< HEAD
 	smem->hwlock = hwspin_lock_request_specific(hwlock_id);
 	if (!smem->hwlock) {
 		ret = -ENXIO;
 		goto release;
 	}
+=======
+	smem->hwlock = devm_hwspin_lock_request_specific(&pdev->dev, hwlock_id);
+	if (!smem->hwlock)
+		return -ENXIO;
+>>>>>>> 60d1c1d4d925 (soc: qcom: smem: fix hwspinlock resource leak in probe error paths)
 
 	ret = hwspin_lock_timeout_irqsave(smem->hwlock, HWSPINLOCK_TIMEOUT, &flags);
 	if (ret)
@@ -1287,6 +1293,7 @@ static void qcom_smem_remove(struct platform_device *pdev)
 {
 	platform_device_unregister(__smem->socinfo);
 
+<<<<<<< HEAD
 	hwspin_lock_free(__smem->hwlock);
 	/*
 	 * In case of Hibernation Restore __smem object is still valid
@@ -1295,6 +1302,8 @@ static void qcom_smem_remove(struct platform_device *pdev)
 	 * it here.
 	 */
 	kfree(__smem);
+=======
+>>>>>>> 60d1c1d4d925 (soc: qcom: smem: fix hwspinlock resource leak in probe error paths)
 	__smem = NULL;
 }
 
