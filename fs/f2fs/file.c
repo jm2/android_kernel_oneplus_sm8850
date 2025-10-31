@@ -1892,6 +1892,7 @@ static int f2fs_expand_inode_data(struct inode *inode, loff_t offset,
 		map.m_len = sec_blks;
 next_alloc:
 <<<<<<< HEAD
+<<<<<<< HEAD
 		f2fs_down_write(&sbi->pin_sem);
 
 		if (unlikely(is_sbi_flag_set(sbi, SBI_CP_DISABLED))) {
@@ -1909,6 +1910,10 @@ next_alloc:
 		if (has_not_enough_free_secs(sbi, 0,
 				sbi->reserved_pin_section)) {
 =======
+=======
+		f2fs_down_write(&sbi->pin_sem);
+
+>>>>>>> 2dda0930fb79 (f2fs: fix to avoid panic once fallocation fails for pinfile)
 		if (has_not_enough_free_secs(sbi, 0, f2fs_sb_has_blkzoned(sbi) ?
 			ZONED_PIN_SEC_REQUIRED_COUNT :
 			GET_SEC_FROM_SEG(sbi, overprovision_segments(sbi)))) {
