@@ -1835,7 +1835,11 @@ static int __etm4_cpu_save(struct etmv4_drvdata *drvdata)
 		state->trcpdcr = etm4x_read32(csa, TRCPDCR);
 
 	/* wait for TRCSTATR.IDLE to go up */
+<<<<<<< HEAD
 	if (coresight_timeout(csa, TRCSTATR, TRCSTATR_IDLE_BIT, 1)) {
+=======
+	if (etm4x_wait_status(csa, TRCSTATR_IDLE_BIT, 1)) {
+>>>>>>> bebb32a22228 (coresight: etm4x: Correct polling IDLE bit)
 		dev_err(etm_dev,
 			"timeout while waiting for Idle Trace Status\n");
 		etm4_os_unlock(drvdata);
