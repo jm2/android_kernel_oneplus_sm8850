@@ -265,6 +265,7 @@
 .Lskip_fgt2_\@:
 .endm
 
+<<<<<<< HEAD
 .macro __init_el2_nvhe_prepare_eret
 	mov	x0, #INIT_PSTATE_EL1
 	msr	spsr_el2, x0
@@ -285,6 +286,8 @@
 .Lskip_mpam_\@:
 .endm
 
+=======
+>>>>>>> 84e5006115cb (KVM: arm64: Initialize SCTLR_EL1 in __kvm_hyp_init_cpu())
 /**
  * Initialize EL2 registers to sane values. This should be called early on all
  * cores that were booted in EL2. Note that everything gets initialised as
