@@ -871,12 +871,24 @@ buddy_merge_likely(unsigned long pfn, unsigned long buddy_pfn,
 			NULL) != NULL;
 }
 
+<<<<<<< HEAD
 static int zone_max_order(struct zone *zone)
 {
 	int max_order = MAX_PAGE_ORDER;
 
 	trace_android_vh_mm_customize_zone_max_order(zone, &max_order);
 	return max_order;
+=======
+static void change_pageblock_range(struct page *pageblock_page,
+				   int start_order, int migratetype)
+{
+	int nr_pageblocks = 1 << (start_order - pageblock_order);
+
+	while (nr_pageblocks--) {
+		set_pageblock_migratetype(pageblock_page, migratetype);
+		pageblock_page += pageblock_nr_pages;
+	}
+>>>>>>> 914769048818 (mm/page_alloc: change all pageblocks migrate type on coalescing)
 }
 
 /*
@@ -973,7 +985,7 @@ static inline void __free_one_page(struct page *page,
 			 * expand() down the line puts the sub-blocks
 			 * on the right freelists.
 			 */
-			set_pageblock_migratetype(buddy, migratetype);
+			change_pageblock_range(buddy, order, migratetype);
 		}
 
 		combined_pfn = buddy_pfn & pfn;
@@ -2095,6 +2107,7 @@ move:
 }
 #endif /* CONFIG_MEMORY_ISOLATION */
 
+<<<<<<< HEAD
 static void change_pageblock_range(struct page *pageblock_page,
 					int start_order, int migratetype)
 {
@@ -2104,6 +2117,39 @@ static void change_pageblock_range(struct page *pageblock_page,
 		set_pageblock_migratetype(pageblock_page, migratetype);
 		pageblock_page += pageblock_nr_pages;
 	}
+=======
+/*
+ * When we are falling back to another migratetype during allocation, try to
+ * steal extra free pages from the same pageblocks to satisfy further
+ * allocations, instead of polluting multiple pageblocks.
+ *
+ * If we are stealing a relatively large buddy page, it is likely there will
+ * be more free pages in the pageblock, so try to steal them all. For
+ * reclaimable and unmovable allocations, we steal regardless of page size,
+ * as fragmentation caused by those allocations polluting movable pageblocks
+ * is worse than movable allocations stealing from unmovable and reclaimable
+ * pageblocks.
+ */
+static bool can_steal_fallback(unsigned int order, int start_mt)
+{
+	/*
+	 * Leaving this order check is intended, although there is
+	 * relaxed order check in next check. The reason is that
+	 * we can actually steal whole pageblock if this condition met,
+	 * but, below check doesn't guarantee it and that is just heuristic
+	 * so could be changed anytime.
+	 */
+	if (order >= pageblock_order)
+		return true;
+
+	if (order >= pageblock_order / 2 ||
+		start_mt == MIGRATE_RECLAIMABLE ||
+		start_mt == MIGRATE_UNMOVABLE ||
+		page_group_by_mobility_disabled)
+		return true;
+
+	return false;
+>>>>>>> 914769048818 (mm/page_alloc: change all pageblocks migrate type on coalescing)
 }
 
 static inline bool boost_watermark(struct zone *zone)
