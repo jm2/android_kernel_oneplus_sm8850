@@ -54,6 +54,7 @@ void qrtr_ns_remove(void);
 int qrtr_peek_pkt_size(const void *data);
 
 int qrtr_get_service_id(unsigned int node_id, unsigned int port_id);
+int qrtr_get_instance_id(unsigned int node_id, unsigned int port_id);
 
 #ifdef CONFIG_OPLUS_POWERINFO_STANDBY_DEBUG
 int qrtr_get_service_instance_id(unsigned int node_id, unsigned int port_id);

@@ -312,6 +312,8 @@ static void handle_alloc_generic_req(struct qmi_handle *handle,
 	alloc_resp = kzalloc(sizeof(*alloc_resp),
 					GFP_KERNEL);
 	if (!alloc_resp) {
+		dev_err(memsh_drv->dev, "kzalloc for resp failed for client id: %d, proc_id: %d, request size: %d\n",
+			alloc_req->client_id, alloc_req->proc_id, alloc_req->num_bytes);
 		mutex_unlock(&memsh_drv->mem_share);
 		return;
 	}
@@ -331,9 +333,9 @@ static void handle_alloc_generic_req(struct qmi_handle *handle,
 	for (i = 0; i < num_clients; i++) {
 		if (memsh_child[i]->client_id == alloc_req->client_id) {
 			client_node = memsh_child[i];
-			dev_dbg(memsh_drv->dev,
-				"memshare_alloc: found client with client_id: %d, index: %d\n",
-				alloc_req->client_id, index);
+			dev_err(memsh_drv->dev,
+				"memshare_alloc: found client with client_id: %d, index: %d, allotted: %d\n",
+				alloc_req->client_id, index, memblock[index].allotted);
 			break;
 		}
 	}
@@ -385,7 +387,7 @@ static void handle_alloc_generic_req(struct qmi_handle *handle,
 		client_node->mem_entry = qcom_glink_mem_entry_init(client_node->dev,
 				mb->virtual_addr, mb->phy_addr, mb->size, mb->phy_addr);
 	}
-	dev_dbg(memsh_drv->dev,
+	dev_err(memsh_drv->dev,
 		"memshare_alloc: free memory count for client id: %d = %d\n",
 		memblock[index].client_id, memblock[index].free_memory);
 
@@ -401,7 +403,7 @@ static void handle_alloc_generic_req(struct qmi_handle *handle,
 		memblock[index].allotted)
 		shared_hyp_mapping(index);
 	mutex_unlock(&memsh_drv->mem_share);
-	dev_info(memsh_drv->dev,
+	dev_err(memsh_drv->dev,
 		"memshare_alloc: client_id: %d, alloc_resp.num_bytes: %d, alloc_resp.resp.result: %lx\n",
 		alloc_req->client_id,
 		alloc_resp->dhms_mem_alloc_addr_info[0].num_bytes,
@@ -710,7 +712,7 @@ static void memshare_init_worker(struct work_struct *work)
 		}
 		return;
 	}
-	dev_dbg(memsh_drv->dev, "memshare: memshare_init successful\n");
+	dev_info(memsh_drv->dev, "memshare: memshare_init successful\n");
 }
 
 static ssize_t dynamic_size_show(struct kobject *kobj, struct kobj_attribute *attr,

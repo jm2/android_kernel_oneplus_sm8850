@@ -103,6 +103,7 @@ struct uaudio_dev {
 	int num_intf;
 	struct intf_info *info;
 	struct snd_usb_audio *chip;
+	bool disconnect_wq_init;
 };
 
 static struct uaudio_dev uadev[SNDRV_CARDS];
@@ -856,7 +857,10 @@ skip_sync:
 	chip = uadev[card_num].chip;
 
 	if (atomic_read(&uadev[card_num].in_use) == 1) {
-		init_waitqueue_head(&uadev[card_num].disconnect_wq);
+		if(!uadev[card_num].disconnect_wq_init) {
+			init_waitqueue_head(&uadev[card_num].disconnect_wq);
+			uadev[card_num].disconnect_wq_init = true;
+		}
 		uadev[card_num].num_intf =
 			subs->dev->config->desc.bNumInterfaces;
 		uadev[card_num].info = kcalloc(uadev[card_num].num_intf,

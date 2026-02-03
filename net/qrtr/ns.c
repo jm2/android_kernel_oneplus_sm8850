@@ -103,26 +103,53 @@ static struct qrtr_node *node_get(unsigned int node_id)
 	return node;
 }
 
+int qrtr_get_instance_id(unsigned int node_id, unsigned int port_id)
+{
+	struct qrtr_server *srv;
+	struct qrtr_node *node;
+	unsigned long index;
+	unsigned int inst_id;
+	unsigned long flags;
+
+	node = xa_load(&nodes, node_id);
+	if (!node)
+		return -EINVAL;
+
+	xa_lock_irqsave(&node->servers, flags);
+	xa_for_each(&node->servers, index, srv) {
+		if (srv->node == node_id && srv->port == port_id) {
+			inst_id = srv->instance;
+			xa_unlock_irqrestore(&node->servers, flags);
+			return inst_id;
+		}
+	}
+	xa_unlock_irqrestore(&node->servers, flags);
+
+	return -EINVAL;
+}
+EXPORT_SYMBOL_GPL(qrtr_get_instance_id);
+
 int qrtr_get_service_id(unsigned int node_id, unsigned int port_id)
 {
 	struct qrtr_server *srv;
 	struct qrtr_node *node;
 	unsigned long index;
 	unsigned int svc_id;
+	unsigned long flags;
 
 	node = xa_load(&nodes, node_id);
 	if (!node)
 		return -EINVAL;
 
-	xa_lock(&node->servers);
+	xa_lock_irqsave(&node->servers, flags);
 	xa_for_each(&node->servers, index, srv) {
 		if (srv->node == node_id && srv->port == port_id) {
 			svc_id = srv->service;
-			xa_unlock(&node->servers);
+			xa_unlock_irqrestore(&node->servers, flags);
 			return svc_id;
 		}
 	}
-	xa_unlock(&node->servers);
+	xa_unlock_irqrestore(&node->servers, flags);
 
 	return -EINVAL;
 }
@@ -174,6 +201,8 @@ static int service_announce_new(struct sockaddr_qrtr *dest,
 
 	NS_INFO("%s: [0x%x:0x%x]@[0x%x:0x%x]\n", __func__, srv->service,
 		srv->instance, srv->node, srv->port);
+	pr_err("%s: [0x%x:0x%x]@[0x%x:0x%x] to dest[0x%x:0x%x]\n", __func__,
+		srv->service, srv->instance, srv->node, srv->port, dest->sq_node, dest->sq_port);
 	iv.iov_base = &pkt;
 	iv.iov_len = sizeof(pkt);
 
@@ -308,7 +337,7 @@ static struct qrtr_server *server_add(unsigned int service,
 		goto err;
 
 	/* Delete the old server on the same port */
-	old = xa_store(&node->servers, port, srv, GFP_KERNEL);
+	old = xa_store_irq(&node->servers, port, srv, GFP_KERNEL);
 	if (old) {
 		if (xa_is_err(old)) {
 			pr_err("failed to add server [0x%x:0x%x] ret:%d\n",
@@ -662,9 +691,10 @@ static void ns_log_msg(const struct qrtr_ctrl_pkt *pkt,
 {
 	unsigned int cmd = le32_to_cpu(pkt->cmd);
 
-	if (cmd == QRTR_TYPE_HELLO || cmd == QRTR_TYPE_BYE)
+	if (cmd == QRTR_TYPE_HELLO || cmd == QRTR_TYPE_BYE) {
 		NS_INFO("cmd:0x%x node[0x%x]\n", cmd, sq->sq_node);
-	else if (cmd == QRTR_TYPE_DEL_CLIENT)
+		pr_err("cmd:0x%x node[0x%x]\n", cmd, sq->sq_node);
+	} else if (cmd == QRTR_TYPE_DEL_CLIENT)
 		NS_INFO("cmd:0x%x addr[0x%x:0x%x]\n", cmd,
 			le32_to_cpu(pkt->client.node),
 			le32_to_cpu(pkt->client.port));
@@ -737,6 +767,11 @@ static void qrtr_ns_worker(struct kthread_work *work)
 					le32_to_cpu(pkt->client.port));
 			break;
 		case QRTR_TYPE_NEW_SERVER:
+			if (le32_to_cpu(pkt->server.service) == 0x34) {
+				pr_err("[%s][NEW_SERVER][0x%x:0x%x][0x%x:0x%x]\n",
+					__func__, le32_to_cpu(pkt->server.service), le32_to_cpu(pkt->server.instance),
+					le32_to_cpu(pkt->server.node), le32_to_cpu(pkt->server.port));
+			}
 			ret = ctrl_cmd_new_server(&sq,
 					le32_to_cpu(pkt->server.service),
 					le32_to_cpu(pkt->server.instance),

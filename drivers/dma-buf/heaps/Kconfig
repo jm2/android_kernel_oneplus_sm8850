@@ -141,3 +141,17 @@ config OPLUS_FEATURE_MM_TA_CMA_RSV
 	depends on OPLUS_FEATURE_MM_OSVELTE
 	help
 	  This driver used for reserver cma pages for ta
+
+config OPLUS_FEATURE_AIZEROCOPY
+	tristate "AI zero copy"
+	select DMA_SHARED_BUFFER
+	default n
+	help
+	  Enable AI zero copy
+
+config AIZEROFS_DEBUG_SYS_ABI
+	bool "aizerofs sysfs debug abi"
+	depends on OPLUS_FEATURE_AIZEROCOPY
+	default y
+	help
+	  support aizerofs sysfs debug

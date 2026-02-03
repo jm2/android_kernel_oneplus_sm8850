@@ -465,7 +465,11 @@ struct page *qcom_sys_heap_alloc_largest_available(struct dynamic_page_pool **po
 int system_qcom_sg_buffer_alloc(struct dma_heap *heap,
 				struct qcom_sg_buffer *buffer,
 				unsigned long len,
-				bool movable)
+				bool movable
+#if IS_ENABLED(CONFIG_OPLUS_FEATURE_AIZEROCOPY)
+				,struct aizerofs_dma_buf_cache *dbuf_cache
+#endif
+				)
 {
 	struct qcom_system_heap *sys_heap;
 	unsigned long size_remaining = len;
@@ -475,6 +479,10 @@ int system_qcom_sg_buffer_alloc(struct dma_heap *heap,
 	struct list_head pages;
 	struct page *page, *tmp_page;
 	int i, ret = -ENOMEM;
+#if IS_ENABLED(CONFIG_OPLUS_FEATURE_AIZEROCOPY)
+	bool cached = false;
+	u64 page_idx = 0;
+#endif
 
 	sys_heap = dma_heap_get_drvdata(heap);
 
@@ -487,7 +495,11 @@ int system_qcom_sg_buffer_alloc(struct dma_heap *heap,
 	INIT_LIST_HEAD(&pages);
 	i = 0;
 #ifdef CONFIG_OPLUS_FEATURE_MM_BOOSTPOOL
+#if IS_ENABLED(CONFIG_OPLUS_FEATURE_AIZEROCOPY)
+	dynamic_boost_pool_alloc_pack(sys_heap->boost_pool, &size_remaining, &max_order, &pages, &i,dbuf_cache, &page_idx);
+#else
 	dynamic_boost_pool_alloc_pack(sys_heap->boost_pool, &size_remaining, &max_order, &pages, &i);
+#endif
 #endif
 	while (size_remaining > 0) {
 		/*
@@ -497,15 +509,32 @@ int system_qcom_sg_buffer_alloc(struct dma_heap *heap,
 		if (fatal_signal_pending(current))
 			goto free_mem;
 
+#if IS_ENABLED(CONFIG_OPLUS_FEATURE_AIZEROCOPY)
+		cached = false;
+		page = get_page_from_dbuf_cache(dbuf_cache, page_idx);
+		if (page) {
+			cached = true;
+			goto add_page;
+		}
+#endif
 		page = qcom_sys_heap_alloc_largest_available(sys_heap->pool_list,
 							     size_remaining,
 							     max_order,
 							     movable);
 		if (!page)
 			goto free_mem;
-
+#if IS_ENABLED(CONFIG_OPLUS_FEATURE_AIZEROCOPY)
+add_page:
+#endif
 		list_add_tail(&page->lru, &pages);
+#if IS_ENABLED(CONFIG_OPLUS_FEATURE_AIZEROCOPY)
+		dbuf_cache_add_pages(dbuf_cache, page, page_idx);
+		page_idx += compound_nr(page);
+#endif
 		size_remaining -= page_size(page);
+#if IS_ENABLED(CONFIG_OPLUS_FEATURE_AIZEROCOPY)
+		if (!cached)
+#endif
 		max_order = compound_order(page);
 		i++;
 	}
@@ -554,17 +583,31 @@ static struct dma_buf *system_heap_allocate(struct dma_heap *heap,
 	DEFINE_DMA_BUF_EXPORT_INFO(exp_info);
 	struct dma_buf *dmabuf;
 	int ret;
+#if IS_ENABLED(CONFIG_OPLUS_FEATURE_AIZEROCOPY)
+	struct aizerofs_dma_buf_cache *dbuf_cache = NULL;
+	dbuf_cache = find_or_create_dbuf_cache(&len);
+	if (IS_ERR(dbuf_cache))
+		return ERR_PTR(-ENOMEM);
+#endif
 
 	buffer = kzalloc(sizeof(*buffer), GFP_KERNEL);
-	if (!buffer)
+	if (!buffer) {
+#if IS_ENABLED(CONFIG_OPLUS_FEATURE_AIZEROCOPY)
+		dbuf_cache_terminate_io_worker(dbuf_cache);
+#endif
 		return ERR_PTR(-ENOMEM);
+	}
 
 #if IS_ENABLED(CONFIG_OPLUS_FEATURE_MM_OSVELTE)
 	mm_trace_fmt_begin("odma-buf: alloc: %s,%lu,%lu",
 			   dma_heap_get_name(heap),
 			   atomic64_read(&qcom_system_heap_total), len);
 #endif /* CONFIG_OPLUS_FEATURE_MM_OSVELTE */
+#if IS_ENABLED(CONFIG_OPLUS_FEATURE_AIZEROCOPY)
+	ret = system_qcom_sg_buffer_alloc(heap, buffer, len, false, dbuf_cache);
+#else
 	ret = system_qcom_sg_buffer_alloc(heap, buffer, len, false);
+#endif
 #if IS_ENABLED(CONFIG_OPLUS_FEATURE_MM_OSVELTE)
 	mm_trace_fmt_end();
 #endif /* CONFIG_OPLUS_FEATURE_MM_OSVELTE */
@@ -588,6 +631,9 @@ static struct dma_buf *system_heap_allocate(struct dma_heap *heap,
 		ret = PTR_ERR(dmabuf);
 		goto free_vmperm;
 	}
+#if IS_ENABLED(CONFIG_OPLUS_FEATURE_AIZEROCOPY)
+	dbuf_cache_init_dbuf(dbuf_cache, dmabuf);
+#endif
 	//add  for dma debug
 	/*
 	* use android_kabi_reserved2 as inode no. but it has potential risk if
@@ -604,9 +650,15 @@ static struct dma_buf *system_heap_allocate(struct dma_heap *heap,
 free_vmperm:
 	mem_buf_vmperm_free(buffer->vmperm);
 free_sys_heap_mem:
+#if IS_ENABLED(CONFIG_OPLUS_FEATURE_AIZEROCOPY)
+        dbuf_cache_terminate_io_worker(dbuf_cache);
+#endif
 	qcom_system_heap_free(buffer);
 	return ERR_PTR(ret);
 free_buf_struct:
+#if IS_ENABLED(CONFIG_OPLUS_FEATURE_AIZEROCOPY)
+	dbuf_cache_terminate_io_worker(dbuf_cache);
+#endif
 	kfree(buffer);
 
 	return ERR_PTR(ret);

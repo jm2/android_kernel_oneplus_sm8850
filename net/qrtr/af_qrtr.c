@@ -363,14 +363,21 @@ static void qrtr_log_tx_msg(struct qrtr_node *node, struct qrtr_hdr_v1 *hdr,
 	} else {
 		skb_copy_bits(skb, QRTR_HDR_MAX_SIZE, &pkt, sizeof(pkt));
 		if (type == QRTR_TYPE_NEW_SERVER ||
-		    type == QRTR_TYPE_DEL_SERVER)
+		    type == QRTR_TYPE_DEL_SERVER) {
 			QRTR_INFO(node->ilc,
 				  "TX CTRL: cmd:0x%x SVC[0x%x:0x%x] addr[0x%x:0x%x]\n",
 				  type, le32_to_cpu(pkt.server.service),
 				  le32_to_cpu(pkt.server.instance),
 				  le32_to_cpu(pkt.server.node),
 				  le32_to_cpu(pkt.server.port));
-		else if (type == QRTR_TYPE_DEL_CLIENT ||
+			if (le32_to_cpu(pkt.server.service) == 0x34) {
+				pr_err("TX CTRL: cmd:0x%x SVC[0x%x:0x%x] addr[0x%x:0x%x]\n",
+					type, le32_to_cpu(pkt.server.service),
+					le32_to_cpu(pkt.server.instance),
+					le32_to_cpu(pkt.server.node),
+					le32_to_cpu(pkt.server.port));
+			}
+		} else if (type == QRTR_TYPE_DEL_CLIENT ||
 			 type == QRTR_TYPE_RESUME_TX)
 			QRTR_INFO(node->ilc,
 				  "TX CTRL: cmd:0x%x addr[0x%x:0x%x]\n",
@@ -401,6 +408,11 @@ static void qrtr_log_rx_msg(struct qrtr_node *node, struct sk_buff *skb)
 
 	if (cb->type == QRTR_TYPE_DATA) {
 		skb_copy_bits(skb, 0, &pl_buf, sizeof(pl_buf));
+		if (qrtr_get_service_id(cb->dst_node, cb->dst_port) == 0x1001 &&
+		    qrtr_get_instance_id(cb->dst_node, cb->dst_port) == 0x2) {
+			pr_err("[modem diag data]RX DATA: Len:0x%x CF:0x%x src[0x%x:0x%x] dst[0x%x:0x%x]\n",
+				skb->len, cb->confirm_rx, cb->src_node, cb->src_port, cb->dst_node, cb->dst_port);
+		}
 		QRTR_INFO(node->ilc,
 			  "RX DATA: Len:0x%x CF:0x%x src[0x%x:0x%x] dst[0x%x:0x%x] [%08x %08x]\n",
 			  skb->len, cb->confirm_rx, cb->src_node, cb->src_port,
@@ -847,7 +859,11 @@ static int qrtr_node_enqueue(struct qrtr_node *node, struct sk_buff *skb,
 
 	hdr->size = cpu_to_le32(len);
 	hdr->confirm_rx = !!confirm_rx;
-
+	if (type == QRTR_TYPE_RESUME_TX &&
+	    qrtr_get_service_id(from->sq_node, from->sq_port) == 0x1001 &&
+	    qrtr_get_instance_id(from->sq_node, from->sq_port) == 0x2) {
+		pr_err("TX CTRL: cmd:0x%x addr[0x%x:0x%x]\n", type, from->sq_node, from->sq_port);
+	}
 	qrtr_log_tx_msg(node, hdr, skb);
 
 	/* word align the data and pad with 0s */

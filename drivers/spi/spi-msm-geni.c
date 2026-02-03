@@ -2178,11 +2178,6 @@ static int spi_geni_mas_setup(struct spi_controller *spi)
 				goto setup_ipc;
 			}
 		}
-
-#ifdef OPLUS_FEATURE_CHG_BASIC
-		gpi_set_cpu_affinity(mas->tx);
-#endif
-
 		mas->tx_event.init.callback = spi_gsi_ch_cb;
 		mas->tx_event.init.cb_param = spi;
 		mas->tx_event.cmd = MSM_GPI_INIT;
