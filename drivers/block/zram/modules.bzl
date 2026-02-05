@@ -17,6 +17,7 @@ def register_modules(registry):
             "drivers/block/zram/hybridswap/hybridswap.h",
             "drivers/block/zram/hybridswap/internal.h",
             "drivers/block/zram/hybridswap/header_dup.h",
+            "drivers/block/zram/hybridswap/display.c",
         ],
         deps = [
             # do not sort

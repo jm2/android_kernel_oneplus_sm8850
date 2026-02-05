@@ -3164,7 +3164,7 @@ static int qcom_scm_do_restart(struct notifier_block *this, unsigned long event,
 	char *cmd = ptr;
 
 	if ((reboot_mode == REBOOT_WARM &&
-		qcom_scm_custom_reset_type == QCOM_SCM_RST_NONE) || (!cmd))
+		qcom_scm_custom_reset_type == QCOM_SCM_RST_NONE))
 		qcom_scm_reboot(scm->dev);
 	else if (cmd && !strcmp(cmd, "rtc"))
 		qcom_scm_custom_reset_type = QCOM_SCM_RST_SHUTDOWN_TO_RTC_MODE;
