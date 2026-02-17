@@ -364,14 +364,27 @@ static void f2fs_write_end_io(struct bio *bio)
 				folio->index != nid_of_node(&folio->page));
 
 		dec_page_count(sbi, type);
+<<<<<<< HEAD
 		if (f2fs_in_warm_node_list(sbi, folio))
 			f2fs_del_fsync_node_entry(sbi, &folio->page);
 		clear_page_private_gcing(&folio->page);
 		folio_end_writeback(folio);
-	}
-	if (!get_pages(sbi, F2FS_WB_CP_DATA) &&
+=======
+
+		/*
+		 * we should access sbi before end_page_writeback() to
+		 * avoid racing w/ kill_f2fs_super()
+		 */
+		if (type == F2FS_WB_CP_DATA && !get_pages(sbi, type) &&
 				wq_has_sleeper(&sbi->cp_wait))
-		wake_up(&sbi->cp_wait);
+			wake_up(&sbi->cp_wait);
+
+		if (f2fs_in_warm_node_list(sbi, page))
+			f2fs_del_fsync_node_entry(sbi, page);
+		clear_page_private_gcing(page);
+		end_page_writeback(page);
+>>>>>>> cf4a9e1bc812 (f2fs: fix to avoid UAF in f2fs_write_end_io())
+	}
 
 	bio_put(bio);
 }
