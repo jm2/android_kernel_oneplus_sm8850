@@ -4450,6 +4450,7 @@ out_unlock:
 	spin_unlock_irqrestore(hba->host->host_lock, flags);
 	mutex_unlock(&hba->uic_cmd_mutex);
 
+<<<<<<< HEAD
 	/*
 <<<<<<< HEAD
 	 * If the h8 exit fails during the runtime resume process,
@@ -4464,6 +4465,8 @@ out_unlock:
 	if (ret && hba->pm_op_in_progress)
 		ret = ufshcd_link_recovery(hba);
 
+=======
+>>>>>>> 1bcc4ea8207a (scsi: ufs: core: Move link recovery for hibern8 exit failure to wl_resume)
 	return ret;
 }
 
@@ -10146,7 +10149,15 @@ static int __ufshcd_wl_resume(struct ufs_hba *hba, enum ufs_pm_op pm_op)
 		} else {
 			dev_err(hba->dev, "%s: hibern8 exit failed %d\n",
 					__func__, ret);
-			goto vendor_suspend;
+			/*
+			 * If the h8 exit fails during the runtime resume
+			 * process, it becomes stuck and cannot be recovered
+			 * through the error handler. To fix this, use link
+			 * recovery instead of the error handler.
+			 */
+			ret = ufshcd_link_recovery(hba);
+			if (ret)
+				goto vendor_suspend;
 		}
 	} else if (ufshcd_is_link_off(hba)) {
 		/*
