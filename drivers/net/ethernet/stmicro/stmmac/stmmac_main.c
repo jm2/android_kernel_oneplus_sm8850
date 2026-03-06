@@ -3638,10 +3638,6 @@ static void stmmac_free_irq(struct net_device *dev,
 			free_irq(priv->sfty_ce_irq, dev);
 		fallthrough;
 	case REQ_IRQ_ERR_SFTY_CE:
-		if (priv->lpi_irq > 0 && priv->lpi_irq != dev->irq)
-			free_irq(priv->lpi_irq, dev);
-		fallthrough;
-	case REQ_IRQ_ERR_LPI:
 		if (priv->wol_irq > 0 && priv->wol_irq != dev->irq)
 			free_irq(priv->wol_irq, dev);
 		fallthrough;
@@ -3703,6 +3699,7 @@ static int stmmac_request_irq_multi_msi(struct net_device *dev)
 		}
 	}
 
+<<<<<<< HEAD
 	/* Request the LPI IRQ in case of another line
 	 * is used for LPI
 	 */
@@ -3722,6 +3719,8 @@ static int stmmac_request_irq_multi_msi(struct net_device *dev)
 		}
 	}
 
+=======
+>>>>>>> cd19a32de5d0 (net: stmmac: remove support for lpi_intr_o)
 	/* Request the common Safety Feature Correctible/Uncorrectible
 	 * Error line in case of another line is used
 	 */
@@ -3862,19 +3861,6 @@ static int stmmac_request_irq_single(struct net_device *dev)
 				   "%s: ERROR: allocating the WoL IRQ %d (%d)\n",
 				   __func__, priv->wol_irq, ret);
 			irq_err = REQ_IRQ_ERR_WOL;
-			goto irq_error;
-		}
-	}
-
-	/* Request the IRQ lines */
-	if (priv->lpi_irq > 0 && priv->lpi_irq != dev->irq) {
-		ret = request_irq(priv->lpi_irq, stmmac_interrupt,
-				  IRQF_SHARED, dev->name, dev);
-		if (unlikely(ret < 0)) {
-			netdev_err(priv->dev,
-				   "%s: ERROR: allocating the LPI IRQ %d (%d)\n",
-				   __func__, priv->lpi_irq, ret);
-			irq_err = REQ_IRQ_ERR_LPI;
 			goto irq_error;
 		}
 	}
@@ -7639,7 +7625,6 @@ int stmmac_dvr_probe(struct device *device,
 
 	priv->dev->irq = res->irq;
 	priv->wol_irq = res->wol_irq;
-	priv->lpi_irq = res->lpi_irq;
 	priv->sfty_irq = res->sfty_irq;
 	priv->sfty_ce_irq = res->sfty_ce_irq;
 	priv->sfty_ue_irq = res->sfty_ue_irq;
