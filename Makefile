@@ -1485,18 +1485,26 @@ ifneq ($(wildcard $(resolve_btfids_O)),)
 endif
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 # Clear a bunch of variables before executing the submake
 ifeq ($(quiet),silent_)
 tools_silent=s
 =======
 PHONY += objtool_clean
+=======
+PHONY += objtool_clean objtool_mrproper
+>>>>>>> 03a072e0fbf9 (kbuild: Leave objtool binary around with 'make clean')
 
 objtool_O = $(abspath $(objtree))/tools/objtool
 
-objtool_clean:
+objtool_clean objtool_mrproper:
 ifneq ($(wildcard $(objtool_O)),)
+<<<<<<< HEAD
 	$(Q)$(MAKE) -sC $(abs_srctree)/tools/objtool O=$(objtool_O) srctree=$(abs_srctree) clean
 >>>>>>> 42c7b5d00261 (kbuild: Add objtool to top-level clean target)
+=======
+	$(Q)$(MAKE) -sC $(abs_srctree)/tools/objtool O=$(objtool_O) srctree=$(abs_srctree) $(patsubst objtool_%,%,$@)
+>>>>>>> 03a072e0fbf9 (kbuild: Leave objtool binary around with 'make clean')
 endif
 
 tools/: FORCE
@@ -1676,7 +1684,7 @@ PHONY += $(mrproper-dirs) mrproper
 $(mrproper-dirs):
 	$(Q)$(MAKE) $(clean)=$(patsubst _mrproper_%,%,$@)
 
-mrproper: clean $(mrproper-dirs)
+mrproper: clean objtool_mrproper $(mrproper-dirs)
 	$(call cmd,rmfiles)
 	@find . $(RCS_FIND_IGNORE) \
 		\( -name '*.rmeta' \) \
