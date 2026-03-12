@@ -484,6 +484,11 @@ KBUILD_USERLDFLAGS := $(USERLDFLAGS)
 export rust_common_flags := --edition=2021 \
 			    -Zbinary_dep_depinfo=y \
 			    -Astable_features \
+<<<<<<< HEAD
+=======
+			    -Aunused_features \
+			    -Dnon_ascii_idents \
+>>>>>>> 19a44efe43fe (rust: kbuild: allow `unused_features`)
 			    -Dunsafe_op_in_unsafe_fn \
 			    -Dnon_ascii_idents \
 			    -Wrust_2018_idioms \
