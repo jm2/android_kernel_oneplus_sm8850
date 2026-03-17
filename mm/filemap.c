@@ -3715,15 +3715,20 @@ vm_fault_t filemap_map_pages(struct vm_fault *vmf,
 	bool can_map_large;
 >>>>>>> c4476fac0c6c (mm/memory: do not populate page table entries beyond i_size)
 
+	/*
+	 * Recalculate end_pgoff based on file_end before calling
+	 * next_uptodate_folio() to avoid races with concurrent
+	 * truncation.
+	 */
+	file_end = DIV_ROUND_UP(i_size_read(mapping->host), PAGE_SIZE) - 1;
+	end_pgoff = min(end_pgoff, file_end);
+
 	rcu_read_lock();
 	folio = next_uptodate_folio(&xas, mapping, end_pgoff);
 	if (!folio)
 		goto out;
 	first_pgoff = xas.xa_index;
 	orig_start_pgoff = xas.xa_index;
-
-	file_end = DIV_ROUND_UP(i_size_read(mapping->host), PAGE_SIZE) - 1;
-	end_pgoff = min(end_pgoff, file_end);
 
 	/*
 	 * Do not allow to map with PTEs beyond i_size and with PMD
