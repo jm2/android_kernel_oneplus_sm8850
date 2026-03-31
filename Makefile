@@ -504,7 +504,16 @@ export rust_common_flags := --edition=2021 \
 			    -Aclippy::needless_lifetimes \
 >>>>>>> baf02dd01e75 (rust: disable `clippy::needless_continue`)
 			    -Wclippy::no_mangle_with_rust_abi \
+<<<<<<< HEAD
 			    -Wclippy::dbg_macro
+=======
+			    -Wclippy::undocumented_unsafe_blocks \
+			    -Aclippy::uninlined_format_args \
+			    -Wclippy::unnecessary_safety_comment \
+			    -Wclippy::unnecessary_safety_doc \
+			    -Wrustdoc::missing_crate_level_docs \
+			    -Wrustdoc::unescaped_backticks
+>>>>>>> fb7b11f9a234 (kbuild: rust: allow `clippy::uninlined_format_args`)
 
 KBUILD_HOSTCFLAGS   := $(KBUILD_USERHOSTCFLAGS) $(HOST_LFS_CFLAGS) \
 		       $(HOSTCFLAGS) -I $(srctree)/scripts/include
