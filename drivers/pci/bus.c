@@ -333,9 +333,6 @@ void pci_bus_add_device(struct pci_dev *dev)
 	struct platform_device *pdev;
 	int retval;
 
-	/* Save config space for error recoverability */
-	pci_save_state(dev);
-
 	/*
 	 * Can not put in pci_device_add yet because resources
 	 * are not assigned yet for some devices.
@@ -348,6 +345,7 @@ void pci_bus_add_device(struct pci_dev *dev)
 	pci_proc_attach_device(dev);
 	pci_bridge_d3_update(dev);
 
+<<<<<<< HEAD
 	/*
 	 * If the PCI device is associated with a pwrctrl device with a
 	 * power supply, create a device link between the PCI device and
@@ -361,6 +359,10 @@ void pci_bus_add_device(struct pci_dev *dev)
 			pci_err(dev, "failed to add device link to power control device %s\n",
 				pdev->name);
 	}
+=======
+	/* Save config space for error recoverability */
+	pci_save_state(dev);
+>>>>>>> f8f55a226aab (PCI: Fix placement of pci_save_state() in pci_bus_add_device())
 
 	dev->match_driver = !dn || of_device_is_available(dn);
 	retval = device_attach(&dev->dev);
