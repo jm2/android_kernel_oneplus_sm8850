@@ -51,6 +51,10 @@ def define_canoe():
                 board_bootconfig_extras = board_bootconfig_extras,
             )
 
+    native.alias(name = "canoe_gki", actual = ":canoe_perf_images")
+    native.alias(name = "canoe_perf", actual = ":msm_kernel_build", visibility = ["//visibility:public"])
+    native.alias(name = "canoe_gki_dist", actual = ":canoe_perf_dist")
+
     define_typical_android_build(
         name = "canoe",
         consolidate_config = canoe_consolidate_config,

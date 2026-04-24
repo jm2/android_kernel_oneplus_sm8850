@@ -6,7 +6,7 @@
 #include <linux/devfreq.h>
 #include <linux/slab.h>
 
-#include "drivers/devfreq/governor.h"
+#include "../../common/drivers/devfreq/governor.h"
 
 static int adreno_passive_get_target_freq(struct devfreq *devfreq,
 					   unsigned long *freq)

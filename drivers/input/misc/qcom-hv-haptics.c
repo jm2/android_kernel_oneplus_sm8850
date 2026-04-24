@@ -1417,7 +1417,7 @@ static int haptics_get_status_data(struct haptics_chip *chip,
 		"RNAT_RCAL_INT",
 		"BRAKE_CAL_SCALAR",
 	};
-	const char *name;
+	const char *name = NULL;
 
 	mutex_lock(&chip->status_lock);
 	mod_sel_val[0] = sel & 0xff;

@@ -31,9 +31,9 @@
 
 #include <soc/qcom/ice.h>
 
+#include "cqhci.h"
 #include "drivers/mmc/host/sdhci-cqhci.h"
 #include "drivers/mmc/host/sdhci-pltfm.h"
-#include "cqhci.h"
 #include "drivers/mmc/core/core.h"
 #include <linux/qtee_shmbridge.h>
 

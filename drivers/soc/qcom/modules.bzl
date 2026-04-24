@@ -487,6 +487,7 @@ def register_modules(registry):
         srcs = [
             # do not sort
             "drivers/soc/qcom/mem-hooks.c",
+            "drivers/soc/qcom/mm/cma.h",
         ],
         deps = [
             # do not sort

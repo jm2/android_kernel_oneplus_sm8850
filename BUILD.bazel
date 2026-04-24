@@ -1,4 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0
+load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
 
 load(":kleaf-scripts/msm_kernel_extensions.bzl", "define_top_level_rules")
 load("//build/kernel/kleaf:hermetic_tools.bzl", "hermetic_genrule")
@@ -159,9 +160,9 @@ ddk_uapi_headers_cc_library(
 
 hermetic_genrule(
     name = "kconfig.msm.generated",
-    srcs = glob(["**/Kconfig*"]),
+    srcs = glob(["**/Kconfig*"], exclude=["out/**"]),
     outs = ["Kconfig.ext"],
-    cmd = "KCONFIG_EXT_PREFIX=soc-repo/ $(location flatten_kconfig.sh) $(location Kconfig.msm) >$@",
+    cmd = "KCONFIG_EXT_PREFIX=$$(dirname $(location Kconfig.msm))/ $(location flatten_kconfig.sh) $(location Kconfig.msm) >$@",
     tools = ["flatten_kconfig.sh"],
 )
 
@@ -278,6 +279,15 @@ label_flag(
 label_flag(
     name = "msm_kernel_build_images",
     build_setting_default = "//common:kernel_aarch64_images",
+    visibility = [
+        "//private/devices/google/aarch64/qcom:__subpackages__",
+        "//private/google-modules/qcom:__subpackages__",
+    ],
+)
+
+label_flag(
+    name = "msm_kernel_build_system_dlkm_image",
+    build_setting_default = "//common:kernel_aarch64_system_dlkm_image",
     visibility = [
         "//private/devices/google/aarch64/qcom:__subpackages__",
         "//private/google-modules/qcom:__subpackages__",

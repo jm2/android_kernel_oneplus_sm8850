@@ -9,7 +9,7 @@ def define_qcom_dtb_setup():
         content = [
             "KERNEL_DIR=common",
             "SOC_DIR=soc-repo",
-            "export DTC_INCLUDE=${ROOT_DIR}/${SOC_DIR}/include",
+            "export DTC_INCLUDE=\"${ROOT_DIR}/${SOC_DIR}/include ${ROOT_DIR}/sm8850/include\"",
             "BOOT_IMAGE_HEADER_VERSION=4",
             "BUILD_INIT_BOOT_IMG=1",
             "LZ4_RAMDISK=1",
