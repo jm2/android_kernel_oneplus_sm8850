@@ -360,8 +360,15 @@ static void f2fs_write_end_io(struct bio *bio)
 						STOP_CP_REASON_WRITE_FAIL);
 		}
 
+<<<<<<< HEAD
 		f2fs_bug_on(sbi, folio->mapping == NODE_MAPPING(sbi) &&
 				folio->index != nid_of_node(&folio->page));
+=======
+		f2fs_bug_on(sbi, page->mapping == NODE_MAPPING(sbi) &&
+				page_folio(page)->index != nid_of_node(page));
+		if (f2fs_in_warm_node_list(sbi, page))
+			f2fs_del_fsync_node_entry(sbi, page);
+>>>>>>> 7be222de96c0 (f2fs: fix UAF caused by decrementing sbi->nr_pages[] in f2fs_write_end_io())
 
 		dec_page_count(sbi, type);
 <<<<<<< HEAD
@@ -379,8 +386,6 @@ static void f2fs_write_end_io(struct bio *bio)
 				wq_has_sleeper(&sbi->cp_wait))
 			wake_up(&sbi->cp_wait);
 
-		if (f2fs_in_warm_node_list(sbi, page))
-			f2fs_del_fsync_node_entry(sbi, page);
 		clear_page_private_gcing(page);
 		end_page_writeback(page);
 >>>>>>> cf4a9e1bc812 (f2fs: fix to avoid UAF in f2fs_write_end_io())
