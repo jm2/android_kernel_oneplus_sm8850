@@ -334,7 +334,7 @@ class BazelBuilder:
         if self.skip_list:
             self.user_opts.extend(["--//soc-repo:skip_{}=true".format(s) for s in self.skip_list if s != 'abi'])
 
-        self.user_opts.append("--incompatible_sandbox_hermetic_tmp=false")
+        # self.user_opts.append("--incompatible_sandbox_hermetic_tmp=false")
         self.user_opts.append("--noenable_workspace --//build/kernel/kleaf:kmi_symbol_list_strict_mode=false")
 
         if self.dry_run:

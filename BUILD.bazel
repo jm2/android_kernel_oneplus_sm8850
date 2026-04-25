@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0
 load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
+load("@rules_cc//cc:defs.bzl", "cc_binary")
 
 load(":kleaf-scripts/msm_kernel_extensions.bzl", "define_top_level_rules")
 load("//build/kernel/kleaf:hermetic_tools.bzl", "hermetic_genrule")

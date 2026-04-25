@@ -1,3 +1,5 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
 def _ddk_unpacked_headers_impl(ctx):
     out_dir = ctx.actions.declare_directory(ctx.label.name)
 
@@ -38,7 +40,7 @@ def ddk_uapi_headers_cc_library(name, header_archive):
         hdr_archive = header_archive,
     )
 
-    native.cc_library(
+    cc_library(
         name = name,
         hdrs = [":" + unpacked_header_name],
         includes = [unpacked_header_name],
