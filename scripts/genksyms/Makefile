@@ -1,30 +1,27 @@
 # SPDX-License-Identifier: GPL-2.0
 
-hostprogs-always-y	+= genksyms
-
-genksyms-objs	:= genksyms.o parse.tab.o lex.lex.o
-
-# FIXME: fix the ambiguous grammar in parse.y and delete this hack
+# scripts/genksyms's Yacc/Lex parser has a pre-existing heap bug that the
+# glibc 2.43 (Arch Linux) tcache double-free check trips on; the host build
+# crashes on real preprocessed input the moment a CONFIG_MODVERSIONS=y kernel
+# tries to compute symbol versions. Until the upstream fix lands or distros
+# settle, ship a musl-static prebuilt at scripts/genksyms/genksyms.prebuilt
+# and copy it into the build dir instead of compiling.
 #
-# Suppress shift/reduce, reduce/reduce conflicts warnings
-# unless W=1 is specified.
+# Note: we deliberately do NOT use `hostprogs-always-y += genksyms` here.
+# That would pull in scripts/Makefile.host's host-csingle / host-cmulti
+# recipes — they would either override our copy rule (rule-redefinition
+# warning, last definition wins) or successfully invoke the host gcc/clang
+# that crashes. Instead we register the target via plain `always-y` so
+# kbuild walks into this directory and builds it via our own recipe.
 #
-# Just in case, run "$(YACC) --version" without suppressing stderr
-# so that 'bison: not found' will be displayed if it is missing.
-ifeq ($(findstring 1,$(KBUILD_EXTRA_WARN)),)
+# To rebuild the prebuilt:
+#   ~/android/build_musl_genksyms.sh
+# It produces a static x86_64-linux-musl ELF that is host-libc-independent.
 
-quiet_cmd_bison_no_warn = $(quiet_cmd_bison)
-      cmd_bison_no_warn = $(YACC) --version >/dev/null; \
-			  $(cmd_bison) 2>/dev/null
+always-y	+= genksyms
 
-$(obj)/pars%.tab.c $(obj)/pars%.tab.h: $(src)/pars%.y FORCE
-	$(call if_changed,bison_no_warn)
+quiet_cmd_genksyms_copy = HOSTCP  $@
+      cmd_genksyms_copy = cp -f $< $@ && chmod +x $@
 
-endif
-
-# -I needed for generated C source to include headers in source tree
-HOSTCFLAGS_parse.tab.o := -I $(src)
-HOSTCFLAGS_lex.lex.o := -I $(src)
-
-# dependencies on generated files need to be listed explicitly
-$(obj)/lex.lex.o: $(obj)/parse.tab.h
+$(obj)/genksyms: $(src)/genksyms.prebuilt FORCE
+	$(call if_changed,genksyms_copy)

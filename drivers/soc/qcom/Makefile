@@ -32,8 +32,12 @@ obj-$(CONFIG_QCOM_CRM_V2)	+= crm-v2.o
 # (which is the standalone .o that we now want as a member of the bundle).
 obj-$(CONFIG_QCOM_MINIDUMP)	+= qcom_minidump.o
 qcom_minidump-y			:= msm_minidump.o minidump_log.o minidump_memory.o
-# Standalone helpers — each with its own module_init/exit.
-obj-$(CONFIG_QCOM_MINIDUMP_SMEM)	+= minidump_smem.o
+# minidump_smem.c is bool=y in Kconfig (always vmlinux when set), but it
+# calls msm_minidump_clear_headers / md_num_regions / set_section_name
+# from msm_minidump.c which lives in the qcom_minidump.ko bundle when
+# QCOM_MINIDUMP=m. Bundling minidump_smem.o into the same .ko resolves
+# the symbols internally.
+qcom_minidump-$(CONFIG_QCOM_MINIDUMP_SMEM)	+= minidump_smem.o
 obj-$(CONFIG_QCOM_VA_MINIDUMP)		+= qcom_va_minidump.o
 obj-$(CONFIG_QCOM_MINIDUMP_VIRTIO)	+= minidump_virtio.o
 obj-$(CONFIG_QCOM_DEBUG_SYMBOL)		+= debug_symbol.o

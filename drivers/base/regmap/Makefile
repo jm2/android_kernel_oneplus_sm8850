@@ -22,3 +22,6 @@ obj-$(CONFIG_REGMAP_I3C) += regmap-i3c.o
 obj-$(CONFIG_REGMAP_SPI_AVMM) += regmap-spi-avmm.o
 obj-$(CONFIG_REGMAP_MDIO) += regmap-mdio.o
 obj-$(CONFIG_REGMAP_FSI) += regmap-fsi.o
+# Vendor-added QTI regmap debugfs helper. The .c exists, the Kconfig stanza
+# exists (REGMAP_QTI_DEBUGFS), but the obj- line was vendor-stripped.
+obj-$(CONFIG_REGMAP_QTI_DEBUGFS) += qti-regmap-debugfs.o
