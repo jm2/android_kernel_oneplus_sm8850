@@ -16,6 +16,17 @@ clk-qcom-$(CONFIG_KRAIT_CLOCKS) += clk-krait.o
 clk-qcom-y += clk-hfpll.o
 clk-qcom-y += reset.o
 clk-qcom-$(CONFIG_QCOM_GDSC) += gdsc.o
+# Vendor-added clk helpers missing from this Makefile. clk-qcom.ko callers
+# reference clk_regulator_*, clk_vdd_proxy_*, clk_hw_populate_clock_opp_table,
+# clk_debug_*, and a dummy clk used as a stub fallback.
+clk-qcom-y += clk-opp.o
+clk-qcom-y += vdd-class.o
+clk-qcom-y += clk-debug.o
+clk-qcom-y += clk-pm.o
+clk-qcom-$(CONFIG_QCOM_GDSC) += gdsc-debug.o
+# clk-dummy.c has its own module_init/exit; build it as a standalone module
+# rather than merging into clk-qcom.ko (causes duplicate init/cleanup_module).
+obj-$(CONFIG_COMMON_CLK_QCOM) += clk-dummy.o
 
 # Keep alphabetically sorted by config
 obj-$(CONFIG_APQ_GCC_8084) += gcc-apq8084.o

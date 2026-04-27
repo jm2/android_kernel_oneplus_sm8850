@@ -823,7 +823,7 @@ out_undo:
 	}
 	return ret;
 }
-#if IS_MODULE(CONFIG_QCOM_IOMMU_UTIL)
+#if IS_MODULE(CONFIG_ARM_SMMU_QCOM)
 module_init(qcom_iommu_util_init);
 #else
 arch_initcall_sync(qcom_iommu_util_init);

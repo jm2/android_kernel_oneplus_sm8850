@@ -2,11 +2,10 @@
 
 zram-y	:=	zcomp.o zram_drv.o
 
-zram-$(CONFIG_ZRAM_BACKEND_LZO)		+= backend_lzorle.o backend_lzo.o
-zram-$(CONFIG_ZRAM_BACKEND_LZ4)		+= backend_lz4.o
-zram-$(CONFIG_ZRAM_BACKEND_LZ4HC)	+= backend_lz4hc.o
-zram-$(CONFIG_ZRAM_BACKEND_ZSTD)	+= backend_zstd.o
-zram-$(CONFIG_ZRAM_BACKEND_DEFLATE)	+= backend_deflate.o
-zram-$(CONFIG_ZRAM_BACKEND_842)		+= backend_842.o
+# The vendor reverted zcomp.c/zcomp.h to the pre-ACK crypto_comp API but kept
+# the new-API backend_*.c files; those don't link with the reverted zcomp.c.
+# zcomp.c selects compression algorithms via crypto_comp, so the backend_*.o
+# objects are dead code here. The ZRAM_BACKEND_* Kconfigs still drive the
+# `select <algo>_COMPRESS` lines, which is what crypto_comp consumes.
 
 obj-$(CONFIG_ZRAM)	+=	zram.o

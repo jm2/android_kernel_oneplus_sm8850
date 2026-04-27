@@ -46,9 +46,9 @@
 #include <ufs/ufs_quirks.h>
 #include <ufs/ufshcd-crypto-qti.h>
 
-//#ifdef CONFIG_OPLUS_UFS_DRIVER
+#ifdef CONFIG_OPLUS_UFS_DRIVER
 #include <soc/oplus/ufs-oplus-dbg.h>
-//#endif
+#endif
 
 #define MCQ_QCFGPTR_MASK	GENMASK(7, 0)
 #define MCQ_QCFGPTR_UNIT	0x200
@@ -1925,9 +1925,9 @@ static int ufs_qcom_suspend(struct ufs_hba *hba, enum ufs_pm_op pm_op,
 	struct ufs_qcom_host *host = ufshcd_get_variant(hba);
 	int err = 0;
 
-	//#ifdef CONFIG_OPLUS_UFS_DRIVER
+#ifdef CONFIG_OPLUS_UFS_DRIVER
 	ufs_sleep_time_get(hba);
-	//#endif
+#endif
 	if (status == PRE_CHANGE)
 		return 0;
 
@@ -1976,9 +1976,9 @@ static int ufs_qcom_resume(struct ufs_hba *hba, enum ufs_pm_op pm_op)
 	struct ufs_qcom_host *host = ufshcd_get_variant(hba);
 	int err;
 
-	//#ifdef CONFIG_OPLUS_UFS_DRIVER
+#ifdef CONFIG_OPLUS_UFS_DRIVER
 	ufs_active_time_get(hba);
-	//#endif
+#endif
 
 	if (host->vddp_ref_clk && (hba->rpm_lvl > UFS_PM_LVL_3 ||
 				   hba->spm_lvl > UFS_PM_LVL_3))
@@ -4042,10 +4042,10 @@ static int ufs_qcom_init(struct ufs_hba *hba)
 			dev_err(host->hba->dev, "Fail to register UFS panic notifier\n");
 	}
 
-	//#ifdef CONFIG_OPLUS_UFS_DRIVER
+#ifdef CONFIG_OPLUS_UFS_DRIVER
 	ufs_init_oplus_dbg(hba);
         ufs_iostack_init(&host->iostack_work);
-	//#endif
+#endif
 	return 0;
 
 out_disable_vccq_parent:
@@ -4448,9 +4448,9 @@ static void ufs_qcom_event_notify(struct ufs_hba *hba,
 	bool ber_th_exceeded = false;
 	bool disable_ber = true;
 
-	//#ifdef CONFIG_OPLUS_UFS_DRIVER
+#ifdef CONFIG_OPLUS_UFS_DRIVER
 	recordSignalerr(hba, *(u32 *)data, evt);
-	//#endif
+#endif
 
 	switch (evt) {
 	case UFS_EVT_PA_ERR:
@@ -5375,7 +5375,9 @@ static int ufs_qcom_config_esi(struct ufs_hba *hba)
 
 static void ufs_qcom_config_scsi_dev(struct scsi_device *sdev)
 {
+#ifdef CONFIG_OPLUS_UFS_DRIVER
 	ufs_oplus_init_sdev(sdev);
+#endif
 }
 static bool ufs_qcom_power_mode_validate(struct ufs_pa_layer_attr *pwr_mode)
 {
@@ -6523,9 +6525,9 @@ static void ufs_qcom_remove(struct platform_device *pdev)
 			remove_group_qos(qcg);
 	}
 
-	//#ifdef CONFIG_OPLUS_UFS_DRIVER
+#ifdef CONFIG_OPLUS_UFS_DRIVER
 	ufs_remove_oplus_dbg();
-	//#endif
+#endif
 
 	if (msm_minidump_enabled())
 		atomic_notifier_chain_unregister(&panic_notifier_list,

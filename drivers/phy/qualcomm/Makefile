@@ -11,6 +11,15 @@ obj-$(CONFIG_PHY_QCOM_QMP_COMBO)	+= phy-qcom-qmp-combo.o phy-qcom-qmp-usbc.o
 obj-$(CONFIG_PHY_QCOM_QMP_PCIE)		+= phy-qcom-qmp-pcie.o
 obj-$(CONFIG_PHY_QCOM_QMP_PCIE_8996)	+= phy-qcom-qmp-pcie-msm8996.o
 obj-$(CONFIG_PHY_QCOM_QMP_UFS)		+= phy-qcom-qmp-ufs.o
+# Vendor-added "phy-qcom-ufs" helper module (provides ufs_qcom_phy_*) and its
+# per-SoC implementations, none of which were wired into this Makefile.
+obj-$(CONFIG_PHY_QCOM_UFS)		+= phy-qcom-ufs.o
+obj-$(CONFIG_PHY_QCOM_UFS_V4_CANOE)	+= phy-qcom-ufs-qmp-v4-canoe.o
+obj-$(CONFIG_PHY_QCOM_UFS_V4_SUN)	+= phy-qcom-ufs-qmp-v4-sun.o
+obj-$(CONFIG_PHY_QCOM_UFS_V4_YUPIK)	+= phy-qcom-ufs-qmp-v4-yupik.o
+obj-$(CONFIG_PHY_QCOM_UFS_V4_WAIPIO)	+= phy-qcom-ufs-qmp-v4-waipio.o
+obj-$(CONFIG_PHY_QCOM_UFS_V4_GEN3AUTO)	+= phy-qcom-ufs-qmp-v4-gen3auto.o
+obj-$(CONFIG_PHY_QCOM_UFS_QRBTC_SDM845)	+= phy-qcom-ufs-qrbtc-sdm845.o
 obj-$(CONFIG_PHY_QCOM_QMP_USB)		+= phy-qcom-qmp-usb.o
 obj-$(CONFIG_PHY_QCOM_QMP_USB_LEGACY)	+= phy-qcom-qmp-usb-legacy.o
 

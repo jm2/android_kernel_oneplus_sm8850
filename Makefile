@@ -990,6 +990,7 @@ CC_FLAGS_FPU	+= -D_LINUX_FPU_COMPILATION_UNIT
 export CC_FLAGS_FPU
 export CC_FLAGS_NO_FPU
 
+ifdef CONFIG_FUNCTION_ALIGNMENT
 ifneq ($(CONFIG_FUNCTION_ALIGNMENT),0)
 # Set the minimal function alignment. Use the newer GCC option
 # -fmin-function-alignment if it is available, or fall back to -falign-funtions.
@@ -998,6 +999,7 @@ ifdef CONFIG_CC_HAS_MIN_FUNCTION_ALIGNMENT
 KBUILD_CFLAGS += -fmin-function-alignment=$(CONFIG_FUNCTION_ALIGNMENT)
 else
 KBUILD_CFLAGS += -falign-functions=$(CONFIG_FUNCTION_ALIGNMENT)
+endif
 endif
 endif
 

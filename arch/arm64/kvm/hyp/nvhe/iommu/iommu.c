@@ -6,6 +6,7 @@
  */
 #include <asm/kvm_hyp.h>
 #include <asm/kvm_hypevents.h>
+#include <linux/iommu.h>
 
 #include <hyp/adjust_pc.h>
 

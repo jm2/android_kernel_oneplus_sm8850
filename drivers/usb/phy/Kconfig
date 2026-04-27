@@ -4,6 +4,13 @@
 #
 menu "USB Physical Layer drivers"
 
+# Vendor stripped this, but several drivers below `select USB_PHY` and
+# drivers/usb/phy/Makefile uses CONFIG_USB_PHY to gate phy.o (which provides
+# usb_add_phy_dev / usb_remove_phy referenced by phy-generic and others).
+config USB_PHY
+	select EXTCON
+	def_bool n
+
 #
 # USB Transceiver Drivers
 #

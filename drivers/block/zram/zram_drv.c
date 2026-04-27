@@ -3133,8 +3133,10 @@ static int __init zram_init(void)
 
 	return 0;
 
+#ifdef CONFIG_HYBRIDSWAP
 destroy_comp_thread:
 	kthread_stop(comp_thread);
+#endif
 delete_comp_queue:
 	zram_delete_compress_queue(DESCRIPTORS_PER_RING - 1);
 out_error:

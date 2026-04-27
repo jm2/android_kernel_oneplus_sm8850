@@ -22,6 +22,21 @@ obj-$(CONFIG_QCOM_RPM_MASTER_STATS)	+= rpm_master_stats.o
 obj-$(CONFIG_QCOM_RPMH)		+= qcom_rpmh.o
 qcom_rpmh-y			+= rpmh-rsc.o
 qcom_rpmh-y			+= rpmh.o
+# Vendor-added CRM/CRM-V2 sources missing from this Makefile.
+obj-$(CONFIG_QCOM_CRM)		+= crm.o
+obj-$(CONFIG_QCOM_CRM_V2)	+= crm-v2.o
+# Bundle the minidump main + helper TUs as one module. minidump_log.c /
+# minidump_memory.c are referenced by name from msm_minidump.c but were
+# never wired into the Makefile, and only msm_minidump.c has MODULE_LICENSE.
+# Module name is qcom_minidump.ko to avoid colliding with msm_minidump.o
+# (which is the standalone .o that we now want as a member of the bundle).
+obj-$(CONFIG_QCOM_MINIDUMP)	+= qcom_minidump.o
+qcom_minidump-y			:= msm_minidump.o minidump_log.o minidump_memory.o
+# Standalone helpers — each with its own module_init/exit.
+obj-$(CONFIG_QCOM_MINIDUMP_SMEM)	+= minidump_smem.o
+obj-$(CONFIG_QCOM_VA_MINIDUMP)		+= qcom_va_minidump.o
+obj-$(CONFIG_QCOM_MINIDUMP_VIRTIO)	+= minidump_virtio.o
+obj-$(CONFIG_QCOM_DEBUG_SYMBOL)		+= debug_symbol.o
 obj-$(CONFIG_QCOM_SMD_RPM)	+= rpm-proc.o smd-rpm.o
 obj-$(CONFIG_QCOM_SMEM) +=	smem.o
 obj-$(CONFIG_QCOM_SMEM_STATE) += smem_state.o
