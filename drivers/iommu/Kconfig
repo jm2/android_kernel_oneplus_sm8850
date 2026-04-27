@@ -394,6 +394,14 @@ config QCOM_LAZY_MAPPING
 config DMA_MAPPING_FAST
 	bool
 
+# Vendor-stripped USB gadget function symbol used by coresight-tmc-usb.
+# Real Kconfig home is drivers/usb/gadget/function/Kconfig but vendor never
+# wrote one; placing here as a hidden symbol selectable by code that needs it.
+# include/linux/usb/usb_qdss.h gates its real declarations on this.
+config USB_F_QDSS
+	tristate "QDSS USB gadget function (vendor)"
+	default m if CORESIGHT_LINK_AND_SINK_TMC
+
 config ARM_SMMU_QCOM_DEBUG
 	bool "ARM SMMU QCOM implementation defined debug support"
 	depends on ARM_SMMU_QCOM=y

@@ -7,6 +7,9 @@ ccflags-y			:= -I$(srctree)/drivers/usb/gadget/
 ccflags-y			+= -I$(srctree)/drivers/usb/gadget/udc/
 
 # USB Functions
+# Vendor-added qdss gadget function (used by coresight-tmc-usb).
+usb_f_qdss-y			:= f_qdss.o u_qdss.o
+obj-$(CONFIG_USB_F_QDSS)	+= usb_f_qdss.o
 usb_f_acm-y			:= f_acm.o
 obj-$(CONFIG_USB_F_ACM)		+= usb_f_acm.o
 usb_f_ss_lb-y			:= f_loopback.o f_sourcesink.o

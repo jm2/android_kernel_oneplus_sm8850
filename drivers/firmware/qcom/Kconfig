@@ -10,6 +10,25 @@ config QCOM_SCM
 	select QCOM_TZMEM
 	tristate
 
+# Vendor stripped the QCOM_TZMEM symbol itself; QCOM_SCM's `select QCOM_TZMEM`
+# above is otherwise a no-op. Restored from ACK android16-6.12.
+config QCOM_TZMEM
+	tristate
+	select GENERIC_ALLOCATOR
+
+choice
+	prompt "TrustZone interface memory allocator mode"
+	depends on QCOM_TZMEM
+	default QCOM_TZMEM_MODE_GENERIC
+
+config QCOM_TZMEM_MODE_GENERIC
+	bool "Generic"
+
+config QCOM_TZMEM_MODE_SHMBRIDGE
+	bool "SHM Bridge"
+
+endchoice
+
 config QTEE_SHM_BRIDGE
 	bool "QTI TEE shared memory bridge"
 	depends on QCOM_SCM

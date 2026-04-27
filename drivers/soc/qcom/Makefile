@@ -37,6 +37,9 @@ obj-$(CONFIG_QCOM_MINIDUMP_SMEM)	+= minidump_smem.o
 obj-$(CONFIG_QCOM_VA_MINIDUMP)		+= qcom_va_minidump.o
 obj-$(CONFIG_QCOM_MINIDUMP_VIRTIO)	+= minidump_virtio.o
 obj-$(CONFIG_QCOM_DEBUG_SYMBOL)		+= debug_symbol.o
+# Vendor-added in-tree files missing from this Makefile.
+obj-$(CONFIG_QCOM_SECURE_BUFFER)	+= secure_buffer.o
+obj-y					+= mem_buf/
 obj-$(CONFIG_QCOM_SMD_RPM)	+= rpm-proc.o smd-rpm.o
 obj-$(CONFIG_QCOM_SMEM) +=	smem.o
 obj-$(CONFIG_QCOM_SMEM_STATE) += smem_state.o

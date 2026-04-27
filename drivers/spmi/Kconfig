@@ -2,6 +2,20 @@
 #
 # SPMI driver configuration
 #
+
+# Vendor stripped the parent SPMI menuconfig stanza but kept the `if SPMI`
+# guard below. Without this declaration the controllers below have nothing
+# to depend on, and CONFIG_SPMI never appears in .config — yet
+# drivers/base/regmap/Kconfig's GKI_HIDDEN_REGMAP_CONFIGS unconditionally
+# selects REGMAP_SPMI, which then references undefined spmi_*_register_*
+# symbols at vmlinux LD time. Restored from upstream linux-stable.
+menuconfig SPMI
+	tristate "SPMI support"
+	help
+	  SPMI (System Power Management Interface) is a two-wire
+	  serial interface between baseband and application processors
+	  and PMIC (Power Management IC) devices.
+
 if SPMI
 
 config SPMI_MSM_PMIC_ARB
