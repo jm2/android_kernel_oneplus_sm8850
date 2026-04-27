@@ -130,8 +130,28 @@ export KBUILD_CLIPPY
 
 # Use make M=dir or set the environment variable KBUILD_EXTMOD to specify the
 # directory of external module to build. Setting M= takes precedence.
+#
+# When O= is set, the top Makefile re-execs itself with cwd switched to the
+# objtree (see __sub-make below). After that switch, $(realpath $(M)) for
+# any relative $(M) would resolve from objtree and miss the source tree.
+# Resolve M to an absolute path here, in the FIRST make invocation where
+# cwd is still the kernel source root, then export so the sub-make sees
+# the resolved value via the env (origin == "environment") and skips this
+# block. Without this, scripts/Makefile.build's $(src) — set to plain
+# $(obj) when KBUILD_EXTMOD is in play (VPATH is empty for external
+# modules, see line 269-275 below) — fails to find $(src)/Makefile from
+# the objtree-rooted cwd, breaking all M= relative external-module builds
+# under O=$(KBUILD_OUTPUT). LineageOS's vendor/lineage kernel.mk uses
+# relpath M=, so this matters in practice.
 ifeq ("$(origin M)", "command line")
-  KBUILD_EXTMOD := $(M)
+  ifeq ("$(origin KBUILD_EXTMOD)", "environment")
+    # Inherited from the parent make — already resolved.
+  else
+    KBUILD_EXTMOD := $(realpath $(M))
+    ifeq ($(KBUILD_EXTMOD),)
+      $(error M=$(M) does not resolve to an existing directory from $(CURDIR))
+    endif
+  endif
 endif
 
 $(if $(word 2, $(KBUILD_EXTMOD)), \
