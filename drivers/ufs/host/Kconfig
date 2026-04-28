@@ -19,6 +19,18 @@ config SCSI_UFSHCD_PCI
 
 	  If unsure, say N.
 
+# Vendor stripped this; restored. Gates ufshcd-crypto-qti.c (built as
+# the OEM prebuilt ufshcd-crypto-qti.ko). When set, ice.c also exposes
+# qcom_ice_program_key_hwkm via the
+# CONFIG_SCSI_UFS_CRYPTO_QTI || CONFIG_MMC_CRYPTO_QTI gate around it.
+config SCSI_UFS_CRYPTO_QTI
+	tristate "QTI Inline Encryption support for UFS"
+	depends on SCSI_UFSHCD && QCOM_INLINE_CRYPTO_ENGINE
+	help
+	  Enable the QTI Inline Encryption support for UFS host controller.
+	  Provides ufshcd-crypto-qti.ko (integrates UFS HCI with the Qualcomm
+	  Inline Crypto Engine and Hardware Key Manager).
+
 config SCSI_UFS_DWC_TC_PCI
 	tristate "DesignWare pci support using a G210 Test Chip"
 	depends on SCSI_UFSHCD_PCI

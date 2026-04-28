@@ -12,3 +12,10 @@ obj-$(CONFIG_SCSI_UFS_MEDIATEK) += ufs-mediatek.o
 obj-$(CONFIG_SCSI_UFS_RENESAS) += ufs-renesas.o
 obj-$(CONFIG_SCSI_UFS_SPRD) += ufs-sprd.o
 obj-$(CONFIG_SCSI_UFS_TI_J721E) += ti-j721e-ufs.o
+
+# Vendor-stripped: ufshcd-crypto-qti.ko (UFS HCI ↔ ICE/HWKM glue).
+# Provides ufshcd_qti_hba_init_crypto_capabilities consumed by
+# ufs-qcom.ko, plus completes the ufshcd-crypto-qti.ko expected by
+# the OEM image. Per drivers/ufs/host/modules.bzl gated on
+# CONFIG_SCSI_UFS_CRYPTO_QTI.
+obj-$(CONFIG_SCSI_UFS_CRYPTO_QTI) += ufshcd-crypto-qti.o

@@ -2462,3 +2462,7 @@ source "drivers/acpi/Kconfig"
 
 source "arch/arm64/kvm/Kconfig"
 
+# Vendor-stripped source line restored. CONFIG_GH_ARM64_DRV gates
+# gh_arm_drv.ko (modules.list.msm.canoe + modules.load.recovery).
+source "arch/arm64/gunyah/Kconfig"
+
