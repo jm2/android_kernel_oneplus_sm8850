@@ -1,4 +1,13 @@
 # SPDX-License-Identifier: GPL-2.0-only
+
+# Vendor stripped this; restored to enable interconnect_qcom.ko which
+# provides qcom_icc_xlate_extended via icc-common.c.
+config INTERCONNECT_QCOM
+	tristate "Qualcomm Network-on-Chip interconnect drivers"
+	depends on ARCH_QCOM
+	help
+	  Support for Qualcomm's Network-on-Chip interconnect hardware.
+
 config INTERCONNECT_QCOM_ALOR
 	tristate "ALOR interconnect driver"
 	depends on INTERCONNECT_QCOM

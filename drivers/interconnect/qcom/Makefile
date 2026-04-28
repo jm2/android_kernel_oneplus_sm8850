@@ -2,6 +2,10 @@
 
 obj-$(CONFIG_INTERCONNECT_QCOM) += interconnect_qcom.o
 
+# Vendor-stripped: icc-debug.ko provides qcom_icc_debug_register/unregister
+# consumed by icc-rpmh.ko. Source file present, Makefile entry restored.
+obj-$(CONFIG_INTERCONNECT_QCOM_DEBUG) += icc-debug.o
+
 interconnect_qcom-y			:= icc-common.o
 icc-bcm-voter-objs			:= bcm-voter.o
 qnoc-msm8909-objs			:= msm8909.o

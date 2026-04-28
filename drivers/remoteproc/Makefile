@@ -3,6 +3,12 @@
 # Generic framework for controlling remote processors
 #
 
+# Vendor-stripped Makefile entry restored. modules.bzl bundles
+# qcom_common.c + qcom_tracepoints.c into rproc_qcom_common.ko (gated
+# on CONFIG_QCOM_RPROC_COMMON). The trace events
+# (rproc_qcom_event etc.) come from qcom_tracepoints.c.
+rproc_qcom_common-y			:= qcom_common.o qcom_tracepoints.o
+
 obj-$(CONFIG_REMOTEPROC)		+= remoteproc.o
 remoteproc-y				:= remoteproc_core.o
 remoteproc-y				+= remoteproc_coredump.o
@@ -22,7 +28,7 @@ obj-$(CONFIG_KEYSTONE_REMOTEPROC)	+= keystone_remoteproc.o
 obj-$(CONFIG_MESON_MX_AO_ARC_REMOTEPROC)+= meson_mx_ao_arc.o
 obj-$(CONFIG_PRU_REMOTEPROC)		+= pru_rproc.o
 obj-$(CONFIG_QCOM_PIL_INFO)		+= qcom_pil_info.o
-obj-$(CONFIG_QCOM_RPROC_COMMON)		+= qcom_common.o
+obj-$(CONFIG_QCOM_RPROC_COMMON)		+= rproc_qcom_common.o
 obj-$(CONFIG_QCOM_Q6V5_COMMON)		+= qcom_q6v5.o
 obj-$(CONFIG_QCOM_Q6V5_ADSP)		+= qcom_q6v5_adsp.o
 obj-$(CONFIG_QCOM_Q6V5_MSS)		+= qcom_q6v5_mss.o

@@ -1,5 +1,33 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
+# Vendor stripped these stanzas; restored to enable gunyah_rsc_mgr.o,
+# gunyah_vcpu.o, gunyah.o (hypercalls), gunyah_qtvm.o, and platform
+# hooks. Source files all present in this directory; only the Kconfig
+# was missing.
+config GUNYAH
+	tristate "Gunyah Virtualization drivers"
+	depends on ARM64
+	select GUNYAH_PLATFORM_HOOKS
+	select GUNYAH_HYPERCALLS
+	help
+	  The Gunyah drivers are the helper interfaces that run in a guest
+	  VM such as basic inter-VM IPC and signaling mechanisms, and higher
+	  level services such as memory/device sharing, IRQ sharing, and so on.
+
+config GUNYAH_HYPERCALLS
+	tristate
+
+config GUNYAH_PLATFORM_HOOKS
+	tristate
+
+config GUNYAH_QCOM_TRUSTED_VM
+	tristate "Gunyah Qualcomm Trusted VM driver"
+	depends on GUNYAH
+	help
+	  Provides notifier registration interface for clients running in
+	  a Qualcomm Trusted VM under Gunyah. Required for OEM modules that
+	  call gunyah_qtvm_register_notifier / gunyah_qtvm_unregister_notifier.
+
 config GUNYAH_QCOM_PLATFORM
 	tristate "Support for Gunyah on Qualcomm platforms"
 	depends on GUNYAH

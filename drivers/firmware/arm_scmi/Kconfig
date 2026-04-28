@@ -1,6 +1,19 @@
 # SPDX-License-Identifier: GPL-2.0-only
 menu "ARM System Control and Management Interface Protocol"
 
+# Vendor stripped this stanza; restored from upstream Linux 6.12.
+config ARM_SCMI_PROTOCOL
+	tristate "ARM System Control and Management Interface (SCMI) Message Protocol"
+	depends on ARM || ARM64 || COMPILE_TEST
+	help
+	  ARM System Control and Management Interface (SCMI) protocol is a
+	  set of operating system-independent software interfaces that are
+	  used in system management. SCMI is extensible and currently
+	  provides interfaces for: Discovery and self-description of the
+	  interfaces it supports, Power domain management, Performance
+	  management, Clock management, Sensor management, Reset domain
+	  management, Voltage domain management.
+
 if ARM_SCMI_PROTOCOL
 
 config QTI_SCMI_PMU_PROTOCOL

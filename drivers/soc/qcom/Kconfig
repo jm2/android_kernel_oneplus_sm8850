@@ -294,6 +294,12 @@ config QCOM_SMEM
 	  The driver provides an interface to items in a heap shared among all
 	  processors in a Qualcomm platform.
 
+# Vendor stripped this; restored from upstream Linux 6.12. Provides
+# qcom_smem_state_get / devm_qcom_smem_state_get / qcom_smem_state_update_bits
+# from smem_state.c, consumed by qcom_q6v5.ko and other OEM prebuilts.
+config QCOM_SMEM_STATE
+	bool
+
 config QCOM_MEMORY_DUMP_V2
 	tristate "QCOM Memory Dump V2 Support"
 	help

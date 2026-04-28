@@ -2,6 +2,45 @@
 
 menu "Rpmsg drivers"
 
+# Vendor stripped these stanzas; restored from upstream Linux 6.12
+# (drivers/rpmsg/Kconfig). Kleaf forces compile via module_outs so the
+# stripped configs don't bite the vendor flow, but plain mka kernel
+# silently drops obj-$(CONFIG_RPMSG_*) without these.
+config RPMSG
+	tristate
+
+config RPMSG_CHAR
+	tristate "RPMSG character device interface"
+	depends on RPMSG_CTRL
+	help
+	  Say Y here to enable a userspace interface to the rpmsg bus on
+	  remote processors connected to the Linux host. Each rpmsg device
+	  appears as a character device under /dev as rpmsg_ctrl0 and
+	  rpmsgN.
+
+config RPMSG_CTRL
+	tristate "RPMSG control interface"
+	depends on RPMSG && (RPMSG_VIRTIO || RPMSG_QCOM_GLINK || RPMSG_QCOM_SMD)
+	help
+	  Say Y here to enable a /dev/rpmsg_ctrl interface that allows
+	  userspace clients to create endpoints with specific name, src and
+	  dst addresses.
+
+config RPMSG_NS
+	tristate "RPMSG name service announcement"
+	depends on RPMSG
+	help
+	  Say Y here to enable the support of the name service announcement
+	  channel that probes the associated RPMsg device on remote
+	  endpoint service announcement.
+
+config RPMSG_VIRTIO
+	tristate "Virtio RPMSG bus driver"
+	depends on HAS_DMA
+	select RPMSG
+	select RPMSG_NS
+	select VIRTIO
+
 # RPMSG always gets selected by whoever wants it
 config RPMSG_QCOM_GLINK
 	tristate

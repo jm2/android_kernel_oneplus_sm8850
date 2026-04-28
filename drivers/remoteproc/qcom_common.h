@@ -8,9 +8,16 @@
 #include <linux/soc/qcom/qmi.h>
 #include <linux/remoteproc/qcom_rproc.h>
 
-#ifndef  OPLUS_FEATURE_MODEM_MINIDUMP
-#define OPLUS_FEATURE_MODEM_MINIDUMP
-#endif
+/* Lineage source-build: unconditionally defining
+ * OPLUS_FEATURE_MODEM_MINIDUMP makes qcom_q6v5.c reference mdmreason_set
+ * (provided by oplus_mdmrst.ko at vendor/oplus/hardware/radio/mdmrst/...
+ * — Phase B will wire that module into TARGET_KERNEL_EXT_MODULES).
+ * Until then, leave the gate undefined so qcom_q6v5.ko's modpost passes.
+ *
+ * #ifndef  OPLUS_FEATURE_MODEM_MINIDUMP
+ * #define OPLUS_FEATURE_MODEM_MINIDUMP
+ * #endif
+ */
 
 static const char * const subdevice_state_string[] = {
 	[QCOM_SSR_BEFORE_POWERUP]	= "before_powerup",

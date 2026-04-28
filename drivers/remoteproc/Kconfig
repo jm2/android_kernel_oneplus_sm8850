@@ -1,6 +1,27 @@
 # SPDX-License-Identifier: GPL-2.0-only
 menu "Remoteproc drivers"
 
+# Vendor stripped these stanzas; restored from upstream Linux 6.12
+# (drivers/remoteproc/Kconfig).
+config REMOTEPROC
+	tristate "Support for Remote Processor subsystem"
+	depends on HAS_DMA
+	select CRC32
+	select FW_LOADER
+	select VIRTIO
+	select WANT_DEV_COREDUMP
+	help
+	  Support for remote processors (such as DSP coprocessors). These
+	  are mainly used on embedded systems.
+
+config REMOTEPROC_CDEV
+	bool "Remoteproc character device interface"
+	depends on REMOTEPROC
+	help
+	  Say y here to have a character device interface for the remoteproc
+	  framework. Userspace can boot/shutdown remote processors through
+	  /dev/remoteproc<id>.
+
 if REMOTEPROC
 
 config QCOM_PIL_INFO

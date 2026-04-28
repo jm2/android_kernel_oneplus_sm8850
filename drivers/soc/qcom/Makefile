@@ -66,3 +66,12 @@ obj-$(CONFIG_QCOM_ICC_BWMON)	+= icc-bwmon.o
 qcom_ice-objs			+= ice.o
 obj-$(CONFIG_QCOM_INLINE_CRYPTO_ENGINE)	+= qcom_ice.o
 obj-$(CONFIG_QCOM_PBS) +=	qcom-pbs.o
+
+# Vendor-stripped Makefile entry restored from drivers/soc/qcom/modules.bzl.
+# qcom_ramdump.ko provides qcom_create_ramdump_device /
+# qcom_destroy_ramdump_device which qcom_q6v5_pas.ko consumes.
+obj-$(CONFIG_QCOM_RAMDUMP)	+= qcom_ramdump.o
+
+# mem-prot.ko provides mem_prot_pool_alloc/free consumed by
+# gh_rm_heap_manager.ko. Vendor-stripped, restored.
+obj-$(CONFIG_MEM_PROT)		+= mem-prot.o
