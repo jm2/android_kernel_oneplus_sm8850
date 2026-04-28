@@ -67,7 +67,7 @@ def register_modules(registry):
             "//vendor/oplus/kernel/cpu:oplus_bsp_task_overload",
         ],
         # Add for oplus config
-        copts = ["-DCONFIG_OPLUS_FEATURE_SCHED_ASSIST", "-DCONFIG_OPLUS_SCHED_HALT_MASK_PRT", "-DCONFIG_OPLUS_FEATURE_FRAME_BOOST", "-DCONFIG_OPLUS_FEATURE_SCHED_EXT"],
+        copts = ["-DCONFIG_OPLUS_FEATURE_SCHED_ASSIST", "-DCONFIG_OPLUS_SCHED_HALT_MASK_PRT", "-DCONFIG_OPLUS_FEATURE_FRAME_BOOST", "-DCONFIG_OPLUS_FEATURE_SCHED_EXT", "-DCONFIG_OPLUS_FEATURE_GEAS"],
     )
 
     registry.register(

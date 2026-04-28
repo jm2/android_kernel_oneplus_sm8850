@@ -2979,7 +2979,8 @@ static int ufs_qcom_setup_qos(struct ufs_hba *hba)
 			INIT_DELAYED_WORK(&host->fwork, ufs_qcom_cpufreq_dwork);
 		}
 	}
-	qr->workq = create_singlethread_workqueue("qc_ufs_qos_swq");
+	qr->workq = alloc_ordered_workqueue("qc_ufs_qos_swq",
+                         __WQ_LEGACY | WQ_MEM_RECLAIM | WQ_HIGHPRI);
 	if (qr->workq)
 		return 0;
 	err = -1;

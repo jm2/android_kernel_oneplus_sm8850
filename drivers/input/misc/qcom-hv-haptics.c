@@ -994,6 +994,7 @@ struct haptics_chip {
 	int				haptic_current_test_time;
 	int				haptic_test_duration;
 	bool				livetap_support;
+	bool				he_optimization_support;
 	bool				vbat_low_vmax_support;
 	int				trig_gpio[TRIG_GPIO_NUM];
 	int				trig_irq[TRIG_GPIO_NUM];
@@ -1004,6 +1005,9 @@ struct haptics_chip {
 	u32				trig1_play_us;
 	u32				trig2_play_us;
 	u32				trig3_play_us;
+	ktime_t				richtap_kpre_time;
+	ktime_t				richtap_kcur_time;
+	u32				richtap_interval_us;
 #endif
 
 #ifdef OPLUS_FEATURE_RICHTAP_SUPPORT
@@ -5860,6 +5864,9 @@ static int haptics_parse_dt(struct haptics_chip *chip)
 	chip->livetap_support = of_property_read_bool(node, "oplus,livetap_support");
 	dev_err(chip->dev, "oplus,livetap_support = %d\n", chip->livetap_support);
 
+	chip->he_optimization_support = of_property_read_bool(node, "oplus,he_optimization_support");
+	dev_err(chip->dev, "oplus,he_optimization_support = %d\n", chip->he_optimization_support);
+
 	chip->disable_pm_ops = false;
 	chip->disable_pm_ops = of_property_read_bool(node, "qcom,disable-pm-ops");
 
@@ -7443,6 +7450,12 @@ static int richtap_file_release(struct inode *inode, struct file *file)
 	return 0;
 }
 
+#ifdef OPLUS_FEATURE_CHG_BASIC
+#define RICHTAP_MIN_PULSE_US		40000
+#define RICHTAP_DELAY_US_MIN		8000
+#define RICHTAP_DELAY_US_MAX		12000
+#endif
+
 static long richtap_file_unlocked_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
 	struct haptics_chip *chip = (struct haptics_chip *)file->private_data;
@@ -7530,9 +7543,27 @@ static long richtap_file_unlocked_ioctl(struct file *file, unsigned int cmd, uns
 		mutex_unlock(&play->lock);
 		richtap_rc_clk_disable(chip, true);
 		atomic_set(&chip->richtap_mode, true);
+#ifdef OPLUS_FEATURE_CHG_BASIC
+		if (chip->he_optimization_support)
+			chip->richtap_kpre_time = ktime_get();
+#endif
 		schedule_work(&chip->richtap_stream_work);
 		break;
 	case RICHTAP_STOP_MODE:
+#ifdef OPLUS_FEATURE_CHG_BASIC
+		if (chip->he_optimization_support) {
+			chip->richtap_kcur_time = ktime_get();
+			chip->richtap_interval_us =
+				ktime_to_us(ktime_sub(chip->richtap_kcur_time,
+						      chip->richtap_kpre_time));
+			if (chip->richtap_interval_us < RICHTAP_MIN_PULSE_US) {
+				dev_info(chip->dev, "%s: interval_us = %u < %u, delay stop\n",
+					__func__, chip->richtap_interval_us,
+					RICHTAP_MIN_PULSE_US);
+				usleep_range(RICHTAP_DELAY_US_MIN, RICHTAP_DELAY_US_MAX);
+			}
+		}
+#endif
 		if (chip->livetap_support) {
 			chip->cancel_work = true;
 			cancel_work_sync(&chip->richtap_stream_work);
