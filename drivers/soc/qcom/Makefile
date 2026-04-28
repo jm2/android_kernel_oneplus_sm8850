@@ -44,6 +44,11 @@ obj-$(CONFIG_QCOM_DEBUG_SYMBOL)		+= debug_symbol.o
 # Vendor-added in-tree files missing from this Makefile.
 obj-$(CONFIG_QCOM_SECURE_BUFFER)	+= secure_buffer.o
 obj-y					+= mem_buf/
+obj-$(CONFIG_SPS)			+= sps/
+# Vendor-added wcd_usbss_i2c bundle (modules.bzl name).
+obj-$(CONFIG_QCOM_WCD_USBSS_I2C)	+= wcd_usbss_i2c.o
+wcd_usbss_i2c-y				:= wcd939x-i2c.o wcd-usbss-regmap.o \
+					   wcd-usbss-tables.o wcd-usbss-utils.o
 obj-$(CONFIG_QCOM_SMD_RPM)	+= rpm-proc.o smd-rpm.o
 obj-$(CONFIG_QCOM_SMEM) +=	smem.o
 obj-$(CONFIG_QCOM_SMEM_STATE) += smem_state.o

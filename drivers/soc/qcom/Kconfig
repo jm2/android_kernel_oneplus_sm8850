@@ -1204,4 +1204,17 @@ config QCOM_LPM_MONITOR
 	  the interface, it sends an indication to the subsystem via the QMI framework and
 	  then waits for the subsystem to return the data of the last ON/OFF timestamps
 	  for each clock.
+
+# Vendor-added: wcd_usbss_i2c (wcd939x-i2c + wcd-usbss-* helpers).
+# Exports wcd_usbss_reg_notifier / unreg_notifier / switch_update /
+# audio_config / etc. msm_drm.ko (display-drivers/msm) imports the
+# notifier APIs for DP-over-USB-C analog-audio mux switching.
+config QCOM_WCD_USBSS_I2C
+	tristate "Qualcomm WCD USBSS I2C analog audio switch driver"
+	depends on I2C
+	help
+	  Driver for the Qualcomm WCD9xx Audio Codec USBSS domain providing
+	  analog-audio sideband and DP alt-mode mux switching. Required for
+	  msm_drm.ko's USB-C DisplayPort path on devices using the WCD
+	  codec family.
 endmenu

@@ -6,10 +6,15 @@ config DRM_DISPLAY_DP_AUX_BUS
 	depends on OF || COMPILE_TEST
 
 config DRM_DISPLAY_HELPER
-	tristate
+	tristate "DRM Display Helper library (Lineage: visible prompt)"
 	depends on DRM
 	help
-	  DRM helpers for display adapters.
+	  DRM helpers for display adapters. Upstream this is a non-prompted
+	  tristate selected by individual drivers; vendor's external
+	  display-drivers/msm.ko (msm_drm) imports drm_dp_dpcd_* / drm_dp_aux_*
+	  / drm_dp_*_link_rate / drm_dp_read_lttpr_common_caps from it but
+	  does not declare a `select` (it lives outside the kernel's Kconfig
+	  graph). Add a prompt so a defconfig fragment can set this =y/=m.
 
 if DRM_DISPLAY_HELPER
 
@@ -39,9 +44,10 @@ config DRM_DISPLAY_DP_AUX_CHARDEV
 	  channel.
 
 config DRM_DISPLAY_DP_HELPER
-	bool
+	bool "DRM DP Helper library (Lineage: visible prompt)"
 	help
-	  DRM display helpers for DisplayPort.
+	  DRM display helpers for DisplayPort. See DRM_DISPLAY_HELPER above
+	  for why this Lineage downstream tree adds a prompt.
 
 config DRM_DISPLAY_DP_TUNNEL
 	bool
