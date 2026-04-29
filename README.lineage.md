@@ -15,8 +15,11 @@ mka kernel
 ```
 
 That produces `out/target/product/infiniti/obj/KERNEL_OBJ/{vmlinux,arch/arm64/boot/Image}`
-plus `Module.symvers` (MODVERSIONS=y) and 188 in-tree `.ko` files
-under `lib/modules/<release>/kernel/`.
+plus `Module.symvers` (MODVERSIONS=y) and ~190 in-tree `.ko` files
+under `lib/modules/<release>/kernel/`. Combined with the 30 source-built
+externals from `kernel/oneplus/sm8850-modules/` and the 568 OEM
+prebuilts in `device/oneplus/infiniti-kernel/`, the build lands at
+**0 depmod symbol errors** (down from 110 before Phase A).
 
 For `make modules Image` outside `mka kernel` (faster iteration cycle),
 use the same env (clang/lld from `/usr`, the genksyms prebuilt below)
@@ -68,10 +71,55 @@ In commit order on `lineage-23.2`:
   enables DRM display helpers (`DRM_DISPLAY_HELPER`,
   `DRM_DISPLAY_DP_HELPER`) by adding visible Kconfig prompts, plus
   `TYPEC_MUX_WCD939X_USBSS=m` and a restored `QCOM_WCD_USBSS_I2C`
-  bundle (`wcd939x-i2c.c` + helpers → `wcd_usbss_i2c.ko`). These are
-  consumed by vendor's `display-drivers/msm.ko`; needed once Phase 3
-  source-builds that module rather than pulling it from the OEM
-  prebuilt set.
+  bundle (`wcd939x-i2c.c` + helpers → `wcd_usbss_i2c.ko`). Consumed
+  by `display-drivers/msm.ko` (now source-built — Phase D).
+
+- **`kernel: Phase A — restore RPMSG/REMOTEPROC/GUNYAH/SCMI/SMEM/ICC framework`** —
+  restores the framework Kconfig stanzas + Makefile entries that
+  vendor's Kleaf flow expressed via `module_outs`. Resolves ~85 of
+  the original 110 unresolved depmod symbols
+  (`rproc_*`/`devm_rproc_*`, `rpmsg_*`/`__register_rpmsg_driver`,
+  `gunyah_*`, `scmi_*`, `qcom_smem_state_*`, `qcom_icc_*`).
+
+- **`kernel: Phase B kernel-side support — gh_arm_drv bundle + oplus_project.h shim`** —
+  `gh_arm_drv-y := gh_arm.o irq.o reset.o` in
+  `arch/arm64/gunyah/Makefile`. New header
+  `include/soc/oplus/boot/oplus_project.h` forward-shims to
+  `<soc/oplus/system/oplus_project.h>` so vendor source's
+  `<soc/oplus/boot/...>` includes resolve. Pairs with the modules-
+  side Phase B that added Kbuilds/Makefiles for the four oplus
+  device-info modules.
+
+- **`kernel: Phase C residuals — UFS CRYPTO QTI gate + arm64 gunyah Kconfig source`** —
+  `SCSI_UFS_CRYPTO_QTI` Kconfig + Makefile entry, plus
+  `source "arch/arm64/gunyah/Kconfig"` from `arch/arm64/Kconfig`.
+  Combined with the modules-side `OPLUS_FEATURE_CAMERA_COMMON`
+  bundling, gets `mka kernel` to exit 0.
+
+- **`kernel: Phase D residuals — altmode-glink + panel_event_notifier + qti_pmic_glink`** —
+  three more in-tree modules `drivers/soc/qcom/` that Kleaf expressed
+  via `module_outs`: `qti_pmic_glink`, `altmode-glink`,
+  `panel_event_notifier`, plus their Kconfig stanzas. Required by the
+  newly-source-built `msm_drm.ko`.
+
+- **`kernel: Phase F — resolve last 2 depmod prebuilts (zram_opt + sched_ext)`** —
+  the last two unresolved-symbol producers needed for the full OEM
+  prebuilt set to merge in cleanly:
+  - `free_zram_is_ok`: in-tree stub at
+    `drivers/block/zram/hybridswap_stub.c` linked into `zram.ko`,
+    plus `hybridswap` symlink fix (5x ../ → 4x ../).
+  - `__tracepoint_android_vh_scx_restore_flags`: `DECLARE_HOOK` in
+    `include/trace/hooks/sched.h` + `EXPORT_TRACEPOINT_SYMBOL_GPL`
+    in `kernel/sched/vendor_hooks.c`.
+
+  After this, the device-side filter-out of `oplus_bsp_zram_opt.ko`
+  / `oplus_bsp_sched_ext.ko` was dropped. **0 depmod symbol errors.**
+
+- **`kernel: restore drivers/soc/qcom/sps/Makefile (vendor-strip)`** —
+  same vendor-strip pattern as Phase A: vendor ships `sps/` as a
+  Bazel target via `modules.bzl` but no parent Makefile, so the
+  in-tree make build couldn't pick up `sps_drv.ko`. Restores the
+  Makefile with the seven-source bundle.
 
 ## Genksyms prebuilt
 
@@ -103,24 +151,25 @@ they recur in preprocessed input.
   `BOARD_VENDOR_KERNEL_MODULES` wildcard for OEM prebuilts.
 
 - [`jm2/android_kernel_oneplus_sm8850-modules`](../sm8850-modules/) —
-  vendor external modules tree. Its `README.md` documents what builds
-  cleanly today and what's blocked behind oplus extension source
-  (Phase 3).
+  vendor external modules tree. Its `README.md` documents the 30
+  source-built externals and the Phase A-F audit trail.
 
-## Open work
+- [`jm2/android_vendor_lineage`](../../../vendor/lineage/) — three
+  patches against `build/tasks/kernel.mk` (modules-target wrapper fix,
+  `BOARD_VENDOR_KERNEL_MODULES` merge into source-build flow, soft-fail
+  on missing `BOARD_*_KERNEL_MODULES_LOAD` entries). See
+  `README.lineage-jm2.md`.
 
-- **vendor/lineage local patch** — `vendor/lineage/build/tasks/kernel.mk`
-  needs a one-liner to pass `modules` explicitly to external module
-  wrappers (works around a `%:` catch-all firing on `all`). Currently
-  applied in the local clone as branch `local-jm2-mka-modules-fix`;
-  needs upstreaming or a jm2 fork.
+## Open upstream work
 
-- **AOSP genksyms prebuilt** — would replace the musl-static one we
+- **AOSP genksyms prebuilt.** Would replace the musl-static one we
   build ourselves. AOSP's `prebuilts/kernel-build-tools` doesn't ship
   it; would need to add a project to the manifest.
 
-- **Phase 3 — full source-build** — see
-  `jm2/android_kernel_oneplus_sm8850-modules/README.md`.
+- **vendor/lineage upstreaming.** All three patches in the
+  `vendor/lineage` jm2 fork are small, self-contained, and reproduce
+  on any LineageOS build that uses the relevant `BOARD_*` knobs.
+  Worth landing upstream so the fork can be retired.
 
 ## Build host
 
