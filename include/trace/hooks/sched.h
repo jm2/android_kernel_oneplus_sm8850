@@ -425,6 +425,16 @@ DECLARE_HOOK(android_vh_scx_task_switch_finish,
 	TP_PROTO(struct task_struct *p, int enable),
 	TP_ARGS(p, enable));
 
+/* Phase F: vendor-defined hook consumed by oplus_bsp_sched_ext.ko (OEM
+ * prebuilt). Kernel-side caller is in oplus's sched-ext extension which
+ * isn't in our tree, but we still need the tracepoint declared so the
+ * prebuilt resolves at depmod. Prototype matches sibling sched-ext hooks
+ * (struct task_struct *p) — best guess; even if the call site uses
+ * different args, the tracepoint symbol exists which is what depmod needs. */
+DECLARE_HOOK(android_vh_scx_restore_flags,
+	TP_PROTO(struct task_struct *p),
+	TP_ARGS(p));
+
 DECLARE_HOOK(android_vh_switching_to_scx,
 	TP_PROTO(struct rq *rq, struct task_struct *p),
 	TP_ARGS(rq, p));

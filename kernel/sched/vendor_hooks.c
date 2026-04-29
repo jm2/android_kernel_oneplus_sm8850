@@ -112,6 +112,9 @@ EXPORT_TRACEPOINT_SYMBOL_GPL(android_vh_scx_ops_enable_state);
 EXPORT_TRACEPOINT_SYMBOL_GPL(android_vh_scx_enabled);
 EXPORT_TRACEPOINT_SYMBOL_GPL(android_vh_scx_set_cpus_allowed);
 EXPORT_TRACEPOINT_SYMBOL_GPL(android_vh_scx_task_switch_finish);
+/* Phase F: vendor hook consumed by oplus_bsp_sched_ext.ko (OEM prebuilt).
+ * Declaration in include/trace/hooks/sched.h; this exports the symbol. */
+EXPORT_TRACEPOINT_SYMBOL_GPL(android_vh_scx_restore_flags);
 EXPORT_TRACEPOINT_SYMBOL_GPL(android_vh_switching_to_scx);
 EXPORT_TRACEPOINT_SYMBOL_GPL(android_rvh_set_sugov_update);
 EXPORT_TRACEPOINT_SYMBOL_GPL(android_rvh_update_rq_clock_pelt);
