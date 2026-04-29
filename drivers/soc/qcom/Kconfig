@@ -300,6 +300,27 @@ config QCOM_SMEM
 config QCOM_SMEM_STATE
 	bool
 
+# Phase D: altmode-glink.ko provides altmode_register_notifier /
+# altmode_send_data / altmode_register_client etc. consumed by msm_drm.ko
+# (source-built display-drivers/msm). Source file present, vendor stripped
+# both Kconfig and Makefile entries.
+config QTI_ALTMODE_GLINK
+	tristate "Qualcomm Altmode over PMIC Glink"
+	depends on QTI_PMIC_GLINK
+	help
+	  Driver for handling alternate-mode messages over PMIC Glink. Provides
+	  the altmode_* notifier API consumed by display drivers for DP/USB-C
+	  alt-mode switching.
+
+# Phase D: panel_event_notifier.ko provides panel_event_notification_*
+# consumed by msm_drm.ko. Same vendor-strip pattern.
+config QCOM_PANEL_EVENT_NOTIFIER
+	tristate "Qualcomm Panel Event Notifier"
+	help
+	  Standalone notifier framework that the display panel driver uses to
+	  publish events (suspend/resume/blank/etc.) to subsystems that need
+	  to react. Consumed by camera-extension, touchpanel, etc.
+
 config QCOM_MEMORY_DUMP_V2
 	tristate "QCOM Memory Dump V2 Support"
 	help

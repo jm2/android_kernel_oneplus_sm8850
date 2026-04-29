@@ -75,3 +75,11 @@ obj-$(CONFIG_QCOM_RAMDUMP)	+= qcom_ramdump.o
 # mem-prot.ko provides mem_prot_pool_alloc/free consumed by
 # gh_rm_heap_manager.ko. Vendor-stripped, restored.
 obj-$(CONFIG_MEM_PROT)		+= mem-prot.o
+
+# Phase D: altmode-glink.ko + panel_event_notifier.ko consumed by msm_drm.ko.
+# Source files in this dir, vendor-stripped Makefile entries restored.
+# qti_pmic_glink.ko provides pmic_glink_register_client / pmic_glink_write
+# consumed by altmode-glink.ko (per modules.bzl deps).
+obj-$(CONFIG_QTI_PMIC_GLINK)           += qti_pmic_glink.o
+obj-$(CONFIG_QTI_ALTMODE_GLINK)        += altmode-glink.o
+obj-$(CONFIG_QCOM_PANEL_EVENT_NOTIFIER) += panel_event_notifier.o
