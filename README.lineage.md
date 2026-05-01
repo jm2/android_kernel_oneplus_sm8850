@@ -121,6 +121,18 @@ In commit order on `lineage-23.2`:
   in-tree make build couldn't pick up `sps_drv.ko`. Restores the
   Makefile with the seven-source bundle.
 
+- **`dtb: retarget vendor symlink to sm8850-modules layout`** —
+  `arch/arm64/boot/dts/vendor` was a symlink resolving to a
+  non-existent path (`kernel/oneplus/qcom/opensource/devicetree`),
+  so the kernel's in-tree `arch/arm64/boot/dts/Makefile` couldn't
+  traverse the vendor DTS via `subdir-y += vendor`. The actual
+  location is under `kernel/oneplus/sm8850-modules/kernel_platform/
+  qcom/opensource/devicetree`. Retargeting the symlink restores
+  in-tree dtbs traversal so `make dtbs` produces the canoe SoC
+  bases + the 4 fat composed bases (canoe-{,v2,tp,tp-v2}-fat.dtb)
+  authored in the sm8850-modules fork. See that fork's Phase G
+  for the full DTB source-compose story.
+
 ## Genksyms prebuilt
 
 `scripts/genksyms/genksyms.prebuilt` is a static x86_64-linux-musl ELF.
