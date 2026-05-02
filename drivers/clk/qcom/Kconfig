@@ -1099,6 +1099,48 @@ config SM_CAMCC_CANOE
 	  Support for the camera clock controller on Canoe (SM8850)
 	  devices. Consumes parent camera clocks from SM_GCC_CANOE.
 
+config SM_CAMBISTMCLKCC_CANOE
+	tristate "Canoe (SM8850) Camera BIST Mclk Clock Controller"
+	depends on ARM64 || COMPILE_TEST
+	depends on SM_GCC_CANOE
+	help
+	  Support for the camera BIST Mclk clock controller on Canoe
+	  (SM8850) devices. Provides a separate test-mode clock used by
+	  CAMCC consumers; referenced via canoe.dtsi clocks=<&cambistmclkcc>.
+
+config SM_EVACC_CANOE
+	tristate "Canoe (SM8850) EVA Clock Controller"
+	depends on ARM64 || COMPILE_TEST
+	depends on SM_GCC_CANOE
+	help
+	  Support for the EVA (Enhanced Video Analytics) clock controller
+	  on Canoe (SM8850) devices.
+
+config SM_GPUCC_CANOE
+	tristate "Canoe (SM8850) Graphics Clock Controller"
+	depends on ARM64 || COMPILE_TEST
+	select SM_GCC_CANOE
+	help
+	  Support for the GPU clock controller on Canoe (SM8850) devices.
+	  Boot-critical for Adreno graphics initialization; canoe.dtsi
+	  references it both as a clock provider and as a power-domain
+	  provider (GPU_CC_CX_GDSC).
+
+config SM_TCSRCC_CANOE
+	tristate "Canoe (SM8850) TCSR Clock Controller"
+	depends on ARM64 || COMPILE_TEST
+	depends on SM_GCC_CANOE
+	help
+	  Support for the TCSR (Top Control and Status Registers) clock
+	  controller on Canoe (SM8850) devices.
+
+config SM_VIDEOCC_CANOE
+	tristate "Canoe (SM8850) Video Clock Controller"
+	depends on ARM64 || COMPILE_TEST
+	depends on SM_GCC_CANOE
+	help
+	  Support for the video clock controller on Canoe (SM8850) devices.
+
 config SM_GPUCC_4450
 	tristate "SM4450 Graphics Clock Controller"
 	depends on ARM64 || COMPILE_TEST
