@@ -1073,6 +1073,32 @@ config SM_GCC_8650
 	  Say Y if you want to use peripheral devices such as UART,
 	  SPI, I2C, USB, SD/UFS, PCIe etc.
 
+config SM_GCC_CANOE
+	tristate "Canoe (SM8850) Global Clock Controller"
+	depends on ARM64 || COMPILE_TEST
+	select QCOM_GDSC
+	help
+	  Support for the global clock controller on Canoe (SM8850)
+	  devices including OnePlus 15 (infiniti). GCC provides the
+	  parent clocks consumed by DISPCC and CAMCC, plus USB / UFS /
+	  PCIe / audio bus clocks.
+
+config SM_DISPCC_CANOE
+	tristate "Canoe (SM8850) Display Clock Controller"
+	depends on ARM64 || COMPILE_TEST
+	depends on SM_GCC_CANOE
+	help
+	  Support for the display clock controller on Canoe (SM8850)
+	  devices. Consumes parent display clocks from SM_GCC_CANOE.
+
+config SM_CAMCC_CANOE
+	tristate "Canoe (SM8850) Camera Clock Controller"
+	depends on ARM64 || COMPILE_TEST
+	select SM_GCC_CANOE
+	help
+	  Support for the camera clock controller on Canoe (SM8850)
+	  devices. Consumes parent camera clocks from SM_GCC_CANOE.
+
 config SM_GPUCC_4450
 	tristate "SM4450 Graphics Clock Controller"
 	depends on ARM64 || COMPILE_TEST
