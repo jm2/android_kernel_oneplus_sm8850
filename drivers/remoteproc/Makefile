@@ -46,3 +46,6 @@ obj-$(CONFIG_TI_K3_DSP_REMOTEPROC)	+= ti_k3_dsp_remoteproc.o
 obj-$(CONFIG_TI_K3_M4_REMOTEPROC)	+= ti_k3_m4_remoteproc.o
 obj-$(CONFIG_TI_K3_R5_REMOTEPROC)	+= ti_k3_r5_remoteproc.o
 obj-$(CONFIG_XLNX_R5_REMOTEPROC)	+= xlnx_r5_remoteproc.o
+# Sub-wave 2E: source-build qcom_spss (OEM ships via tech-package
+# overlay; obj-$() entry not in upstream Makefile).
+obj-$(CONFIG_QCOM_SPSS)			+= qcom_spss.o

@@ -83,3 +83,9 @@ obj-$(CONFIG_MEM_PROT)		+= mem-prot.o
 obj-$(CONFIG_QTI_PMIC_GLINK)           += qti_pmic_glink.o
 obj-$(CONFIG_QTI_ALTMODE_GLINK)        += altmode-glink.o
 obj-$(CONFIG_QCOM_PANEL_EVENT_NOTIFIER) += panel_event_notifier.o
+# Sub-wave 2E: source-build qcom_lpm (OEM ships via tech-package
+# overlay; obj-$() entry not in upstream Makefile). Module .ko is
+# qcom_lpm.ko, source is qcom_lpm_monitor.c +
+# qcom_lpm_monitor_service_v01.c.
+qcom_lpm-y := qcom_lpm_monitor.o qcom_lpm_monitor_service_v01.o
+obj-$(CONFIG_QCOM_LPM_MONITOR)         += qcom_lpm.o
