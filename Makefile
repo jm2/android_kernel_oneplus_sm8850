@@ -497,7 +497,7 @@ export rust_common_flags := --edition=2021 \
 			    -Wclippy::needless_continue \
 			    -Aclippy::needless_lifetimes \
 			    -Wclippy::no_mangle_with_rust_abi \
-			    -Wclippy::dbg_macro
+			    -Wclippy::dbg_macro \
 			    -Wclippy::undocumented_unsafe_blocks \
 			    -Aclippy::uninlined_format_args \
 			    -Wclippy::unnecessary_safety_comment \
@@ -2219,6 +2219,7 @@ existing-targets := $(wildcard $(sort $(targets)))
 endif # config-build
 endif # mixed-build
 endif # need-sub-make
+endif # end-of-file guard
 
 PHONY += FORCE
 FORCE:
