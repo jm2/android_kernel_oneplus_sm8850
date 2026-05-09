@@ -110,20 +110,17 @@ static void fuse_file_put(struct inode *inode, struct fuse_file *ff, bool sync)
 #ifdef CONFIG_FUSE_BPF
 		struct fuse_err_ret fer;
 
-<<<<<<< HEAD
 		fer = fuse_bpf_backing(inode, struct fuse_release_in,
 				fuse_release_initialize, fuse_release_backing,
 				fuse_release_finalize,
 				inode, ff);
 		if (fer.ret) {
-=======
 		if (!args) {
 			/* Do nothing when server does not implement 'opendir' */
 		} else if (args->opcode == FUSE_RELEASE && ff->fm->fc->no_open) {
 			fuse_release_end(ff->fm, args, 0);
 		} else if (sync) {
 			fuse_simple_request(ff->fm, args);
->>>>>>> fbba8b00bbe4 (fuse: fix readahead reclaim deadlock)
 			fuse_release_end(ff->fm, args, 0);
 		} else
 #endif		

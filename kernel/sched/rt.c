@@ -2184,9 +2184,7 @@ static struct rq *find_lock_lowest_rq(struct task_struct *task, struct rq *rq)
 
 		/* if the prio of this runqueue changed, try again */
 		if (double_lock_balance(rq, lowest_rq)) {
-<<<<<<< HEAD
 			if (unlikely(!rt_revalidate_rq_state(task, rq, lowest_rq, &retry))) {
-=======
 			/*
 			 * We had to unlock the run queue. In
 			 * the mean time, task could have
@@ -2201,7 +2199,6 @@ static struct rq *find_lock_lowest_rq(struct task_struct *task, struct rq *rq)
 				     !cpumask_test_cpu(lowest_rq->cpu, &task->cpus_mask) ||
 				     task != pick_next_pushable_task(rq))) {
 
->>>>>>> debfbc047196 (sched/rt: Fix race in push_rt_task)
 				double_unlock_balance(rq, lowest_rq);
 				lowest_rq = NULL;
 				break;

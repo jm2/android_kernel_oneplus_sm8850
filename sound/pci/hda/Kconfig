@@ -94,8 +94,6 @@ config SND_HDA_PATCH_LOADER
 config SND_HDA_CIRRUS_SCODEC
 	tristate
 
-<<<<<<< HEAD
-=======
 config SND_HDA_CIRRUS_SCODEC_KUNIT_TEST
 	tristate "KUnit test for Cirrus side-codec library" if !KUNIT_ALL_TESTS
 	depends on SND_HDA_CIRRUS_SCODEC && GPIOLIB && KUNIT
@@ -107,7 +105,6 @@ config SND_HDA_CIRRUS_SCODEC_KUNIT_TEST
 	  Documentation/dev-tools/kunit/.
 	  If in doubt, say "N".
 
->>>>>>> 9b019be5890c (ALSA: hda/cirrus_scodec_test: Don't select dependencies)
 config SND_HDA_SCODEC_CS35L41
 	tristate
 	select SND_HDA_GENERIC

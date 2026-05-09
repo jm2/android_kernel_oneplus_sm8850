@@ -597,7 +597,7 @@ static void hidinput_cleanup_battery(struct hid_device *dev)
 }
 
 static bool hidinput_update_battery_charge_status(struct hid_device *dev,
-			                                       unsigned int usage, int value)
+					  unsigned int usage, int value)
 {
 	switch (usage) {
 		case HID_BAT_CHARGING:
@@ -613,19 +613,14 @@ static bool hidinput_update_battery_charge_status(struct hid_device *dev,
 					     POWER_SUPPLY_STATUS_CHARGING :
 					     POWER_SUPPLY_STATUS_DISCHARGING;
 		return true;
->>>>>>> e2cf56faa25f (HID: input: rename hidinput_set_battery_charge_status())
 	}
 
 	return false;
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 static void hidinput_update_battery(struct hid_device *dev, unsigned int usage,
 				    int value)
-=======
 static void hidinput_update_battery(struct hid_device *dev, int value)
->>>>>>> e2cf56faa25f (HID: input: rename hidinput_set_battery_charge_status())
 static void hidinput_update_battery(struct hid_device *dev, unsigned int usage,
 				    int value)
 {
@@ -653,23 +648,11 @@ static void hidinput_update_battery(struct hid_device *dev, unsigned int usage,
 		return;
 	}
 
+	/* Stylus/other digitizer tools sometimes report 0 spuriously. */
 	if ((usage & HID_USAGE_PAGE) == HID_UP_DIGITIZER && value == 0)
 		return;
 
-	if (value < dev->battery_min || value > dev->battery_max)
-<<<<<<< HEAD
-=======
 	if (value == 0 || value < dev->battery_min || value > dev->battery_max)
->>>>>>> 8ac194ad5254 (HID: input: report battery status changes immediately)
-=======
->>>>>>> 560024035fe7 (HID: hid-input: only ignore 0 battery events for digitizers)
-		return;
-	}
-
-	if ((usage & HID_USAGE_PAGE) == HID_UP_DIGITIZER && value == 0)
-		return;
-
-	if (value < dev->battery_min || value > dev->battery_max)
 		return;
 
 	capacity = hidinput_scale_battery_capacity(dev, value);
@@ -708,7 +691,6 @@ static void hidinput_update_battery(struct hid_device *dev, unsigned int usage,
 				    int value)
 {
 }
-=======
 #endif	/* CONFIG_HID_BATTERY_STRENGTH */
 
 static bool hidinput_field_in_collection(struct hid_device *device, struct hid_field *field,

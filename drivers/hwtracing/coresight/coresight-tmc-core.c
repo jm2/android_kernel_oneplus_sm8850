@@ -1216,8 +1216,6 @@ static void tmc_platform_remove(struct platform_device *pdev)
 		clk_put(drvdata->pclk);
 }
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_PM
 static int tmc_runtime_suspend(struct device *dev)
 {
@@ -1250,7 +1248,6 @@ static const struct dev_pm_ops tmc_dev_pm_ops = {
 	SET_RUNTIME_PM_OPS(tmc_runtime_suspend, tmc_runtime_resume, NULL)
 };
 
->>>>>>> 670bdf9eacd9 (coresight: tmc: Support atclk)
 #ifdef CONFIG_ACPI
 static const struct acpi_device_id tmc_acpi_ids[] = {
 	{"ARMHC501", 0, 0, 0}, /* ARM CoreSight ETR */

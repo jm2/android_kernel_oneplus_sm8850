@@ -2660,8 +2660,6 @@ EXPORT_SYMBOL_GPL(dm_bufio_set_sector_offset);
 
 /*--------------------------------------------------------------*/
 
-<<<<<<< HEAD
-=======
 static unsigned int get_max_age_hz(void)
 {
 	unsigned int max_age = READ_ONCE(dm_bufio_max_age);
@@ -2790,7 +2788,6 @@ static void work_fn(struct work_struct *w)
 
 /*--------------------------------------------------------------*/
 
->>>>>>> 68860d1ade38 (dm-bufio: fix sched in atomic context)
 /*
  * Global cleanup tries to evict the oldest buffers from across _all_
  * the clients.  It does this by repeatedly evicting a few buffers from

@@ -2171,7 +2171,6 @@ static bool can_steal_fallback(unsigned int order, int start_mt)
 		return true;
 
 	return false;
->>>>>>> 914769048818 (mm/page_alloc: change all pageblocks migrate type on coalescing)
 }
 
 static inline bool boost_watermark(struct zone *zone)
@@ -2212,7 +2211,6 @@ static inline bool boost_watermark(struct zone *zone)
 }
 
 /*
-<<<<<<< HEAD
  * When we are falling back to another migratetype during allocation, should we
  * try to claim an entire block to satisfy further allocations, instead of
  * polluting multiple pageblocks?
@@ -2300,7 +2298,6 @@ try_to_claim_block(struct zone *zone, struct page *page,
 {
 	int free_pages, movable_pages, alike_pages;
 	unsigned long start_pfn;
-=======
  * This function implements actual steal behaviour. If order is large enough, we
  * can claim the whole pageblock for the requested migratetype. If not, we check
  * the pageblock for constituent pages; if at least half of the pages are free
@@ -2385,10 +2382,8 @@ try_to_steal_block(struct zone *zone, struct page *page,
 
 
 /*
-<<<<<<< HEAD
  * Try to allocate from some fallback migratetype by claiming the entire block,
  * i.e. converting it to the allocation's start migratetype.
-=======
  * Reserve the pageblock(s) surrounding an allocation request for
  * exclusive use of high-order atomic allocations if there are no
  * empty page blocks that contain a page with a suitable order
@@ -2540,11 +2535,8 @@ static bool unreserve_highatomic_pageblock(const struct alloc_context *ac,
  *
  * If a whole block cannot be stolen, regress to __rmqueue_smallest()
  * logic to at least break up as little contiguity as possible.
->>>>>>> 564d25b1a6a0 (mm: page_alloc: don't steal single pages from biggest buddy)
-=======
  * Try to allocate from some fallback migratetype by claiming the entire block,
  * i.e. converting it to the allocation's start migratetype.
->>>>>>> 16bae58f7355 (mm: page_alloc: speed up fallbacks in rmqueue_bulk())
  *
  * The use of signed ints for order and current_order is a deliberate
  * deviation from the rest of this file, to make the for loop
@@ -2776,7 +2768,6 @@ static int rmqueue_bulk(struct zone *zone, unsigned int order,
 
 	spin_lock_irqsave(&zone->lock, flags);
 	for (i = 0; i < count; ++i) {
-<<<<<<< HEAD
 		struct page *page;
 
 		/*
@@ -2789,7 +2780,6 @@ static int rmqueue_bulk(struct zone *zone, unsigned int order,
 		else
 			page = __rmqueue(zone, order, migratetype, alloc_flags, &rmqm);
 
-=======
 		struct page *page = __rmqueue(zone, order, migratetype,
 					      alloc_flags, &rmqm);
 		if (unlikely(page == NULL))

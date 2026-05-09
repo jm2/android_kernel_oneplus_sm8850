@@ -1942,8 +1942,6 @@ static void qcom_glink_destroy_ept(struct rpmsg_endpoint *ept)
 	channel->ept.cb = NULL;
 	spin_unlock_irqrestore(&channel->recv_lock, flags);
 
-<<<<<<< HEAD
-=======
 	/* Decouple the potential rpdev from the channel */
 	if (channel->rpdev) {
 		strscpy_pad(chinfo.name, channel->name, sizeof(chinfo.name));
@@ -1954,7 +1952,6 @@ static void qcom_glink_destroy_ept(struct rpmsg_endpoint *ept)
 	}
 	channel->rpdev = NULL;
 
->>>>>>> fcab5c2672f8 (rpmsg: glink: fix rpmsg device leak)
 	qcom_glink_send_close_req(glink, channel);
 }
 

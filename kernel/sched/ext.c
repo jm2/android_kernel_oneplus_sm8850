@@ -5508,13 +5508,10 @@ static void scx_ops_enable_workfn(struct kthread_work *work)
 
 	atomic_long_inc(&scx_enable_seq);
 
-<<<<<<< HEAD
 	add_taint(TAINT_AUX, LOCKDEP_STILL_OK);
 	return 0;
-=======
 	cmd->ret = 0;
 	return;
->>>>>>> e0b14bf06393 (sched_ext: Fix starvation of scx_enable() under fair-class saturation)
 
 err_del:
 	kobject_del(scx_root_kobj);

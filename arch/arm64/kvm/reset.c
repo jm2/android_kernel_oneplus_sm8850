@@ -231,10 +231,6 @@ void kvm_reset_vcpu(struct kvm_vcpu *vcpu)
 	 * Additional reset state handling that PSCI may have imposed on us.
 	 * Must be done after all the sys_reg reset.
 	 */
-<<<<<<< HEAD
-	if (reset_state.reset)
-		kvm_reset_vcpu_psci(vcpu, &reset_state);
-=======
 	if (reset_state.reset) {
 		unsigned long target_pc = reset_state.pc;
 
@@ -265,7 +261,6 @@ void kvm_reset_vcpu(struct kvm_vcpu *vcpu)
 		vcpu_clear_flag(vcpu, INCREMENT_PC);
 		vcpu_set_reg(vcpu, 0, reset_state.r0);
 	}
->>>>>>> 68e5da7c5326 (KVM: arm64: Discard PC update state on vcpu reset)
 
 	/* Reset timer */
 	kvm_timer_vcpu_reset(vcpu);
