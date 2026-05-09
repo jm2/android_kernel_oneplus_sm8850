@@ -2,6 +2,9 @@
 
 //! Implementation of [`Vec`].
 
+// May not be needed in Rust 1.87.0 (pending beta backport).
+#![allow(clippy::ptr_eq)]
+
 use super::{
     allocator::{KVmalloc, Kmalloc, Vmalloc},
     layout::ArrayLayout,
@@ -195,6 +198,7 @@ where
     /// - `additional` must be less than or equal to `self.capacity - self.len`.
     /// - All elements within the interval [`self.len`,`self.len + additional`) must be initialized.
     #[inline]
+<<<<<<< HEAD
     pub unsafe fn inc_len(&mut self, additional: usize) {
         // Guaranteed by the type invariant to never underflow.
         debug_assert!(additional <= self.capacity() - self.len());
@@ -220,6 +224,14 @@ where
         // SAFETY: The memory after `self.len()` is guaranteed to contain `count` initialized
         // elements of type `T`.
         unsafe { slice::from_raw_parts_mut(self.as_mut_ptr().add(self.len), count) }
+=======
+    pub unsafe fn set_len(&mut self, new_len: usize) {
+        debug_assert!(new_len <= self.capacity());
+
+        // INVARIANT: By the safety requirements of this method `new_len` represents the exact
+        // number of elements stored within `self`.
+        self.len = new_len;
+>>>>>>> 6635bb78eb7d (rust: alloc: add missing invariant in Vec::set_len())
     }
 
     /// Returns a slice of the entire vector.

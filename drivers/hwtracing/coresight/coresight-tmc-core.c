@@ -686,6 +686,10 @@ static int tmc_add_coresight_dev(struct device *dev, struct resource *res)
 	struct coresight_desc desc = { 0 };
 	struct coresight_dev_list *dev_list = NULL;
 
+	drvdata->atclk = devm_clk_get_optional_enabled(dev, "atclk");
+	if (IS_ERR(drvdata->atclk))
+		return PTR_ERR(drvdata->atclk);
+
 	ret = -ENOMEM;
 	drvdata = dev_get_drvdata(dev);
 	if (!drvdata)
@@ -1212,6 +1216,41 @@ static void tmc_platform_remove(struct platform_device *pdev)
 		clk_put(drvdata->pclk);
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PM
+static int tmc_runtime_suspend(struct device *dev)
+{
+	struct tmc_drvdata *drvdata = dev_get_drvdata(dev);
+
+	clk_disable_unprepare(drvdata->atclk);
+	clk_disable_unprepare(drvdata->pclk);
+
+	return 0;
+}
+
+static int tmc_runtime_resume(struct device *dev)
+{
+	struct tmc_drvdata *drvdata = dev_get_drvdata(dev);
+	int ret;
+
+	ret = clk_prepare_enable(drvdata->pclk);
+	if (ret)
+		return ret;
+
+	ret = clk_prepare_enable(drvdata->atclk);
+	if (ret)
+		clk_disable_unprepare(drvdata->pclk);
+
+	return ret;
+}
+#endif
+
+static const struct dev_pm_ops tmc_dev_pm_ops = {
+	SET_RUNTIME_PM_OPS(tmc_runtime_suspend, tmc_runtime_resume, NULL)
+};
+
+>>>>>>> 670bdf9eacd9 (coresight: tmc: Support atclk)
 #ifdef CONFIG_ACPI
 static const struct acpi_device_id tmc_acpi_ids[] = {
 	{"ARMHC501", 0, 0, 0}, /* ARM CoreSight ETR */
@@ -1234,6 +1273,7 @@ static struct platform_driver tmc_platform_driver = {
 
 static int __init tmc_init(void)
 {
+<<<<<<< HEAD
 	int ret;
 
 	ret = tmc_pm_setup();
@@ -1241,6 +1281,9 @@ static int __init tmc_init(void)
 		return ret;
 
 	return coresight_init_driver("tmc", &tmc_driver, &tmc_platform_driver);
+=======
+	return coresight_init_driver("tmc", &tmc_driver, &tmc_platform_driver, THIS_MODULE);
+>>>>>>> 1183a72221d5 (coresight: Fixes device's owner field for registered using coresight_init_driver())
 }
 
 static void __exit tmc_exit(void)

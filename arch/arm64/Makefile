@@ -48,6 +48,12 @@ KBUILD_CFLAGS	+= $(CC_FLAGS_NO_FPU) \
 KBUILD_CFLAGS	+= $(call cc-disable-warning, psabi)
 KBUILD_AFLAGS	+= $(compat_vdso)
 
+<<<<<<< HEAD
+=======
+ifeq ($(call rustc-min-version, 108500),y)
+KBUILD_RUSTFLAGS += --target=aarch64-unknown-none-softfloat
+else
+>>>>>>> 1814e71a4e9c (kbuild: rust: add rustc-min-version support function)
 KBUILD_RUSTFLAGS += --target=aarch64-unknown-none -Ctarget-feature="-neon"
 
 KBUILD_CFLAGS	+= $(call cc-option,-mabi=lp64)

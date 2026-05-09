@@ -931,7 +931,7 @@ static u32 qcom_smem_get_item_count(struct qcom_smem *smem)
 	if (IS_ERR_OR_NULL(ptable))
 		return SMEM_ITEM_COUNT;
 
-	info = (struct smem_info *)&ptable->entry[ptable->num_entries];
+	info = (struct smem_info *)&ptable->entry[le32_to_cpu(ptable->num_entries)];
 	if (memcmp(info->magic, SMEM_INFO_MAGIC, sizeof(info->magic)))
 		return SMEM_ITEM_COUNT;
 
@@ -1227,11 +1227,17 @@ static int qcom_smem_probe(struct platform_device *pdev)
 			goto release;
 	}
 
+<<<<<<< HEAD
 	smem->hwlock = hwspin_lock_request_specific(hwlock_id);
 	if (!smem->hwlock) {
 		ret = -ENXIO;
 		goto release;
 	}
+=======
+	smem->hwlock = devm_hwspin_lock_request_specific(&pdev->dev, hwlock_id);
+	if (!smem->hwlock)
+		return -ENXIO;
+>>>>>>> 60d1c1d4d925 (soc: qcom: smem: fix hwspinlock resource leak in probe error paths)
 
 	ret = hwspin_lock_timeout_irqsave(smem->hwlock, HWSPINLOCK_TIMEOUT, &flags);
 	if (ret)
@@ -1254,7 +1260,9 @@ static int qcom_smem_probe(struct platform_device *pdev)
 		smem->item_count = qcom_smem_get_item_count(smem);
 		break;
 	case SMEM_GLOBAL_HEAP_VERSION:
-		qcom_smem_map_global(smem, size);
+		ret = qcom_smem_map_global(smem, size);
+		if (ret < 0)
+			return ret;
 		smem->item_count = SMEM_ITEM_COUNT;
 		break;
 	default:
@@ -1287,6 +1295,7 @@ static void qcom_smem_remove(struct platform_device *pdev)
 {
 	platform_device_unregister(__smem->socinfo);
 
+<<<<<<< HEAD
 	hwspin_lock_free(__smem->hwlock);
 	/*
 	 * In case of Hibernation Restore __smem object is still valid
@@ -1295,6 +1304,8 @@ static void qcom_smem_remove(struct platform_device *pdev)
 	 * it here.
 	 */
 	kfree(__smem);
+=======
+>>>>>>> 60d1c1d4d925 (soc: qcom: smem: fix hwspinlock resource leak in probe error paths)
 	__smem = NULL;
 }
 
@@ -1338,7 +1349,7 @@ MODULE_DEVICE_TABLE(of, qcom_smem_of_match);
 
 static struct platform_driver qcom_smem_driver = {
 	.probe = qcom_smem_probe,
-	.remove_new = qcom_smem_remove,
+	.remove = qcom_smem_remove,
 	.driver  = {
 		.name = "qcom-smem",
 		.of_match_table = qcom_smem_of_match,

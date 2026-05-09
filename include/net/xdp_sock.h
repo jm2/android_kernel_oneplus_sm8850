@@ -14,7 +14,7 @@
 #include <linux/mm.h>
 #include <net/sock.h>
 
-#define XDP_UMEM_SG_FLAG (1 << 1)
+#define XDP_UMEM_SG_FLAG BIT(3)
 
 struct net_device;
 struct xsk_queue;
@@ -70,9 +70,6 @@ struct xdp_sock {
 	 * preventing other XSKs from being starved.
 	 */
 	u32 tx_budget_spent;
-
-	/* Protects generic receive. */
-	spinlock_t rx_lock;
 
 	/* Statistics */
 	u64 rx_dropped;

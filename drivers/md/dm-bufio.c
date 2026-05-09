@@ -1362,7 +1362,7 @@ static void submit_io(struct dm_buffer *b, enum req_op op, unsigned short ioprio
 {
 	unsigned int n_sectors;
 	sector_t sector;
-	unsigned int offset, end;
+	unsigned int offset, end, align;
 
 	b->end_io = end_io;
 
@@ -1376,9 +1376,11 @@ static void submit_io(struct dm_buffer *b, enum req_op op, unsigned short ioprio
 			b->c->write_callback(b);
 		offset = b->write_start;
 		end = b->write_end;
-		offset &= -DM_BUFIO_WRITE_ALIGN;
-		end += DM_BUFIO_WRITE_ALIGN - 1;
-		end &= -DM_BUFIO_WRITE_ALIGN;
+		align = max(DM_BUFIO_WRITE_ALIGN,
+			bdev_physical_block_size(b->c->bdev));
+		offset &= -align;
+		end += align - 1;
+		end &= -align;
 		if (unlikely(end > b->c->block_size))
 			end = b->c->block_size;
 
@@ -2658,6 +2660,137 @@ EXPORT_SYMBOL_GPL(dm_bufio_set_sector_offset);
 
 /*--------------------------------------------------------------*/
 
+<<<<<<< HEAD
+=======
+static unsigned int get_max_age_hz(void)
+{
+	unsigned int max_age = READ_ONCE(dm_bufio_max_age);
+
+	if (max_age > UINT_MAX / HZ)
+		max_age = UINT_MAX / HZ;
+
+	return max_age * HZ;
+}
+
+static bool older_than(struct dm_buffer *b, unsigned long age_hz)
+{
+	return time_after_eq(jiffies, READ_ONCE(b->last_accessed) + age_hz);
+}
+
+struct evict_params {
+	gfp_t gfp;
+	unsigned long age_hz;
+
+	/*
+	 * This gets updated with the largest last_accessed (ie. most
+	 * recently used) of the evicted buffers.  It will not be reinitialised
+	 * by __evict_many(), so you can use it across multiple invocations.
+	 */
+	unsigned long last_accessed;
+};
+
+/*
+ * We may not be able to evict this buffer if IO pending or the client
+ * is still using it.
+ *
+ * And if GFP_NOFS is used, we must not do any I/O because we hold
+ * dm_bufio_clients_lock and we would risk deadlock if the I/O gets
+ * rerouted to different bufio client.
+ */
+static enum evict_result select_for_evict(struct dm_buffer *b, void *context)
+{
+	struct evict_params *params = context;
+
+	if (!(params->gfp & __GFP_FS) ||
+	    (static_branch_unlikely(&no_sleep_enabled) && b->c->no_sleep)) {
+		if (test_bit_acquire(B_READING, &b->state) ||
+		    test_bit(B_WRITING, &b->state) ||
+		    test_bit(B_DIRTY, &b->state))
+			return ER_DONT_EVICT;
+	}
+
+	return older_than(b, params->age_hz) ? ER_EVICT : ER_STOP;
+}
+
+static unsigned long __evict_many(struct dm_bufio_client *c,
+				  struct evict_params *params,
+				  int list_mode, unsigned long max_count)
+{
+	unsigned long count;
+	unsigned long last_accessed;
+	struct dm_buffer *b;
+
+	for (count = 0; count < max_count; count++) {
+		b = cache_evict(&c->cache, list_mode, select_for_evict, params);
+		if (!b)
+			break;
+
+		last_accessed = READ_ONCE(b->last_accessed);
+		if (time_after_eq(params->last_accessed, last_accessed))
+			params->last_accessed = last_accessed;
+
+		__make_buffer_clean(b);
+		__free_buffer_wake(b);
+
+		if (need_resched()) {
+			dm_bufio_unlock(c);
+			cond_resched();
+			dm_bufio_lock(c);
+		}
+	}
+
+	return count;
+}
+
+static void evict_old_buffers(struct dm_bufio_client *c, unsigned long age_hz)
+{
+	struct evict_params params = {.gfp = 0, .age_hz = age_hz, .last_accessed = 0};
+	unsigned long retain = get_retain_buffers(c);
+	unsigned long count;
+	LIST_HEAD(write_list);
+
+	dm_bufio_lock(c);
+
+	__check_watermark(c, &write_list);
+	if (unlikely(!list_empty(&write_list))) {
+		dm_bufio_unlock(c);
+		__flush_write_list(&write_list);
+		dm_bufio_lock(c);
+	}
+
+	count = cache_total(&c->cache);
+	if (count > retain)
+		__evict_many(c, &params, LIST_CLEAN, count - retain);
+
+	dm_bufio_unlock(c);
+}
+
+static void cleanup_old_buffers(void)
+{
+	unsigned long max_age_hz = get_max_age_hz();
+	struct dm_bufio_client *c;
+
+	mutex_lock(&dm_bufio_clients_lock);
+
+	__cache_size_refresh();
+
+	list_for_each_entry(c, &dm_bufio_all_clients, client_list)
+		evict_old_buffers(c, max_age_hz);
+
+	mutex_unlock(&dm_bufio_clients_lock);
+}
+
+static void work_fn(struct work_struct *w)
+{
+	cleanup_old_buffers();
+
+	queue_delayed_work(dm_bufio_wq, &dm_bufio_cleanup_old_work,
+			   DM_BUFIO_WORK_TIMER_SECS * HZ);
+}
+
+/*--------------------------------------------------------------*/
+
+>>>>>>> 68860d1ade38 (dm-bufio: fix sched in atomic context)
 /*
  * Global cleanup tries to evict the oldest buffers from across _all_
  * the clients.  It does this by repeatedly evicting a few buffers from

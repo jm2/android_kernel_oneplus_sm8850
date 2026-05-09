@@ -25,7 +25,20 @@ mkdir -p "${destdir}"
 		echo tools/objtool/objtool
 	fi
 
+<<<<<<< HEAD
 	find "arch/${SRCARCH}/include" Module.symvers include scripts -type f
+=======
+	if is_enabled CONFIG_DEBUG_INFO_BTF_MODULES; then
+		echo tools/bpf/resolve_btfids/resolve_btfids
+	fi
+
+	echo Module.symvers
+	echo "arch/${SRCARCH}/include/generated"
+	echo include/config/auto.conf
+	echo include/config/kernel.release
+	echo include/generated
+	find_in_scripts
+>>>>>>> da89e7137b9d (kbuild: install-extmod-build: Package resolve_btfids if necessary)
 
 	if is_enabled CONFIG_GCC_PLUGINS; then
 		find scripts/gcc-plugins -name '*.so'

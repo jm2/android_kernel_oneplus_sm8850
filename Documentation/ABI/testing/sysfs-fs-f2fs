@@ -836,6 +836,10 @@ Contact:	"Jaegeuk Kim" <jaegeuk@kernel.org>
 Description:	It reclaims the given KBs of file-backed pages registered by
 		ioctl(F2FS_IOC_DONATE_RANGE).
 		For example, writing N tries to drop N KBs spaces in LRU.
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7cc6b80df66f (f2fs: add carve_out sysfs node)
 
 What:		/sys/fs/f2fs/<disk>/carve_out
 Date:		March 2025
@@ -846,6 +850,10 @@ Description:	For several zoned storage devices, vendors will provide extra space
 		reserved_blocks. However, it is not enough, since this extra space should
 		not be shown to users. So, with this new sysfs node, we can hide the space
 		by substracting reserved_blocks from total bytes.
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> d4a4abba4584 (f2fs: sysfs: add encoding_flags entry)
 
 What:		/sys/fs/f2fs/<disk>/encoding_flags
 Date:		April 2025
@@ -859,6 +867,10 @@ Description:	This is a read-only entry to show the value of sb.s_encoding_flags,
 		SB_ENC_STRICT_MODE_FL            0x00000001
 		SB_ENC_NO_COMPAT_FALLBACK_FL     0x00000002
 		============================     ==========
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 4c5181b9e1a9 (f2fs: introduce reserved_pin_section sysfs entry)
 
 What:		/sys/fs/f2fs/<disk>/reserved_pin_section
 Date:		June 2025
@@ -868,6 +880,8 @@ Description:	This threshold is used to control triggering garbage collection whi
 		reserved section before preallocating on pinned file.
 		By default, the value is ovp_sections, especially, for zoned ufs, the
 		value is 1.
+<<<<<<< HEAD
+<<<<<<< HEAD
 
 What:		/sys/fs/f2fs/<disk>/effective_lookup_mode
 Date:		August 2025
@@ -883,3 +897,29 @@ Description:
 		- "compat": Hash-based lookup with a linear search fallback enabled
 		- "auto:perf": lookup_mode is auto and fallback is disabled on-disk
 		- "auto:compat": lookup_mode is auto and fallback is enabled on-disk
+=======
+>>>>>>> 9933e05f508e (f2fs: add a sysfs entry to reclaim POSIX_FADV_NOREUSE pages)
+=======
+>>>>>>> 7cc6b80df66f (f2fs: add carve_out sysfs node)
+=======
+>>>>>>> d4a4abba4584 (f2fs: sysfs: add encoding_flags entry)
+=======
+>>>>>>> 4c5181b9e1a9 (f2fs: introduce reserved_pin_section sysfs entry)
+=======
+
+What:		/sys/fs/f2fs/<disk>/gc_boost_gc_multiple
+Date:		June 2025
+Contact:	"Daeho Jeong" <daehojeong@google.com>
+Description:	Set a multiplier for the background GC migration window when F2FS GC is
+		boosted. The range should be from 1 to the segment count in a section.
+		Default: 5
+<<<<<<< HEAD
+>>>>>>> 4236c017c4ce (f2fs: add gc_boost_gc_multiple sysfs node)
+=======
+
+What:		/sys/fs/f2fs/<disk>/gc_boost_gc_greedy
+Date:		June 2025
+Contact:	"Daeho Jeong" <daehojeong@google.com>
+Description:	Control GC algorithm for boost GC. 0: cost benefit, 1: greedy
+		Default: 1
+>>>>>>> 3573b6200272 (f2fs: add gc_boost_gc_greedy sysfs node)

@@ -3853,6 +3853,7 @@ static struct platform_driver arm_smmu_driver = {
 static int __init arm_smmu_init(void)
 {
 	int ret;
+<<<<<<< HEAD
 	ktime_t cur;
 
 	cur = ktime_get();
@@ -3875,6 +3876,25 @@ static void __exit arm_smmu_exit(void)
 {
 	platform_driver_unregister(&arm_smmu_driver);
 	platform_driver_unregister(&qsmmuv500_tbu_driver);
+=======
+
+	ret = platform_driver_register(&arm_smmu_driver);
+	if (ret)
+		return ret;
+
+	ret = arm_smmu_impl_module_init();
+	if (ret)
+		platform_driver_unregister(&arm_smmu_driver);
+
+	return ret;
+}
+module_init(arm_smmu_init);
+
+static void __exit arm_smmu_exit(void)
+{
+	arm_smmu_impl_module_exit();
+	platform_driver_unregister(&arm_smmu_driver);
+>>>>>>> 121f787e740d (iommu/arm-smmu-qcom: do not register driver in probe())
 }
 module_exit(arm_smmu_exit);
 

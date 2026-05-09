@@ -633,7 +633,7 @@ static int ufs_qcom_ice_init(struct ufs_qcom_host *host)
 	struct device *dev = hba->dev;
 	struct qcom_ice *ice;
 
-	ice = of_qcom_ice_get(dev);
+	ice = devm_of_qcom_ice_get(dev);
 	if (ice == ERR_PTR(-EOPNOTSUPP)) {
 		dev_warn(dev, "Disabling inline encryption support\n");
 		ice = NULL;
@@ -1102,7 +1102,28 @@ static int ufs_qcom_power_up_sequence(struct ufs_hba *hba)
 	if (host->hw_ver.major == 0x6 && host->hw_ver.minor == 0x2)
 		ufs_qcom_phy_set_device_id(phy, host->device_id);
 
+<<<<<<< HEAD
 	ret = ufs_qcom_phy_power_on(hba);
+=======
+	if (phy->power_count)
+		phy_power_off(phy);
+
+
+	/* phy initialization - calibrate the phy */
+	ret = phy_init(phy);
+	if (ret) {
+		dev_err(hba->dev, "%s: phy init failed, ret = %d\n",
+			__func__, ret);
+		return ret;
+	}
+
+	ret = phy_set_mode_ext(phy, mode, host->phy_gear);
+	if (ret)
+		goto out_disable_phy;
+
+	/* power on phy - start serdes and phy's power and clocks */
+	ret = phy_power_on(phy);
+>>>>>>> 1cda72119b31 (scsi: ufs: qcom: Prevent calling phy_exit() before phy_init())
 	if (ret) {
 		dev_err(hba->dev, "%s: phy power on failed, ret = %d\n",
 				 __func__, ret);

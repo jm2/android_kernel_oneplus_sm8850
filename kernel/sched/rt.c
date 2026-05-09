@@ -2010,12 +2010,17 @@ static int find_lowest_rq(struct task_struct *sched_ctx, struct task_struct *exe
 
 static struct task_struct *pick_next_pushable_task(struct rq *rq)
 {
+<<<<<<< HEAD
 	struct plist_head *head = &rq->rt.pushable_tasks;
 	struct task_struct *p, *push_task = NULL;
+=======
+	struct task_struct *p;
+>>>>>>> debfbc047196 (sched/rt: Fix race in push_rt_task)
 
 	if (!has_pushable_tasks(rq))
 		return NULL;
 
+<<<<<<< HEAD
 	plist_for_each_entry(p, head, pushable_tasks) {
 		if (task_is_pushable(rq, p, 0)) {
 			push_task = p;
@@ -2139,6 +2144,19 @@ static inline bool rt_revalidate_rq_state(struct task_struct *task, struct rq *r
 	}
 
 	return true;
+=======
+	p = plist_first_entry(&rq->rt.pushable_tasks,
+			      struct task_struct, pushable_tasks);
+
+	BUG_ON(rq->cpu != task_cpu(p));
+	BUG_ON(task_current(rq, p));
+	BUG_ON(p->nr_cpus_allowed <= 1);
+
+	BUG_ON(!task_on_rq_queued(p));
+	BUG_ON(!rt_task(p));
+
+	return p;
+>>>>>>> debfbc047196 (sched/rt: Fix race in push_rt_task)
 }
 
 /* Will lock the rq it finds */
@@ -2172,7 +2190,24 @@ static struct rq *find_lock_lowest_rq(struct task_struct *task, struct rq *rq)
 
 		/* if the prio of this runqueue changed, try again */
 		if (double_lock_balance(rq, lowest_rq)) {
+<<<<<<< HEAD
 			if (unlikely(!rt_revalidate_rq_state(task, rq, lowest_rq, &retry))) {
+=======
+			/*
+			 * We had to unlock the run queue. In
+			 * the mean time, task could have
+			 * migrated already or had its affinity changed,
+			 * therefore check if the task is still at the
+			 * head of the pushable tasks list.
+			 * It is possible the task was scheduled, set
+			 * "migrate_disabled" and then got preempted, so we must
+			 * check the task migration disable flag here too.
+			 */
+			if (unlikely(is_migration_disabled(task) ||
+				     !cpumask_test_cpu(lowest_rq->cpu, &task->cpus_mask) ||
+				     task != pick_next_pushable_task(rq))) {
+
+>>>>>>> debfbc047196 (sched/rt: Fix race in push_rt_task)
 				double_unlock_balance(rq, lowest_rq);
 				lowest_rq = NULL;
 				break;
@@ -2366,6 +2401,7 @@ static void push_rt_tasks(struct rq *rq)
  */
 static int rto_next_cpu(struct root_domain *rd)
 {
+	int this_cpu = smp_processor_id();
 	int next;
 	int cpu;
 
@@ -2391,6 +2427,10 @@ static int rto_next_cpu(struct root_domain *rd)
 		trace_android_rvh_rto_next_cpu(rd->rto_cpu, rd->rto_mask, &cpu);
 
 		rd->rto_cpu = cpu;
+
+		/* Do not send IPI to self */
+		if (cpu == this_cpu)
+			continue;
 
 		if (cpu < nr_cpu_ids)
 			return cpu;
@@ -2918,7 +2958,7 @@ static int tg_rt_schedulable(struct task_group *tg, void *data)
 {
 	struct rt_schedulable_data *d = data;
 	struct task_group *child;
-	unsigned long total, sum = 0;
+	u64 total, sum = 0;
 	u64 period, runtime;
 
 	period = ktime_to_ns(tg->rt_bandwidth.rt_period);
@@ -3164,6 +3204,12 @@ undo:
 		sysctl_sched_rt_runtime = old_runtime;
 	}
 	mutex_unlock(&mutex);
+
+	/*
+	 * After changing maximum available bandwidth for DEADLINE, we need to
+	 * recompute per root domain and per cpus variables accordingly.
+	 */
+	rebuild_sched_domains();
 
 	return ret;
 }
