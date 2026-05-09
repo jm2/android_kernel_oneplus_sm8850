@@ -4825,19 +4825,10 @@ try_onemore:
 	/* get segno of first zoned block device */
 	sbi->first_seq_zone_segno = get_first_seq_zone_segno(sbi);
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 4c5181b9e1a9 (f2fs: introduce reserved_pin_section sysfs entry)
 	sbi->reserved_pin_section = f2fs_sb_has_blkzoned(sbi) ?
 			ZONED_PIN_SEC_REQUIRED_COUNT :
 			GET_SEC_FROM_SEG(sbi, overprovision_segments(sbi));
 
-<<<<<<< HEAD
-=======
->>>>>>> ffbbe11577b7 (f2fs: zone: introduce first_zoned_segno in f2fs_sb_info)
-=======
->>>>>>> 4c5181b9e1a9 (f2fs: introduce reserved_pin_section sysfs entry)
 	/* Read accumulated write IO statistics if exists */
 	seg_i = CURSEG_I(sbi, CURSEG_HOT_NODE);
 	if (__exist_node_summaries(sbi))

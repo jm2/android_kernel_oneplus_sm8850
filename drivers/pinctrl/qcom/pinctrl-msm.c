@@ -1260,7 +1260,6 @@ static bool msm_gpio_needs_dual_edge_parent_workaround(struct irq_data *d,
 	       test_bit(d->hwirq, pctrl->skip_wake_irqs);
 }
 
-<<<<<<< HEAD
 static void msm_dirconn_cfg_reg(struct irq_data *d, u32 offset)
 {
 	u32 val;
@@ -1282,7 +1281,6 @@ static void msm_dirconn_cfg_reg(struct irq_data *d, u32 offset)
 
 	msm_writel_intr_cfg(val, pctrl, g);
 	raw_spin_unlock_irqrestore(&pctrl->lock, flags);
-=======
 static void msm_gpio_irq_init_valid_mask(struct gpio_chip *gc,
 					 unsigned long *valid_mask,
 					 unsigned int ngpios)
@@ -1300,7 +1298,6 @@ static void msm_gpio_irq_init_valid_mask(struct gpio_chip *gc,
 		    g->intr_detection_width != 2)
 			clear_bit(i, valid_mask);
 	}
->>>>>>> 275605a8b480 (pinctrl: qcom: msm: mark certain pins as invalid for interrupts)
 }
 
 static int msm_gpio_irq_set_type(struct irq_data *d, unsigned int type)
@@ -1311,13 +1308,10 @@ static int msm_gpio_irq_set_type(struct irq_data *d, unsigned int type)
 	u32 intr_target_mask = GENMASK(2, 0);
 	irq_hw_number_t irq = 0;
 	unsigned long flags;
-<<<<<<< HEAD
 	u32 offset = 0;
 	bool was_enabled;
 	u32 val;
-=======
 	u32 val, oldval;
->>>>>>> c1368383cd37 (pinctrl: qcom: Clear latched interrupt status when changing IRQ type)
 
 	if (msm_gpio_needs_dual_edge_parent_workaround(d, type)) {
 		set_bit(d->hwirq, pctrl->dual_edge_irqs);
@@ -1781,7 +1775,6 @@ static int msm_gpio_init(struct msm_pinctrl *pctrl)
 	return 0;
 }
 
-<<<<<<< HEAD
 static void msm_gpio_setup_dir_connects(struct msm_pinctrl *pctrl)
 {
 	struct msm_dir_conn *dc = NULL;
@@ -1814,9 +1807,7 @@ static void msm_gpio_setup_dir_connects(struct msm_pinctrl *pctrl)
 
 static int msm_ps_hold_restart(struct notifier_block *nb, unsigned long action,
 			       void *data)
-=======
 static int msm_ps_hold_restart(struct sys_off_data *data)
->>>>>>> 3e79182c82a1 (pinctrl: qcom: switch to devm_register_sys_off_handler())
 {
 	struct msm_pinctrl *pctrl = data->cb_data;
 

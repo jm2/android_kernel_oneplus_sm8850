@@ -172,9 +172,9 @@ int slim_do_transfer(struct slim_controller *ctrl, struct slim_msg_txn *txn)
 	if (!ret && need_tid && !txn->msg->comp) {
 		unsigned long ms = txn->rl + HZ;
 
-		timeout = wait_for_completion_timeout(txn->comp,
-						      msecs_to_jiffies(ms));
-		if (!timeout) {
+		time_left = wait_for_completion_timeout(txn->comp,
+							msecs_to_jiffies(ms));
+		if (!time_left) {
 			ret = -ETIMEDOUT;
 			txn->comp = NULL;
 			slim_free_txn_tid(ctrl, txn);

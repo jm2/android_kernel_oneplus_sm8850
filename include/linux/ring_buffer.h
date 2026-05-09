@@ -143,6 +143,14 @@ struct trace_buffer *__ring_buffer_alloc_range(unsigned long size, unsigned flag
 bool ring_buffer_last_boot_delta(struct trace_buffer *buffer, long *text,
 				 long *data);
 
+struct trace_buffer *__ring_buffer_alloc_range(unsigned long size, unsigned flags,
+					       int order, unsigned long start,
+					       unsigned long range_size,
+					       struct lock_class_key *key);
+
+bool ring_buffer_last_boot_delta(struct trace_buffer *buffer, long *text,
+				 long *data);
+
 /*
  * Because the ring buffer is generic, if other users of the ring buffer get
  * traced by ftrace, it can produce lockdep warnings. We need to keep each
@@ -152,6 +160,18 @@ bool ring_buffer_last_boot_delta(struct trace_buffer *buffer, long *text,
 ({								\
 	static struct lock_class_key __key;			\
 	__ring_buffer_alloc((size), (flags), &__key, NULL);	\
+})
+
+/*
+ * Because the ring buffer is generic, if other users of the ring buffer get
+ * traced by ftrace, it can produce lockdep warnings. We need to keep each
+ * ring buffer's lock class separate.
+ */
+#define ring_buffer_alloc_range(size, flags, order, start, range_size)	\
+({									\
+	static struct lock_class_key __key;				\
+	__ring_buffer_alloc_range((size), (flags), (order), (start),	\
+				  (range_size), &__key);		\
 })
 
 /*

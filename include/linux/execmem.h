@@ -124,7 +124,6 @@ void *execmem_alloc(enum execmem_type type, size_t size);
  */
 void execmem_free(void *ptr);
 
-<<<<<<< HEAD
 #ifdef CONFIG_MMU
 /**
  * execmem_vmap - create virtual mapping for EXECMEM_MODULE_DATA memory
@@ -136,9 +135,7 @@ void execmem_free(void *ptr);
  */
 struct vm_struct *execmem_vmap(size_t size);
 #endif
-=======
 DEFINE_FREE(execmem, void *, if (_T) execmem_free(_T));
->>>>>>> 88a817e60dbb (x86/its: Use dynamic thunks for indirect branches)
 
 #if defined(CONFIG_EXECMEM) && !defined(CONFIG_ARCH_WANTS_EXECMEM_LATE)
 void execmem_init(void);

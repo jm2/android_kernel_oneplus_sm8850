@@ -1,11 +1,8 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2011-2015, 2017, 2020, The Linux Foundation. All rights reserved.
-<<<<<<< HEAD
  * Copyright (c) 2022, 2024-2025, Qualcomm Innovation Center, Inc. All rights reserved.
-=======
  * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
->>>>>>> f740ee4a0713 (thermal/drivers/qcom-spmi-temp-alarm: Enable stage 2 shutdown when required)
  */
 
 #include <linux/bitfield.h>
@@ -48,14 +45,11 @@
 #define STATUS_GEN2_STATE_MASK		GENMASK(6, 4)
 #define STATUS_GEN2_STATE_SHIFT		4
 
-<<<<<<< HEAD
 /* IRQ status only needed for TEMP_ALARM_LITE */
 #define IRQ_STATUS_MASK			BIT(0)
 
 #define SHUTDOWN_CTRL1_OVERRIDE_S2	BIT(6)
-=======
 #define SHUTDOWN_CTRL1_OVERRIDE_STAGE2	BIT(6)
->>>>>>> f740ee4a0713 (thermal/drivers/qcom-spmi-temp-alarm: Enable stage 2 shutdown when required)
 #define SHUTDOWN_CTRL1_THRESHOLD_MASK	GENMASK(1, 0)
 
 #define SHUTDOWN_CTRL1_RATE_25HZ	BIT(3)
@@ -404,12 +398,9 @@ static int qpnp_tm_update_critical_trip_temp(struct qpnp_tm_chip *chip,
 {
 	long stage2_threshold_min = (*chip->temp_map)[THRESH_MIN][1];
 	long stage2_threshold_max = (*chip->temp_map)[THRESH_MAX][1];
-<<<<<<< HEAD
 	bool disable_s2_shutdown = false;
 	bool require_s2_shutdown = false;
-=======
 	bool disable_stage2_shutdown = false;
->>>>>>> f740ee4a0713 (thermal/drivers/qcom-spmi-temp-alarm: Enable stage 2 shutdown when required)
 	u8 reg;
 
 	WARN_ON(!mutex_is_locked(&chip->lock));
@@ -460,13 +451,10 @@ static int qpnp_tm_update_critical_trip_temp(struct qpnp_tm_chip *chip,
 
 skip:
 	reg |= chip->thresh;
-<<<<<<< HEAD
 	if (disable_s2_shutdown && !require_s2_shutdown)
 		reg |= SHUTDOWN_CTRL1_OVERRIDE_S2;
-=======
 	if (disable_stage2_shutdown && !chip->require_stage2_shutdown)
 		reg |= SHUTDOWN_CTRL1_OVERRIDE_STAGE2;
->>>>>>> f740ee4a0713 (thermal/drivers/qcom-spmi-temp-alarm: Enable stage 2 shutdown when required)
 
 	return qpnp_tm_write(chip, QPNP_TM_REG_SHUTDOWN_CTRL1, reg);
 }
@@ -732,16 +720,13 @@ static int qpnp_tm_probe(struct platform_device *pdev)
 {
 	struct qpnp_tm_chip *chip;
 	struct device_node *node;
-<<<<<<< HEAD
 	const struct thermal_zone_device_ops *ops;
 	u8 type, subtype, dig_major, dig_minor;
 	u32 res;
 	int ret;
-=======
 	u8 type, subtype, dig_major, dig_minor;
 	u32 res, dig_revision;
 	int ret, irq;
->>>>>>> f740ee4a0713 (thermal/drivers/qcom-spmi-temp-alarm: Enable stage 2 shutdown when required)
 
 	node = pdev->dev.of_node;
 
@@ -793,18 +778,15 @@ static int qpnp_tm_probe(struct platform_device *pdev)
 				     "could not read dig_major\n");
 
 	ret = qpnp_tm_read(chip, QPNP_TM_REG_DIG_MINOR, &dig_minor);
-<<<<<<< HEAD
 	if (ret < 0) {
 		dev_err(&pdev->dev, "could not read dig_minor\n");
 		return ret;
 	}
 
 	chip->dig_revision = (dig_major << 8) | dig_minor;
-=======
 	if (ret < 0)
 		return dev_err_probe(&pdev->dev, ret,
 				     "could not read dig_minor\n");
->>>>>>> f740ee4a0713 (thermal/drivers/qcom-spmi-temp-alarm: Enable stage 2 shutdown when required)
 
 	if (type != QPNP_TM_TYPE || (subtype != QPNP_TM_SUBTYPE_GEN1
 				     && subtype != QPNP_TM_SUBTYPE_GEN2
@@ -823,7 +805,6 @@ static int qpnp_tm_probe(struct platform_device *pdev)
 	else if (subtype == QPNP_TM_SUBTYPE_GEN1)
 		chip->temp_map = &temp_map_gen1;
 
-<<<<<<< HEAD
 	if (chip->has_temp_dac) {
 		ops = &qpnp_tm_sensor_temp_dac_ops;
 		ret = qpnp_tm_temp_dac_init(chip);
@@ -836,7 +817,6 @@ static int qpnp_tm_probe(struct platform_device *pdev)
 		ret = qpnp_tm_temp_lite_init(chip);
 		if (ret < 0)
 			return ret;
-=======
 	if (chip->subtype == QPNP_TM_SUBTYPE_GEN2) {
 		dig_revision = (dig_major << 8) | dig_minor;
 		/*
@@ -852,7 +832,6 @@ static int qpnp_tm_probe(struct platform_device *pdev)
 			chip->require_stage2_shutdown = true;
 			break;
 		}
->>>>>>> f740ee4a0713 (thermal/drivers/qcom-spmi-temp-alarm: Enable stage 2 shutdown when required)
 	}
 
 	/*

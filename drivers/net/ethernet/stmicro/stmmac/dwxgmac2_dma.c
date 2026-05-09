@@ -211,15 +211,12 @@ static void dwxgmac2_dma_rx_mode(struct stmmac_priv *priv, void __iomem *ioaddr,
 		writel(flow, ioaddr + XGMAC_MTL_RXQ_FLOW_CONTROL(dwxgmac_addrs, channel));
 	}
 
-<<<<<<< HEAD
 	writel(value, ioaddr + XGMAC_MTL_RXQ_OPMODE(dwxgmac_addrs, channel));
 
 	/* Enable MTL RX overflow */
 	value = readl(ioaddr + XGMAC_MTL_QINTEN(dwxgmac_addrs, channel));
 	writel(value | XGMAC_RXOIE, ioaddr + XGMAC_MTL_QINTEN(dwxgmac_addrs, channel));
-=======
 	writel(value, ioaddr + XGMAC_MTL_RXQ_OPMODE(channel));
->>>>>>> 160a7e072a0c (net: stmmac: xgmac: Do not enable RX FIFO Overflow interrupts)
 }
 
 static void dwxgmac2_dma_tx_mode(struct stmmac_priv *priv, void __iomem *ioaddr,

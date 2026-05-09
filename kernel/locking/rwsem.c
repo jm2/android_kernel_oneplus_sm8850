@@ -196,6 +196,16 @@ static inline struct task_struct *rwsem_owner(struct rw_semaphore *sem)
 		(atomic_long_read(&sem->owner) & ~RWSEM_OWNER_FLAGS_MASK);
 }
 
+#ifdef CONFIG_DEBUG_RWSEMS
+/*
+ * Return just the real task structure pointer of the owner
+ */
+static inline struct task_struct *rwsem_owner(struct rw_semaphore *sem)
+{
+	return (struct task_struct *)
+		(atomic_long_read(&sem->owner) & ~RWSEM_OWNER_FLAGS_MASK);
+}
+
 /*
  * Return true if the rwsem is owned by a reader.
  */

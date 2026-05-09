@@ -1648,12 +1648,9 @@ void thermal_zone_device_unregister(struct thermal_zone_device *tz)
 
 	cancel_delayed_work_sync(&tz->poll_queue);
 
-<<<<<<< HEAD
 	thermal_set_governor(tz, NULL);
 
 	thermal_thresholds_exit(tz);
-=======
->>>>>>> f412e541d25a (thermal: core: Fix thermal zone governor cleanup issues)
 	thermal_remove_hwmon_sysfs(tz);
 	ida_free(&thermal_tz_ida, tz->id);
 	ida_destroy(&tz->ida);

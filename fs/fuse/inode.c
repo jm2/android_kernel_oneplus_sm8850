@@ -99,7 +99,6 @@ static struct inode *fuse_alloc_inode(struct super_block *sb)
 	memset((void *) fi + sizeof(fi->inode), 0, sizeof(*fi) - sizeof(fi->inode));
 
 	fi->inval_mask = ~0;
-<<<<<<< HEAD
 #ifdef CONFIG_FUSE_BPF
 	fi->backing_inode = NULL;
 	fi->bpf = NULL;
@@ -111,8 +110,6 @@ static struct inode *fuse_alloc_inode(struct super_block *sb)
 	fi->orig_ino = 0;
 	fi->state = 0;
 	fi->submount_lookup = NULL;
-=======
->>>>>>> deee089a226f (fuse: zero initialize inode private data)
 	mutex_init(&fi->mutex);
 	spin_lock_init(&fi->lock);
 	fi->forget = fuse_alloc_forget();

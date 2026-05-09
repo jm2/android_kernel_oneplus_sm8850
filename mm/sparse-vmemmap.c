@@ -337,7 +337,6 @@ int __meminit vmemmap_populate_hugepages(unsigned long start, unsigned long end,
 			return -ENOMEM;
 
 		pmd = pmd_offset(pud, addr);
-<<<<<<< HEAD
 
 		/* avoid pmd size alloc if no altmap */
 #ifdef CONFIG_QCOM_VM_MEMORY_FEATURES_NONGKI
@@ -345,9 +344,7 @@ int __meminit vmemmap_populate_hugepages(unsigned long start, unsigned long end,
 #else
 		if (pmd_none(READ_ONCE(*pmd))) {
 #endif
-=======
 		if (pmd_none(pmdp_get(pmd))) {
->>>>>>> 9bcbf9ae7db8 (mm: replace READ_ONCE() with standard page table accessors)
 			void *p;
 
 			p = vmemmap_alloc_block_buf(PMD_SIZE, node, altmap);

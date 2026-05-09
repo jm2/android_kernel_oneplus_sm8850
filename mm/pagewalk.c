@@ -236,14 +236,11 @@ static int walk_pud_range(p4d_t *p4d, unsigned long addr, unsigned long end,
 
 		if (walk->vma)
 			split_huge_pud(walk->vma, pud, addr);
-<<<<<<< HEAD
-		else if (pud_leaf(*pud) || !pud_present(*pud))
 			continue; /* Nothing to do. */
 
 		if (pud_none(*pud))
 			goto again;
-=======
->>>>>>> 138ada1337b4 (mm/pagewalk: fix race between concurrent split and refault)
+		else if (pud_leaf(*pud) || !pud_present(*pud))
 
 		err = walk_pmd_range(pud, addr, next, walk);
 		if (err)

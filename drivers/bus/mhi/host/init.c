@@ -221,11 +221,7 @@ int mhi_init_irq_setup(struct mhi_controller *mhi_cntrl)
 			continue;
 
 		if (mhi_event->irq >= mhi_cntrl->nr_irqs) {
-<<<<<<< HEAD
-			MHI_ERR(dev, "irq %d not available for event ring\n",
-=======
 			dev_err(mhi_cntrl->cntrl_dev, "irq %d not available for event ring\n",
->>>>>>> 61a60c45ebd6 (bus: mhi: host: Do not use uninitialized 'dev' pointer in mhi_init_irq_setup())
 				mhi_event->irq);
 			ret = -EINVAL;
 			goto error_request;
@@ -236,11 +232,7 @@ int mhi_init_irq_setup(struct mhi_controller *mhi_cntrl)
 				  irq_flags,
 				  "mhi", mhi_event);
 		if (ret) {
-<<<<<<< HEAD
-			MHI_ERR(dev, "Error requesting irq:%d for ev:%d\n",
-=======
 			dev_err(mhi_cntrl->cntrl_dev, "Error requesting irq:%d for ev:%d\n",
->>>>>>> 61a60c45ebd6 (bus: mhi: host: Do not use uninitialized 'dev' pointer in mhi_init_irq_setup())
 				mhi_cntrl->irq[mhi_event->irq], i);
 			goto error_request;
 		}
@@ -1505,7 +1497,7 @@ static int mhi_match(struct device *dev, const struct device_driver *drv)
 	return 0;
 };
 
-struct bus_type mhi_bus_type = {
+const struct bus_type mhi_bus_type = {
 	.name = "mhi",
 	.dev_name = "mhi",
 	.match = mhi_match,

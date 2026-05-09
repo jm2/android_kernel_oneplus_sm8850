@@ -93,14 +93,11 @@ unsigned int sysctl_sched_tunable_scaling = SCHED_TUNABLESCALING_LOG;
  *
  * (default: 0.70 msec * (1 + ilog(ncpus)), units: nanoseconds)
  */
-<<<<<<< HEAD
 unsigned int sysctl_sched_base_slice			= 750000ULL;
 EXPORT_SYMBOL_GPL(sysctl_sched_base_slice);
 static unsigned int normalized_sysctl_sched_base_slice	= 750000ULL;
-=======
 unsigned int sysctl_sched_base_slice			= 700000ULL;
 static unsigned int normalized_sysctl_sched_base_slice	= 700000ULL;
->>>>>>> e6e31b0182de (sched: Reduce the default slice to avoid tasks getting an extra tick)
 
 /*
  * After fork, child runs first. If set to 0 (default) then

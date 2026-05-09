@@ -1403,13 +1403,10 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
 	int is_udplite = IS_UDPLITE(sk);
 	int (*getfrag)(void *, char *, int, int, int, struct sk_buff *);
 
-<<<<<<< HEAD
 	trace_android_rvh_udpv6_sendmsg(sk, msg, len);
 
 	ipcm6_init(&ipc6);
-=======
 	ipcm6_init_sk(&ipc6, sk);
->>>>>>> 3c44ebad5aed (ipv6: replace ipcm6_init calls with ipcm6_init_sk)
 	ipc6.gso_size = READ_ONCE(up->gso_size);
 	ipc6.sockc.tsflags = READ_ONCE(sk->sk_tsflags);
 	ipc6.sockc.mark = READ_ONCE(sk->sk_mark);

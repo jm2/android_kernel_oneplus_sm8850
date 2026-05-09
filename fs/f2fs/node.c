@@ -1905,16 +1905,13 @@ continue_unlock:
 				if (IS_INODE(&folio->page)) {
 					if (is_inode_flag_set(inode,
 								FI_DIRTY_INODE))
-<<<<<<< HEAD
 						f2fs_update_inode(inode, &folio->page);
 					set_dentry_mark(&folio->page,
 						f2fs_need_dentry_mark(sbi, ino));
-=======
 						f2fs_update_inode(inode, page);
 					if (!atomic)
 						set_dentry_mark(page,
 							f2fs_need_dentry_mark(sbi, ino));
->>>>>>> 962c167b0f26 (f2fs: fix IS_CHECKPOINTED flag inconsistency issue caused by concurrent atomic commit and checkpoint writes)
 				}
 				/* may be written by other thread */
 				if (!folio_test_dirty(folio))

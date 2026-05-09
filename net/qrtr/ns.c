@@ -31,19 +31,13 @@ static struct {
 	struct socket *sock;
 	struct sockaddr_qrtr bcast_sq;
 	struct list_head lookups;
-<<<<<<< HEAD
-<<<<<<< HEAD
 	struct kthread_worker kworker;
 	struct kthread_work work;
 	struct task_struct *task;
-=======
-=======
 	u32 lookup_count;
->>>>>>> 76adf8f69b0b (net: qrtr: ns: Limit the maximum number of lookups)
 	struct workqueue_struct *workqueue;
 	struct work_struct work;
 	void (*saved_data_ready)(struct sock *sk);
->>>>>>> db3c60ec772d (net: qrtr: ns: Fix use-after-free in driver remove())
 	int local_node;
 } qrtr_ns;
 
@@ -413,11 +407,8 @@ static int server_del(struct qrtr_node *node, unsigned int port, bool bcast)
 
 	xa_lock_irq(&node->servers);
 	kfree(srv);
-<<<<<<< HEAD
 	xa_unlock_irq(&node->servers);
-=======
 	node->server_count--;
->>>>>>> 3efaad55cad1 (net: qrtr: ns: Limit the maximum server registration per node)
 
 	return 0;
 }
@@ -500,7 +491,6 @@ static int ctrl_cmd_bye(struct sockaddr_qrtr *from)
 		msg.msg_namelen = sizeof(sq);
 
 		ret = kernel_sendmsg(qrtr_ns.sock, &msg, &iv, 1, sizeof(pkt));
-<<<<<<< HEAD
 		if (ret < 0 && ret != -ENODEV)
 			pr_err_ratelimited("send bye failed: [0x%x:0x%x] 0x%x ret: %d\n",
 					   srv->service, srv->instance,
@@ -508,7 +498,6 @@ static int ctrl_cmd_bye(struct sockaddr_qrtr *from)
 	}
 
 	return 0;
-=======
 		if (ret < 0 && ret != -ENODEV) {
 			pr_err("failed to send bye cmd\n");
 			goto delete_node;
@@ -524,7 +513,6 @@ delete_node:
 	node_count--;
 
 	return ret;
->>>>>>> 65932f5102bb (net: qrtr: ns: Free the node during ctrl_cmd_bye())
 }
 
 static int ctrl_cmd_del_client(struct sockaddr_qrtr *from,
@@ -896,13 +884,10 @@ int qrtr_ns_init(void)
 		goto err_sock;
 	}
 
-<<<<<<< HEAD
 	/* Camera Team, BugID: 9846848, Set the task priority to FIFO low */
 	sched_set_fifo_low(qrtr_ns.task);
 
-=======
 	qrtr_ns.saved_data_ready = qrtr_ns.sock->sk->sk_data_ready;
->>>>>>> db3c60ec772d (net: qrtr: ns: Fix use-after-free in driver remove())
 	qrtr_ns.sock->sk->sk_data_ready = qrtr_ns_data_ready;
 
 	sq.sq_port = QRTR_PORT_CTRL;
@@ -946,15 +931,12 @@ int qrtr_ns_init(void)
 	return 0;
 
 err_wq:
-<<<<<<< HEAD
 	kthread_stop(qrtr_ns.task);
-=======
 	write_lock_bh(&qrtr_ns.sock->sk->sk_callback_lock);
 	qrtr_ns.sock->sk->sk_data_ready = qrtr_ns.saved_data_ready;
 	write_unlock_bh(&qrtr_ns.sock->sk->sk_callback_lock);
 
 	destroy_workqueue(qrtr_ns.workqueue);
->>>>>>> db3c60ec772d (net: qrtr: ns: Fix use-after-free in driver remove())
 err_sock:
 	sock_release(qrtr_ns.sock);
 	return ret;
@@ -963,10 +945,8 @@ EXPORT_SYMBOL_GPL(qrtr_ns_init);
 
 void qrtr_ns_remove(void)
 {
-<<<<<<< HEAD
 	kthread_flush_worker(&qrtr_ns.kworker);
 	kthread_stop(qrtr_ns.task);
-=======
 	write_lock_bh(&qrtr_ns.sock->sk->sk_callback_lock);
 	qrtr_ns.sock->sk->sk_data_ready = qrtr_ns.saved_data_ready;
 	write_unlock_bh(&qrtr_ns.sock->sk->sk_callback_lock);
@@ -974,7 +954,6 @@ void qrtr_ns_remove(void)
 	cancel_work_sync(&qrtr_ns.work);
 	synchronize_net();
 	destroy_workqueue(qrtr_ns.workqueue);
->>>>>>> db3c60ec772d (net: qrtr: ns: Fix use-after-free in driver remove())
 
 	/* sock_release() expects the two references that were put during
 	 * qrtr_ns_init(). This function is only called during module remove,

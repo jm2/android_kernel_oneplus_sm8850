@@ -54,12 +54,9 @@ struct fwnode_handle {
 	struct device *dev;
 	struct list_head suppliers;
 	struct list_head consumers;
-<<<<<<< HEAD
 	u8 flags;
 	ANDROID_KABI_RESERVE(1);
-=======
 	unsigned long flags;
->>>>>>> e42527bf3058 (device property: Make modifications of fwnode "flags" thread safe)
 };
 
 /*

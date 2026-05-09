@@ -389,7 +389,6 @@ static long udmabuf_create(struct miscdevice *device,
 =======
 	INIT_LIST_HEAD(&ubuf->unpin_list);
 	pglimit = ((u64)size_limit_mb * 1024 * 1024) >> PAGE_SHIFT;
->>>>>>> 29b65a3171a4 (udmabuf: fix a buf size overflow issue during udmabuf creation)
 	for (i = 0; i < head->count; i++) {
 		pgoff_t subpgcnt;
 

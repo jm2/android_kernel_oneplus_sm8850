@@ -35,18 +35,13 @@
 #include <trace/events/f2fs.h>
 #include <uapi/linux/f2fs.h>
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 #undef CREATE_TRACE_POINTS
 #include <trace/hooks/fs.h>
 
 vm_fault_t f2fs_filemap_fault(struct vm_fault *vmf)
-=======
 static void f2fs_zero_post_eof_page(struct inode *inode, loff_t new_size)
-=======
 static void f2fs_zero_post_eof_page(struct inode *inode,
 					loff_t new_size, bool lock)
->>>>>>> d6b19dacc094 (f2fs: fix to mitigate overhead of f2fs_zero_post_eof_page())
 {
 	loff_t old_size = i_size_read(inode);
 
@@ -1897,8 +1892,6 @@ static int f2fs_expand_inode_data(struct inode *inode, loff_t offset,
 
 		map.m_len = sec_blks;
 next_alloc:
-<<<<<<< HEAD
-<<<<<<< HEAD
 		f2fs_down_write(&sbi->pin_sem);
 
 		if (unlikely(is_sbi_flag_set(sbi, SBI_CP_DISABLED))) {
@@ -1913,25 +1906,15 @@ next_alloc:
 			}
 		}
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 		if (has_not_enough_free_secs(sbi, 0,
 				sbi->reserved_pin_section)) {
-=======
-=======
 		f2fs_down_write(&sbi->pin_sem);
 
->>>>>>> 2dda0930fb79 (f2fs: fix to avoid panic once fallocation fails for pinfile)
-=======
->>>>>>> 65e42a7084d1 (f2fs: fix to avoid running out of free segments)
 		if (has_not_enough_free_secs(sbi, 0, f2fs_sb_has_blkzoned(sbi) ?
 			ZONED_PIN_SEC_REQUIRED_COUNT :
 			GET_SEC_FROM_SEG(sbi, overprovision_segments(sbi)))) {
->>>>>>> 58330262213a (f2fs: decrease spare area for pinned files for zoned devices)
-=======
 		if (has_not_enough_free_secs(sbi, 0,
 				sbi->reserved_pin_section)) {
->>>>>>> 4c5181b9e1a9 (f2fs: introduce reserved_pin_section sysfs entry)
 			f2fs_down_write(&sbi->gc_lock);
 			stat_inc_gc_call_count(sbi, FOREGROUND);
 			err = f2fs_gc(sbi, &gc_control);

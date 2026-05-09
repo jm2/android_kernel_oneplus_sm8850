@@ -301,10 +301,7 @@ struct perf_event_pmu_context;
 #define PERF_PMU_CAP_AUX_OUTPUT			0x0080
 #define PERF_PMU_CAP_EXTENDED_HW_TYPE		0x0100
 #define PERF_PMU_CAP_AUX_PAUSE			0x0200
-<<<<<<< HEAD
 #define PERF_PMU_CAP_AUX_PREFER_LARGE		0x0400
-=======
->>>>>>> c61feda37350 (perf/core: Add aux_pause, aux_resume, aux_start_paused)
 
 /**
  * pmu::scope

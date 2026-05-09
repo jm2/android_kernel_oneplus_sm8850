@@ -403,8 +403,6 @@ static void etm4_check_arch_features(struct etmv4_drvdata *drvdata,
 }
 #endif /* CONFIG_ETM4X_IMPDEF_FEATURE */
 
-<<<<<<< HEAD
-=======
 static void etm4x_sys_ins_barrier(struct csdev_access *csa, u32 offset, int pos, int val)
 {
 	if (!csa->io_mem)
@@ -480,7 +478,6 @@ static int etm4_enable_trace_unit(struct etmv4_drvdata *drvdata)
 	return 0;
 }
 
->>>>>>> 11c5672a04d0 (coresight: etm4x: Extract the trace unit controlling)
 static int etm4_enable_hw(struct etmv4_drvdata *drvdata)
 {
 	int i, rc;
@@ -512,7 +509,7 @@ static int etm4_enable_hw(struct etmv4_drvdata *drvdata)
 		isb();
 
 	/* wait for TRCSTATR.IDLE to go up */
-	if (coresight_timeout(csa, TRCSTATR, TRCSTATR_IDLE_BIT, 1))
+	if (etm4x_wait_status(csa, TRCSTATR_IDLE_BIT, 1))
 		dev_err(etm_dev,
 			"timeout while waiting for Idle Trace Status\n");
 	if (drvdata->nr_pe)
@@ -540,11 +537,8 @@ static int etm4_enable_hw(struct etmv4_drvdata *drvdata)
 		etm4x_relaxed_write32(csa, config->seq_rst, TRCSEQRSTEVR);
 		etm4x_relaxed_write32(csa, config->seq_state, TRCSEQSTR);
 	}
-<<<<<<< HEAD
 	if (drvdata->ext_inp_sel)
-=======
 	if (drvdata->numextinsel)
->>>>>>> a1b2c8b7af21 (coresight-etm4x: Conditionally access register TRCEXTINSELR)
 		etm4x_relaxed_write32(csa, config->ext_inp, TRCEXTINSELR);
 	for (i = 0; i < drvdata->nr_cntr; i++) {
 		etm4x_relaxed_write32(csa, config->cntrldvr[i], TRCCNTRLDVRn(i));
@@ -594,7 +588,6 @@ static int etm4_enable_hw(struct etmv4_drvdata *drvdata)
 		etm4x_relaxed_write32(csa, trcpdcr | TRCPDCR_PU, TRCPDCR);
 	}
 
-<<<<<<< HEAD
 	/*
 	 * ETE mandates that the TRCRSR is written to before
 	 * enabling it.
@@ -622,9 +615,7 @@ static int etm4_enable_hw(struct etmv4_drvdata *drvdata)
 	dsb(sy);
 	isb();
 
-=======
 	rc = etm4_enable_trace_unit(drvdata);
->>>>>>> 11c5672a04d0 (coresight: etm4x: Extract the trace unit controlling)
 done:
 	etm4_cs_lock(drvdata, csa);
 
@@ -843,7 +834,8 @@ out:
 }
 
 static int etm4_enable_perf(struct coresight_device *csdev,
-			    struct perf_event *event)
+			    struct perf_event *event,
+			    struct coresight_trace_id_map *id_map)
 {
 	int ret = 0, trace_id;
 	struct etmv4_drvdata *drvdata = dev_get_drvdata(csdev->dev.parent);
@@ -866,7 +858,7 @@ static int etm4_enable_perf(struct coresight_device *csdev,
 	 * with perf locks - we know the ID cannot change until perf shuts down
 	 * the session
 	 */
-	trace_id = coresight_trace_id_read_cpu_id(drvdata->cpu);
+	trace_id = coresight_trace_id_read_cpu_id_map(drvdata->cpu, id_map);
 	if (!IS_VALID_CS_TRACE_ID(trace_id)) {
 		dev_err(&drvdata->csdev->dev, "Failed to set trace ID for %s on CPU%d\n",
 			dev_name(&drvdata->csdev->dev), drvdata->cpu);
@@ -937,7 +929,7 @@ unlock_sysfs_enable:
 }
 
 static int etm4_enable(struct coresight_device *csdev, struct perf_event *event,
-		       enum cs_mode mode)
+		       enum cs_mode mode, struct coresight_trace_id_map *id_map)
 {
 	int ret;
 
@@ -951,7 +943,7 @@ static int etm4_enable(struct coresight_device *csdev, struct perf_event *event,
 		ret = etm4_enable_sysfs(csdev);
 		break;
 	case CS_MODE_PERF:
-		ret = etm4_enable_perf(csdev, event);
+		ret = etm4_enable_perf(csdev, event, id_map);
 		break;
 	default:
 		ret = -EINVAL;
@@ -999,11 +991,9 @@ static void etm4_disable_trace_unit(struct etmv4_drvdata *drvdata)
 
 	isb();
 	/* wait for TRCSTATR.PMSTABLE to go to '1' */
-	if (coresight_timeout(csa, TRCSTATR, TRCSTATR_PMSTABLE_BIT, 1))
+	if (etm4x_wait_status(csa, TRCSTATR_PMSTABLE_BIT, 1))
 		dev_err(etm_dev,
 			"timeout while waiting for PM stable Trace Status\n");
-<<<<<<< HEAD
-=======
 	/*
 	 * As recommended by section 4.3.7 (Synchronization of register updates)
 	 * of ARM IHI 0064H.b.
@@ -1032,7 +1022,6 @@ static void etm4_disable_hw(void *info)
 
 	etm4_disable_trace_unit(drvdata);
 
->>>>>>> 11c5672a04d0 (coresight: etm4x: Extract the trace unit controlling)
 	/* read the status of the single shot comparators */
 	for (i = 0; i < drvdata->nr_ss_cmp; i++) {
 		config->ss_status[i] =
@@ -1450,12 +1439,9 @@ static void etm4_init_arch_data(void *info)
 	etmidr5 = etm4x_relaxed_read32(csa, TRCIDR5);
 	/* NUMEXTIN, bits[8:0] number of external inputs implemented */
 	drvdata->nr_ext_inp = FIELD_GET(TRCIDR5_NUMEXTIN_MASK, etmidr5);
-<<<<<<< HEAD
 	/* NUMEXTINSEL, bits[11:9] number of external inputs implemented */
 	drvdata->ext_inp_sel = FIELD_GET(TRCIDR5_NUMEXTINSEL_MASK, etmidr5);
-=======
 	drvdata->numextinsel = FIELD_GET(TRCIDR5_NUMEXTINSEL_MASK, etmidr5);
->>>>>>> a1b2c8b7af21 (coresight-etm4x: Conditionally access register TRCEXTINSELR)
 	/* TRACEIDSIZE, bits[21:16] indicates the trace ID width */
 	drvdata->trcid_size = FIELD_GET(TRCIDR5_TRACEIDSIZE_MASK, etmidr5);
 	/* ATBTRIG, bit[22] implementation can support ATB triggers? */
@@ -1843,7 +1829,7 @@ static int __etm4_cpu_save(struct etmv4_drvdata *drvdata)
 	etm4_os_lock(drvdata);
 
 	/* wait for TRCSTATR.PMSTABLE to go up */
-	if (coresight_timeout(csa, TRCSTATR, TRCSTATR_PMSTABLE_BIT, 1)) {
+	if (etm4x_wait_status(csa, TRCSTATR_PMSTABLE_BIT, 1)) {
 		dev_err(etm_dev,
 			"timeout while waiting for PM Stable Status\n");
 		etm4_os_unlock(drvdata);
@@ -1883,12 +1869,9 @@ static int __etm4_cpu_save(struct etmv4_drvdata *drvdata)
 		state->trcseqrstevr = etm4x_read32(csa, TRCSEQRSTEVR);
 		state->trcseqstr = etm4x_read32(csa, TRCSEQSTR);
 	}
-<<<<<<< HEAD
 	if (drvdata->ext_inp_sel)
-=======
 
 	if (drvdata->numextinsel)
->>>>>>> a1b2c8b7af21 (coresight-etm4x: Conditionally access register TRCEXTINSELR)
 		state->trcextinselr = etm4x_read32(csa, TRCEXTINSELR);
 
 	for (i = 0; i < drvdata->nr_cntr; i++) {
@@ -1940,11 +1923,8 @@ static int __etm4_cpu_save(struct etmv4_drvdata *drvdata)
 		state->trcpdcr = etm4x_read32(csa, TRCPDCR);
 
 	/* wait for TRCSTATR.IDLE to go up */
-<<<<<<< HEAD
 	if (coresight_timeout(csa, TRCSTATR, TRCSTATR_IDLE_BIT, 1)) {
-=======
 	if (etm4x_wait_status(csa, TRCSTATR_IDLE_BIT, 1)) {
->>>>>>> bebb32a22228 (coresight: etm4x: Correct polling IDLE bit)
 		dev_err(etm_dev,
 			"timeout while waiting for Idle Trace Status\n");
 		etm4_os_unlock(drvdata);
@@ -2025,11 +2005,8 @@ static void __etm4_cpu_restore(struct etmv4_drvdata *drvdata)
 		etm4x_relaxed_write32(csa, state->trcseqrstevr, TRCSEQRSTEVR);
 		etm4x_relaxed_write32(csa, state->trcseqstr, TRCSEQSTR);
 	}
-<<<<<<< HEAD
 	if (drvdata->ext_inp_sel)
-=======
 	if (drvdata->numextinsel)
->>>>>>> a1b2c8b7af21 (coresight-etm4x: Conditionally access register TRCEXTINSELR)
 		etm4x_relaxed_write32(csa, state->trcextinselr, TRCEXTINSELR);
 
 	for (i = 0; i < drvdata->nr_cntr; i++) {

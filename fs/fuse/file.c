@@ -410,11 +410,8 @@ void fuse_file_release(struct inode *inode, struct fuse_file *ff,
 	 * own ref to the file, the IO completion has to drop the ref, which is
 	 * how the fuse server can end up closing its clients' files.
 	 */
-<<<<<<< HEAD
 	fuse_file_put(ra->inode, ff, ff->fm->fc->destroy);
-=======
 	fuse_file_put(ff, false);
->>>>>>> b26923512dbe (fuse: fix livelock in synchronous file put from fuseblk workers)
 }
 
 void fuse_release_common(struct file *file, bool isdir)

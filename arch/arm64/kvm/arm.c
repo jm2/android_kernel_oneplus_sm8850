@@ -513,7 +513,6 @@ void kvm_arch_vcpu_destroy(struct kvm_vcpu *vcpu)
 	} else {
 		kvm_mmu_free_memory_cache(&vcpu->arch.mmu_page_cache);
 	}
-
 	kvm_timer_vcpu_terminate(vcpu);
 	kvm_pmu_vcpu_destroy(vcpu);
 	kvm_vgic_vcpu_destroy(vcpu);
@@ -894,7 +893,6 @@ int kvm_arch_vcpu_run_pid_change(struct kvm_vcpu *vcpu)
 		if (ret)
 			return ret;
 	}
-
 	mutex_lock(&kvm->arch.config_lock);
 	set_bit(KVM_ARCH_FLAG_HAS_RAN_ONCE, &kvm->arch.flags);
 	mutex_unlock(&kvm->arch.config_lock);
@@ -2064,6 +2062,10 @@ static void __init cpu_prepare_hyp_mode(int cpu)
 			tcr |= TCR_EL2_DS;
 	}
 	tcr |= TCR_T0SZ(hyp_va_bits);
+	tcr &= ~TCR_EL2_PS_MASK;
+	tcr |= FIELD_PREP(TCR_EL2_PS_MASK, ips);
+	if (lpa2_is_enabled())
+		tcr |= TCR_EL2_DS;
 	params->tcr_el2 = tcr;
 
 	params->pgd_pa = kvm_mmu_get_httbr();

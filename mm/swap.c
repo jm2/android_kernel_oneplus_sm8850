@@ -720,14 +720,11 @@ void deactivate_file_folio(struct folio *folio)
 	if (folio_test_unevictable(folio) || !folio_test_lru(folio))
 		return;
 
-<<<<<<< HEAD
 	if (lru_gen_enabled() && lru_gen_clear_refs(folio))
 		return;
 
 	folio_batch_add_and_move(folio, lru_deactivate_file, true);
-=======
 	folio_batch_add_and_move(folio, lru_deactivate_file);
->>>>>>> 9422cfa89e1d (mm: revert "mm/gup: clear the LRU flag of a page before adding to LRU batch")
 }
 
 /*
@@ -740,15 +737,12 @@ void deactivate_file_folio(struct folio *folio)
  */
 void folio_deactivate(struct folio *folio)
 {
-<<<<<<< HEAD
 	if (folio_test_unevictable(folio))
 		return;
 
 	if (lru_gen_enabled() ? lru_gen_clear_refs(folio) : !folio_test_active(folio))
-=======
 	if (folio_test_unevictable(folio) || !folio_test_lru(folio) ||
 	    !(folio_test_active(folio) || lru_gen_enabled()))
->>>>>>> 9422cfa89e1d (mm: revert "mm/gup: clear the LRU flag of a page before adding to LRU batch")
 		return;
 
 	folio_batch_add_and_move(folio, lru_deactivate);

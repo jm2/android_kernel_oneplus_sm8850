@@ -1912,10 +1912,7 @@ int xhci_alloc_tt_info(struct xhci_hcd *xhci,
 		struct usb_tt *tt, gfp_t mem_flags);
 int xhci_set_interrupter_moderation(struct xhci_interrupter *ir,
 				    u32 imod_interval);
-<<<<<<< HEAD
-=======
 int xhci_enable_interrupter(struct xhci_interrupter *ir);
->>>>>>> 177771486508 (xhci: Limit time spent with xHC interrupts disabled during bus resume)
 int xhci_disable_interrupter(struct xhci_interrupter *ir);
 
 /* xHCI ring, segment, TRB, and TD functions */

@@ -1236,12 +1236,9 @@ int f2fs_truncate_partial_cluster(struct inode *inode, u64 from, bool lock)
 		int i;
 
 		for (i = cluster_size - 1; i >= 0; i--) {
-<<<<<<< HEAD
 			struct folio *folio = page_folio(rpages[i]);
 			loff_t start = folio->index << PAGE_SHIFT;
-=======
 			loff_t start = (loff_t)rpages[i]->index << PAGE_SHIFT;
->>>>>>> 0e75a098b0a3 (f2fs: fix to avoid overflow while left shift operation)
 
 			if (from <= start) {
 				folio_zero_segment(folio, 0, folio_size(folio));

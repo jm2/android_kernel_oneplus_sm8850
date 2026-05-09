@@ -1544,7 +1544,7 @@ Description:
 
 What:		/sys/devices/platform/.../ufshci_capabilities/product_id
 Date:		August 2024
-Contact:	Avri Altman <avri.altman@wdc.com>
+Contact:	Avri Altman <avri.altcman@wdc.com>
 Description:
 		Host Capabilities register group: product ID register.
 		Symbol - HCPID.  This file shows the UFSHCD product id.

@@ -368,18 +368,14 @@ int module_frob_arch_sections(Elf_Ehdr *ehdr, Elf_Shdr *sechdrs,
 		tramp->sh_size = NR_FTRACE_PLTS * sizeof(struct plt_entry);
 	}
 
-<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_KVM)
 	pkvm_el2_mod_frob_sections(ehdr, sechdrs, secstrings);
 #endif
-=======
 	if (init_tramp) {
 		init_tramp->sh_type = SHT_NOBITS;
 		init_tramp->sh_flags = SHF_EXECINSTR | SHF_ALLOC;
 		init_tramp->sh_addralign = __alignof__(struct plt_entry);
 		init_tramp->sh_size = NR_FTRACE_PLTS * sizeof(struct plt_entry);
 	}
->>>>>>> 650c14abe303 (arm64: ftrace: fix unreachable PLT for ftrace_caller in init_module with CONFIG_DYNAMIC_FTRACE)
-
 	return 0;
 }

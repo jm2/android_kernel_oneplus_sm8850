@@ -5659,12 +5659,9 @@ static void run_state_machine(struct tcpm_port *port)
 		tcpm_set_auto_vbus_discharge_threshold(port, TYPEC_PWR_MODE_USB,
 						       port->pps_data.active, 0);
 		tcpm_set_charge(port, false);
-<<<<<<< HEAD
 		tcpm_set_state(port, hard_reset_state(port),
 			       port->timings.ps_src_off_time);
-=======
 		tcpm_set_state(port, ERROR_RECOVERY, PD_T_PS_SOURCE_OFF);
->>>>>>> 287b9cec2eef (usb: typec: tcpm: PSSourceOffTimer timeout in PR_Swap enters ERROR_RECOVERY)
 		break;
 	case PR_SWAP_SNK_SRC_SOURCE_ON:
 		tcpm_enable_auto_vbus_discharge(port, true);

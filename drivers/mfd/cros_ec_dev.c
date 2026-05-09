@@ -107,13 +107,10 @@ static const struct mfd_cell cros_ec_keyboard_leds_cells[] = {
 	{ .name = "cros-keyboard-leds", },
 };
 
-<<<<<<< HEAD
 static const struct mfd_cell cros_ec_ucsi_cells[] = {
 	{ .name = "cros_ec_ucsi", },
-=======
 static const struct mfd_cell cros_ec_charge_control_cells[] = {
 	{ .name = "cros-charge-control", },
->>>>>>> 130362b4b39d (mfd: cros_ec: Separate charge-control probing from USB-PD)
 };
 
 static const struct cros_feature_to_cells cros_subdevices[] = {

@@ -668,15 +668,12 @@ static void tcp_rcv_rtt_update(struct tcp_sock *tp, u32 sample, int win_dep)
 	u32 new_sample, old_sample = tp->rcv_rtt_est.rtt_us;
 	long m = sample << 3;
 
-<<<<<<< HEAD
 	trace_android_vh_tcp_rcv_rtt_update(tp, sample, win_dep);
 
 	if (new_sample != 0) {
-=======
 	if (old_sample == 0 || m < old_sample) {
 		new_sample = m;
 	} else {
->>>>>>> 0a8446058c6e (tcp: always seek for minimal rtt in tcp_rcv_rtt_update())
 		/* If we sample in larger samples in the non-timestamp
 		 * case, we could grossly overestimate the RTT especially
 		 * with chatty applications or bulk transfer apps which

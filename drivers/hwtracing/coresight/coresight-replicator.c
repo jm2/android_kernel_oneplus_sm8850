@@ -736,7 +736,6 @@ static struct amba_driver dynamic_replicator_driver = {
 
 static int __init replicator_init(void)
 {
-<<<<<<< HEAD
 	int ret;
 
 	ret = replicator_pm_setup();
@@ -760,10 +759,8 @@ static int __init replicator_init(void)
 clear_pm:
 	replicator_pm_clear();
 	return ret;
-=======
 	return coresight_init_driver("replicator", &dynamic_replicator_driver, &replicator_driver,
 				     THIS_MODULE);
->>>>>>> 1183a72221d5 (coresight: Fixes device's owner field for registered using coresight_init_driver())
 }
 
 static void __exit replicator_exit(void)

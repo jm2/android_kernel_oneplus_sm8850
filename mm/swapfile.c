@@ -3500,17 +3500,14 @@ SYSCALL_DEFINE2(swapon, const char __user *, specialfile, int, swap_flags)
 	if (error)
 		goto bad_swap_unlock_inode;
 
-<<<<<<< HEAD
 	trace_android_vh_check_hibernation_swap(si->swap_file, &hibernation_swap);
 
 	nr_extents = setup_swap_map_and_extents(si, swap_header, swap_map,
 						maxpages, &span);
 	if (unlikely(nr_extents < 0)) {
 		error = nr_extents;
-=======
 	error = setup_swap_map(si, swap_header, swap_map, maxpages);
 	if (error)
->>>>>>> f7c75406b7e6 (mm: swap: correctly use maxpages in swapon syscall to avoid potential deadloop)
 		goto bad_swap_unlock_inode;
 
 	/*

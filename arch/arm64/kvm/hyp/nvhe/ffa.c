@@ -605,12 +605,7 @@ static int __do_ffa_mem_xfer(const u64 func_id,
 	struct ffa_mem_region_attributes *ep_mem_access;
 	struct ffa_composite_mem_region *reg, *temp_reg;
 	struct ffa_mem_region *buf;
-<<<<<<< HEAD
-	struct kvm_ffa_buffers *ffa_buf;
-	u32 offset, nr_ranges;
-=======
 	u32 offset, nr_ranges, checked_offset;
->>>>>>> bc1909ef3878 (KVM: arm64: Check the untrusted offset in FF-A memory share)
 	int ret = 0;
 	struct ffa_mem_transfer *transfer = NULL;
 
@@ -663,10 +658,6 @@ static int __do_ffa_mem_xfer(const u64 func_id,
 		goto out_unlock;
 	}
 
-<<<<<<< HEAD
-	if (fraglen < offset + sizeof(struct ffa_composite_mem_region)) {
-		ffa_to_smccc_error(res, FFA_RET_INVALID_PARAMETERS);
-=======
 	if (check_add_overflow(offset, sizeof(struct ffa_composite_mem_region), &checked_offset)) {
 		ret = FFA_RET_INVALID_PARAMETERS;
 		goto out_unlock;
@@ -674,10 +665,8 @@ static int __do_ffa_mem_xfer(const u64 func_id,
 
 	if (fraglen < checked_offset) {
 		ret = FFA_RET_INVALID_PARAMETERS;
->>>>>>> bc1909ef3878 (KVM: arm64: Check the untrusted offset in FF-A memory share)
 		goto out_unlock;
 	}
-
 	reg = (void *)buf + offset;
 	nr_ranges = ((void *)buf + fraglen) - (void *)reg->constituents;
 	if (nr_ranges % sizeof(reg->constituents[0])) {

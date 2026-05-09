@@ -508,7 +508,9 @@ EXPORT_SYMBOL(blk_rq_append_bio);
 /* Prepare bio for passthrough IO given ITER_BVEC iter */
 static int blk_rq_map_user_bvec(struct request *rq, const struct iov_iter *iter)
 {
-	unsigned int max_bytes = rq->q->limits.max_hw_sectors << SECTOR_SHIFT;
+	const struct queue_limits *lim = &rq->q->limits;
+	unsigned int max_bytes = lim->max_hw_sectors << SECTOR_SHIFT;
+	unsigned int nsegs;
 	struct bio *bio;
 	int ret;
 
@@ -521,10 +523,18 @@ static int blk_rq_map_user_bvec(struct request *rq, const struct iov_iter *iter)
 		return -ENOMEM;
 	bio_iov_bvec_set(bio, (struct iov_iter *)iter);
 
-	ret = blk_rq_append_bio(rq, bio);
-	if (ret)
+	/* check that the data layout matches the hardware restrictions */
+	ret = bio_split_rw_at(bio, lim, &nsegs, max_bytes);
+	if (ret) {
+		/* if we would have to split the bio, copy instead */
+		if (ret > 0)
+			ret = -EREMOTEIO;
 		blk_mq_map_bio_put(bio);
-	return ret;
+		return ret;
+	}
+
+	blk_rq_bio_prep(rq, bio, nsegs);
+	return 0;
 }
 
 /**

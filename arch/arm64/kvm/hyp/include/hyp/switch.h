@@ -456,7 +456,6 @@ static void kvm_hyp_save_fpsimd_host(struct kvm_vcpu *vcpu)
 	if (kvm_has_fpmr(kern_hyp_va(vcpu->kvm)))
 		*host_data_ptr(fpmr) = read_sysreg_s(SYS_FPMR);
 }
-
 /*
  * We trap the first access to the FP/SIMD to save the host context and
  * restore the guest context lazily.

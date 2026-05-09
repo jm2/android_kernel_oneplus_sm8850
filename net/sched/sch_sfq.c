@@ -672,16 +672,10 @@ static int sfq_change(struct Qdisc *sch, struct nlattr *opt,
 		if (!p)
 			return -ENOMEM;
 	}
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 	if (ctl->limit == 1) {
 		NL_SET_ERR_MSG_MOD(extack, "invalid limit");
 		return -EINVAL;
 	}
->>>>>>> 70449ca40609 (net_sched: sch_sfq: use a temporary work area for validating configuration)
-=======
->>>>>>> f86293adce0c (net_sched: sch_sfq: move the limit validation)
 
 	sch_tree_lock(sch);
 
@@ -726,7 +720,6 @@ static int sfq_change(struct Qdisc *sch, struct nlattr *opt,
 		NL_SET_ERR_MSG_MOD(extack, "invalid limit");
 		return -EINVAL;
 	}
-<<<<<<< HEAD
 
 	/* commit configuration */
 	q->limit = limit;
@@ -739,8 +732,6 @@ static int sfq_change(struct Qdisc *sch, struct nlattr *opt,
 	q->flags = flags;
 	if (p)
 		swap(q->red_parms, p);
-=======
->>>>>>> f86293adce0c (net_sched: sch_sfq: move the limit validation)
 
 	/* commit configuration */
 	q->limit = limit;

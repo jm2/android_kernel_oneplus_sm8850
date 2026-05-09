@@ -233,15 +233,10 @@ static inline unsigned short req_get_ioprio(struct request *req)
 #define rq_dma_dir(rq) \
 	(op_is_write(req_op(rq)) ? DMA_TO_DEVICE : DMA_FROM_DEVICE)
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 2ad0f19a4e99 (block: add a rq_list type)
 static inline int rq_list_empty(const struct rq_list *rl)
 {
 	return rl->head == NULL;
 }
-<<<<<<< HEAD
 
 static inline void rq_list_init(struct rq_list *rl)
 {
@@ -292,13 +287,10 @@ static inline struct request *rq_list_peek(struct rq_list *rl)
 #define rq_list_for_each_safe(rl, pos, nxt)				\
 	for (pos = rq_list_peek((rl)), nxt = pos->rq_next;		\
 		pos; pos = nxt, nxt = pos ? pos->rq_next : NULL)
-=======
 #define rq_list_add(listptr, rq)	do {		\
 	(rq)->rq_next = *(listptr);			\
 	*(listptr) = rq;				\
 } while (0)
-=======
->>>>>>> 2ad0f19a4e99 (block: add a rq_list type)
 
 static inline void rq_list_init(struct rq_list *rl)
 {
@@ -335,11 +327,8 @@ static inline struct request *rq_list_pop(struct rq_list *rl)
 		rq->rq_next = NULL;
 	}
 
-<<<<<<< HEAD
 #define rq_list_next(rq)	(rq)->rq_next
 #define rq_list_empty(list)	((list) == (struct request *) NULL)
->>>>>>> 5b34f40cdab6 (block: remove rq_list_move)
-=======
 	return rq;
 }
 
@@ -354,7 +343,6 @@ static inline struct request *rq_list_peek(struct rq_list *rl)
 #define rq_list_for_each_safe(rl, pos, nxt)				\
 	for (pos = rq_list_peek((rl)), nxt = pos->rq_next;		\
 		pos; pos = nxt, nxt = pos ? pos->rq_next : NULL)
->>>>>>> 2ad0f19a4e99 (block: add a rq_list type)
 
 /**
  * enum blk_eh_timer_return - How the timeout handler should proceed
@@ -987,11 +975,8 @@ static inline bool blk_mq_add_to_batch(struct request *req,
 	else if (iob->complete != complete)
 		return false;
 	iob->need_ts |= blk_mq_need_time_stamp(req);
-<<<<<<< HEAD
 	rq_list_add_tail(&iob->req_list, req);
-=======
 	rq_list_add_head(&iob->req_list, req);
->>>>>>> 2ad0f19a4e99 (block: add a rq_list type)
 	return true;
 }
 

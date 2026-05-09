@@ -282,7 +282,6 @@ static ssize_t encoding_flags_show(struct f2fs_attr *a,
 		le16_to_cpu(F2FS_RAW_SUPER(sbi)->s_encoding_flags));
 }
 
-<<<<<<< HEAD
 static ssize_t effective_lookup_mode_show(struct f2fs_attr *a,
 		struct f2fs_sb_info *sbi, char *buf)
 {
@@ -299,8 +298,6 @@ static ssize_t effective_lookup_mode_show(struct f2fs_attr *a,
 	return 0;
 }
 
-=======
->>>>>>> d4a4abba4584 (f2fs: sysfs: add encoding_flags entry)
 static ssize_t mounted_time_sec_show(struct f2fs_attr *a,
 		struct f2fs_sb_info *sbi, char *buf)
 {
@@ -1237,14 +1234,8 @@ F2FS_SBI_GENERAL_RO_ATTR(unusable_blocks_per_sec);
 F2FS_SBI_GENERAL_RW_ATTR(blkzone_alloc_policy);
 #endif
 F2FS_SBI_GENERAL_RW_ATTR(carve_out);
-<<<<<<< HEAD
-<<<<<<< HEAD
 F2FS_SBI_GENERAL_RW_ATTR(reserved_pin_section);
-=======
->>>>>>> 7cc6b80df66f (f2fs: add carve_out sysfs node)
-=======
 F2FS_SBI_GENERAL_RW_ATTR(reserved_pin_section);
->>>>>>> 4c5181b9e1a9 (f2fs: introduce reserved_pin_section sysfs entry)
 
 /* STAT_INFO ATTR */
 #ifdef CONFIG_F2FS_STAT_FS
@@ -1281,10 +1272,7 @@ F2FS_GENERAL_RO_ATTR(current_reserved_blocks);
 F2FS_GENERAL_RO_ATTR(unusable);
 F2FS_GENERAL_RO_ATTR(encoding);
 F2FS_GENERAL_RO_ATTR(encoding_flags);
-<<<<<<< HEAD
 F2FS_GENERAL_RO_ATTR(effective_lookup_mode);
-=======
->>>>>>> d4a4abba4584 (f2fs: sysfs: add encoding_flags entry)
 F2FS_GENERAL_RO_ATTR(mounted_time_sec);
 F2FS_GENERAL_RO_ATTR(main_blkaddr);
 F2FS_GENERAL_RO_ATTR(pending_discard);
@@ -1403,10 +1391,7 @@ static struct attribute *f2fs_attrs[] = {
 	ATTR_LIST(current_reserved_blocks),
 	ATTR_LIST(encoding),
 	ATTR_LIST(encoding_flags),
-<<<<<<< HEAD
 	ATTR_LIST(effective_lookup_mode),
-=======
->>>>>>> d4a4abba4584 (f2fs: sysfs: add encoding_flags entry)
 	ATTR_LIST(mounted_time_sec),
 #ifdef CONFIG_F2FS_STAT_FS
 	ATTR_LIST(cp_foreground_calls),
@@ -1448,14 +1433,8 @@ static struct attribute *f2fs_attrs[] = {
 	ATTR_LIST(last_age_weight),
 	ATTR_LIST(max_read_extent_count),
 	ATTR_LIST(carve_out),
-<<<<<<< HEAD
-<<<<<<< HEAD
 	ATTR_LIST(reserved_pin_section),
-=======
->>>>>>> 7cc6b80df66f (f2fs: add carve_out sysfs node)
-=======
 	ATTR_LIST(reserved_pin_section),
->>>>>>> 4c5181b9e1a9 (f2fs: introduce reserved_pin_section sysfs entry)
 	NULL,
 };
 ATTRIBUTE_GROUPS(f2fs);
@@ -1490,16 +1469,13 @@ static struct attribute *f2fs_feat_attrs[] = {
 	BASE_ATTR_LIST(readonly),
 #ifdef CONFIG_F2FS_FS_COMPRESSION
 	BASE_ATTR_LIST(compression),
-<<<<<<< HEAD
 #endif
 	BASE_ATTR_LIST(pin_file),
 #ifdef CONFIG_UNICODE
 	BASE_ATTR_LIST(linear_lookup),
 #endif
-=======
 #endif
 	BASE_ATTR_LIST(pin_file),
->>>>>>> 1d15319323d8 (f2fs: introduce f2fs_base_attr for global sysfs entries)
 	NULL,
 };
 ATTRIBUTE_GROUPS(f2fs_feat);

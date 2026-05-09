@@ -898,14 +898,12 @@ buddy_merge_likely(unsigned long pfn, unsigned long buddy_pfn,
 			NULL) != NULL;
 }
 
-<<<<<<< HEAD
 static int zone_max_order(struct zone *zone)
 {
 	int max_order = MAX_PAGE_ORDER;
 
 	trace_android_vh_mm_customize_zone_max_order(zone, &max_order);
 	return max_order;
-=======
 static void change_pageblock_range(struct page *pageblock_page,
 				   int start_order, int migratetype)
 {
@@ -915,7 +913,6 @@ static void change_pageblock_range(struct page *pageblock_page,
 		set_pageblock_migratetype(pageblock_page, migratetype);
 		pageblock_page += pageblock_nr_pages;
 	}
->>>>>>> 914769048818 (mm/page_alloc: change all pageblocks migrate type on coalescing)
 }
 
 /*
@@ -2134,7 +2131,6 @@ move:
 }
 #endif /* CONFIG_MEMORY_ISOLATION */
 
-<<<<<<< HEAD
 static void change_pageblock_range(struct page *pageblock_page,
 					int start_order, int migratetype)
 {
@@ -2144,7 +2140,6 @@ static void change_pageblock_range(struct page *pageblock_page,
 		set_pageblock_migratetype(pageblock_page, migratetype);
 		pageblock_page += pageblock_nr_pages;
 	}
-=======
 /*
  * When we are falling back to another migratetype during allocation, try to
  * steal extra free pages from the same pageblocks to satisfy further
@@ -2329,7 +2324,6 @@ try_to_steal_block(struct zone *zone, struct page *page,
 	 */
 	if (is_migrate_highatomic(block_type))
 		return NULL;
->>>>>>> 564d25b1a6a0 (mm: page_alloc: don't steal single pages from biggest buddy)
 
 	/* Take ownership for orders >= pageblock_order */
 	if (current_order >= pageblock_order) {
@@ -2539,7 +2533,6 @@ static bool unreserve_highatomic_pageblock(const struct alloc_context *ac,
 }
 
 /*
-<<<<<<< HEAD
  * Try finding a free buddy page on the fallback list.
  *
  * This will attempt to steal a whole pageblock for the requested type
@@ -2590,7 +2583,6 @@ __rmqueue_claim(struct zone *zone, int order, int start_migratetype,
 		if (fallback_mt == -1)
 			continue;
 
-<<<<<<< HEAD
 		/* Advanced into orders too low to claim, abort */
 		if (fallback_mt == -2)
 			break;
@@ -2625,7 +2617,6 @@ __rmqueue_steal(struct zone *zone, int order, int start_migratetype)
 		area = &(zone->free_area[current_order]);
 		fallback_mt = find_suitable_fallback(area, current_order,
 						     start_migratetype, false);
-=======
 		if (!can_steal)
 			break;
 
@@ -2659,21 +2650,17 @@ __rmqueue_steal(struct zone *zone, int order, int start_migratetype)
 		area = &(zone->free_area[current_order]);
 		fallback_mt = find_suitable_fallback(area, current_order,
 				start_migratetype, false, &can_steal);
->>>>>>> 564d25b1a6a0 (mm: page_alloc: don't steal single pages from biggest buddy)
 		if (fallback_mt == -1)
 			continue;
 
 		page = get_page_from_free_area(area, fallback_mt);
 		page_del_and_expand(zone, page, order, current_order, fallback_mt);
-<<<<<<< HEAD
-<<<<<<< HEAD
 		trace_mm_page_alloc_extfrag(page, order, current_order,
 					    start_migratetype, fallback_mt);
 		return page;
 	}
 
 	return NULL;
-=======
 		goto got_one;
 	}
 
@@ -2684,15 +2671,12 @@ got_one:
 		start_migratetype, fallback_mt);
 
 	return page;
->>>>>>> 564d25b1a6a0 (mm: page_alloc: don't steal single pages from biggest buddy)
-=======
 		trace_mm_page_alloc_extfrag(page, order, current_order,
 					    start_migratetype, fallback_mt);
 		return page;
 	}
 
 	return NULL;
->>>>>>> 16bae58f7355 (mm: page_alloc: speed up fallbacks in rmqueue_bulk())
 }
 
 enum rmqueue_mode {
@@ -2747,11 +2731,8 @@ __rmqueue(struct zone *zone, unsigned int order, int migratetype,
 			return page;
 		fallthrough;
 	case RMQUEUE_CMA:
-<<<<<<< HEAD
 		if (!cma_redirect_restricted() && alloc_flags & ALLOC_CMA) {
-=======
 		if (alloc_flags & ALLOC_CMA) {
->>>>>>> 16bae58f7355 (mm: page_alloc: speed up fallbacks in rmqueue_bulk())
 			page = __rmqueue_cma_fallback(zone, order);
 			if (page) {
 				*mode = RMQUEUE_CMA;
@@ -2776,10 +2757,7 @@ __rmqueue(struct zone *zone, unsigned int order, int migratetype,
 			}
 		}
 	}
-<<<<<<< HEAD
-=======
 
->>>>>>> 16bae58f7355 (mm: page_alloc: speed up fallbacks in rmqueue_bulk())
 	return NULL;
 }
 
@@ -2814,7 +2792,6 @@ static int rmqueue_bulk(struct zone *zone, unsigned int order,
 =======
 		struct page *page = __rmqueue(zone, order, migratetype,
 					      alloc_flags, &rmqm);
->>>>>>> 16bae58f7355 (mm: page_alloc: speed up fallbacks in rmqueue_bulk())
 		if (unlikely(page == NULL))
 			break;
 
@@ -3439,15 +3416,12 @@ struct page *rmqueue_buddy(struct zone *preferred_zone, struct zone *zone,
 		if (alloc_flags & ALLOC_HIGHATOMIC)
 			page = __rmqueue_smallest(zone, order, MIGRATE_HIGHATOMIC);
 		if (!page) {
-<<<<<<< HEAD
 			if (cma_redirect_restricted() &&
 			    alloc_flags & ALLOC_CMA)
 				page = __rmqueue_cma_fallback(zone, order);
-=======
 			enum rmqueue_mode rmqm = RMQUEUE_NORMAL;
 
 			page = __rmqueue(zone, order, migratetype, alloc_flags, &rmqm);
->>>>>>> 16bae58f7355 (mm: page_alloc: speed up fallbacks in rmqueue_bulk())
 
 			if (!page) {
 				enum rmqueue_mode rmqm = RMQUEUE_NORMAL;
@@ -5150,9 +5124,7 @@ restart:
 	}
 
 retry:
-<<<<<<< HEAD
 	retry_loop_count++;
-=======
 	/*
 	 * Deal with possible cpuset update races or zonelist updates to avoid
 	 * infinite retries.
@@ -5161,7 +5133,6 @@ retry:
 	    check_retry_zonelist(zonelist_iter_cookie))
 		goto restart;
 
->>>>>>> 9da33ce1142b (mm/page_alloc.c: avoid infinite retries caused by cpuset race)
 	/* Ensure kswapd doesn't accidentally go to sleep as long as we loop */
 	if (alloc_flags & ALLOC_KSWAPD)
 		wake_all_kswapds(order, gfp_mask, ac);
@@ -7415,7 +7386,6 @@ static void split_free_pages(struct list_head *list, gfp_t gfp_mask)
 	}
 }
 
-<<<<<<< HEAD
 #ifdef CONFIG_COMPACTION
 unsigned long isolate_and_split_free_page(struct page *page,
 		struct list_head *list)
@@ -7440,7 +7410,6 @@ unsigned long isolate_and_split_free_page(struct page *page,
 }
 EXPORT_SYMBOL_GPL(isolate_and_split_free_page);
 #endif
-=======
 static int __alloc_contig_verify_gfp_mask(gfp_t gfp_mask, gfp_t *gfp_cc_mask)
 {
 	const gfp_t reclaim_mask = __GFP_IO | __GFP_FS | __GFP_RECLAIM;
@@ -7475,7 +7444,6 @@ static int __alloc_contig_verify_gfp_mask(gfp_t gfp_mask, gfp_t *gfp_cc_mask)
 			__GFP_HARDWALL | __GFP_MOVABLE | __GFP_RETRY_MAYFAIL;
 	return 0;
 }
->>>>>>> 05634a14e743 (mm/page_alloc: sort out the alloc_contig_range() gfp flags mess)
 
 /**
  * alloc_contig_range() -- tries to allocate given range of pages

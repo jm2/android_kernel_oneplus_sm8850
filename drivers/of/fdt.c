@@ -503,13 +503,10 @@ void __init early_init_fdt_scan_reserved_mem(void)
 	if (!initial_boot_params)
 		return;
 
-<<<<<<< HEAD
 	memblock_memsize_detect_hole();
 	memblock_memsize_disable_tracking();
 
 	fdt_scan_reserved_mem();
-=======
->>>>>>> 0849560e52c5 (arm64: kdump: Fix elfcorehdr overlap caused by reserved memory processing reorder)
 	fdt_reserve_elfcorehdr();
 	fdt_scan_reserved_mem();
 

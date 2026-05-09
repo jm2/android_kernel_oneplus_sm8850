@@ -85,7 +85,8 @@ static int qmi_assign_dummy_source_atid(struct dummy_drvdata *drvdata)
 }
 
 static int dummy_source_enable(struct coresight_device *csdev,
-			       struct perf_event *event, enum cs_mode mode)
+			       struct perf_event *event, enum cs_mode mode,
+			       __maybe_unused struct coresight_trace_id_map *id_map)
 {
 	int ret;
 	int trace_id;

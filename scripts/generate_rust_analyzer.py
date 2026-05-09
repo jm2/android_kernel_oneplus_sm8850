@@ -49,7 +49,6 @@ def generate_crates(srctree, objtree, sysroot_src, external_src, cfgs, core_edit
             }
         })
 
-<<<<<<< HEAD
     # First, the ones in `rust/` since they are a bit special.
     append_crate(
         "core",
@@ -58,7 +57,6 @@ def generate_crates(srctree, objtree, sysroot_src, external_src, cfgs, core_edit
         cfg=crates_cfgs.get("core", []),
         is_workspace_member=False,
     )
-=======
     def append_sysroot_crate(
         display_name,
         deps,
@@ -104,7 +102,6 @@ def generate_crates(srctree, objtree, sysroot_src, external_src, cfgs, core_edit
     append_sysroot_crate("alloc", ["core"])
     append_sysroot_crate("std", ["alloc", "core"])
     append_sysroot_crate("proc_macro", ["core", "std"])
->>>>>>> 60d8db49ef14 (rust: compile libcore with edition 2024 for 1.87+)
 
     append_crate(
         "compiler_builtins",
@@ -113,16 +110,9 @@ def generate_crates(srctree, objtree, sysroot_src, external_src, cfgs, core_edit
     )
 
     append_crate(
-        "alloc",
-        sysroot_src / "alloc" / "src" / "lib.rs",
-        ["core", "compiler_builtins"],
-        cfg=crates_cfgs.get("alloc", []),
-    )
-
-    append_crate(
         "macros",
         srctree / "rust" / "macros" / "lib.rs",
-        [],
+        ["std", "proc_macro"],
         is_proc_macro=True,
     )
     crates[-1]["proc_macro_dylib_path"] = f"{objtree}/rust/libmacros.so"
@@ -134,13 +124,11 @@ def generate_crates(srctree, objtree, sysroot_src, external_src, cfgs, core_edit
     )
 
     append_crate(
-<<<<<<< HEAD
         "bindings",
         srctree / "rust"/ "bindings" / "lib.rs",
         ["core"],
         cfg=cfg,
     )
-    crates[-1]["env"]["OBJTREE"] = str(objtree.resolve(True))
 
     append_crate(
         "kernel",
@@ -155,7 +143,6 @@ def generate_crates(srctree, objtree, sysroot_src, external_src, cfgs, core_edit
         ],
         "exclude_dirs": [],
     }
-=======
         "ffi",
         srctree / "rust" / "ffi.rs",
         ["core", "compiler_builtins"],
@@ -183,7 +170,6 @@ def generate_crates(srctree, objtree, sysroot_src, external_src, cfgs, core_edit
     append_crate_with_generated("bindings", ["core", "ffi"])
     append_crate_with_generated("uapi", ["core", "ffi"])
     append_crate_with_generated("kernel", ["core", "macros", "build_error", "ffi", "bindings", "uapi"])
->>>>>>> 0f1ee79b0fea (scripts: generate_rust_analyzer: Add ffi crate)
 
     scripts = srctree / "scripts"
     makefile = (scripts / "Makefile").read_text()
@@ -224,7 +210,7 @@ def generate_crates(srctree, objtree, sysroot_src, external_src, cfgs, core_edit
             append_crate(
                 name,
                 path,
-                ["core", "alloc", "kernel"],
+                ["core", "kernel"],
                 cfg=cfg,
             )
 

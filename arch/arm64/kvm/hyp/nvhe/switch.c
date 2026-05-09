@@ -37,77 +37,6 @@ DEFINE_PER_CPU(unsigned long, kvm_hyp_vector);
 extern void kvm_nvhe_prepare_backtrace(unsigned long fp, unsigned long pc);
 extern void __pkvm_unmask_serror(void);
 
-#define update_pvm_fgt_traps(hctxt, vcpu, kvm, reg)	\
-	update_fgt_traps_cs(hctxt, vcpu, kvm, reg, PVM_ ## reg ## _CLR, PVM_ ## reg ## _SET);
-
-static void __activate_pvm_traps_hcrx(struct kvm_vcpu *vcpu)
-{
-	struct kvm_cpu_context *hctxt = host_data_ptr(host_ctxt);
-	struct kvm *kvm = kern_hyp_va(vcpu->kvm);
-	u64 clear = 0;
-	u64 set = 0;
-
-	if (!cpus_have_final_cap(ARM64_HAS_HCX))
-		return;
-
-	ctxt_sys_reg(hctxt, HCRX_EL2) = read_sysreg_s(SYS_HCRX_EL2);
-	if (vcpu_has_nv(vcpu) && !is_hyp_ctxt(vcpu))
-		compute_clr_set(vcpu, HCRX_EL2, clear, set);
-
-	set |= PVM_HCRX_EL2_SET;
-	clear |= PVM_HCRX_EL2_CLR;
-	if (clear || set) {
-		u64 val = __HCRX_EL2_nMASK;
-
-		val |= set;
-		val &= ~clear;
-		write_sysreg_s(val, SYS_HCRX_EL2);
-	}
-}
-
-static void __activate_pvm_traps_hfgxtr(struct kvm_vcpu *vcpu)
-{
-	struct kvm_cpu_context *hctxt = host_data_ptr(host_ctxt);
-	struct kvm *kvm = kern_hyp_va(vcpu->kvm);
-
-	if (!cpus_have_final_cap(ARM64_HAS_FGT))
-		return;
-
-	update_pvm_fgt_traps(hctxt, vcpu, kvm, HFGRTR_EL2);
-
-	/* Trap guest writes to TCR_EL1 to prevent it from enabling HA or HD. */
-	if (cpus_have_final_cap(ARM64_WORKAROUND_AMPERE_AC03_CPU_38)) {
-		update_fgt_traps_cs(hctxt, vcpu, kvm, HFGWTR_EL2, PVM_HFGWTR_EL2_CLR,
-			PVM_HFGWTR_EL2_SET | HFGxTR_EL2_TCR_EL1_MASK);
-	} else {
-		update_pvm_fgt_traps(hctxt, vcpu, kvm, HFGWTR_EL2);
-	}
-
-	update_pvm_fgt_traps(hctxt, vcpu, kvm, HFGITR_EL2);
-	update_pvm_fgt_traps(hctxt, vcpu, kvm, HDFGRTR_EL2);
-	update_pvm_fgt_traps(hctxt, vcpu, kvm, HDFGWTR_EL2);
-
-	if (cpu_has_amu())
-		update_pvm_fgt_traps(hctxt, vcpu, kvm, HAFGRTR_EL2);
-}
-
-static void __deactivate_pvm_traps_hfgxtr(struct kvm_vcpu *vcpu)
-{
-	struct kvm_cpu_context *hctxt = &this_cpu_ptr(&kvm_host_data)->host_ctxt;
-
-	if (!cpus_have_final_cap(ARM64_HAS_FGT))
-		return;
-
-	write_sysreg_s(ctxt_sys_reg(hctxt, HFGRTR_EL2), SYS_HFGRTR_EL2);
-	write_sysreg_s(ctxt_sys_reg(hctxt, HFGWTR_EL2), SYS_HFGWTR_EL2);
-	write_sysreg_s(ctxt_sys_reg(hctxt, HFGITR_EL2), SYS_HFGITR_EL2);
-	write_sysreg_s(ctxt_sys_reg(hctxt, HDFGRTR_EL2), SYS_HDFGRTR_EL2);
-	write_sysreg_s(ctxt_sys_reg(hctxt, HDFGWTR_EL2), SYS_HDFGWTR_EL2);
-
-	if (cpu_has_amu())
-		write_sysreg_s(ctxt_sys_reg(hctxt, HAFGRTR_EL2), SYS_HAFGRTR_EL2);
-}
-
 static void __activate_cptr_traps(struct kvm_vcpu *vcpu)
 {
 	u64 val = CPTR_EL2_TAM;	/* Same bit irrespective of E2H */
@@ -172,14 +101,6 @@ static void __activate_traps(struct kvm_vcpu *vcpu)
 	___activate_traps(vcpu, vcpu->arch.hcr_el2);
 	__activate_traps_common(vcpu);
 	__activate_cptr_traps(vcpu);
-
-	if (unlikely(vcpu_is_protected(vcpu))) {
-		__activate_pvm_traps_hcrx(vcpu);
-		__activate_pvm_traps_hfgxtr(vcpu);
-	} else {
-		__activate_traps_hcrx(vcpu);
-		__activate_traps_hfgxtr(vcpu);
-	}
 
 	write_sysreg(__this_cpu_read(kvm_hyp_vector), vbar_el2);
 
@@ -337,19 +258,35 @@ static const exit_handler_fn *kvm_get_exit_handler_array(struct kvm_vcpu *vcpu)
 	return hyp_exit_handlers;
 }
 
-/*
- * As we have caught the guest red-handed, decide that it isn't fit for
- * purpose anymore by making the vcpu invalid. The VMM can try and fix it by
- * re-initializing the vcpu with KVM_ARM_VCPU_INIT, however, this is likely
- * not possible for protected VMs.
- */
-void vcpu_illegal_trap(struct kvm_vcpu *vcpu, u64 *exit_code)
+static inline bool fixup_guest_exit(struct kvm_vcpu *vcpu, u64 *exit_code)
 {
-	trace_vcpu_illegal_trap(kvm_vcpu_get_esr(vcpu));
+	const exit_handler_fn *handlers = kvm_get_exit_handler_array(vcpu);
 
-	vcpu_clear_flag(vcpu, VCPU_INITIALIZED);
-	*exit_code &= BIT(ARM_EXIT_WITH_SERROR_BIT);
-	*exit_code |= ARM_EXCEPTION_IL;
+	synchronize_vcpu_pstate(vcpu, exit_code);
+
+	/*
+	 * Some guests (e.g., protected VMs) are not be allowed to run in
+	 * AArch32.  The ARMv8 architecture does not give the hypervisor a
+	 * mechanism to prevent a guest from dropping to AArch32 EL0 if
+	 * implemented by the CPU. If the hypervisor spots a guest in such a
+	 * state ensure it is handled, and don't trust the host to spot or fix
+	 * it.  The check below is based on the one in
+	 * kvm_arch_vcpu_ioctl_run().
+	 */
+	if (unlikely(vcpu_is_protected(vcpu) && vcpu_mode_is_32bit(vcpu))) {
+		/*
+		 * As we have caught the guest red-handed, decide that it isn't
+		 * fit for purpose anymore by making the vcpu invalid. The VMM
+		 * can try and fix it by re-initializing the vcpu with
+		 * KVM_ARM_VCPU_INIT, however, this is likely not possible for
+		 * protected VMs.
+		 */
+		vcpu_clear_flag(vcpu, VCPU_INITIALIZED);
+		*exit_code &= BIT(ARM_EXIT_WITH_SERROR_BIT);
+		*exit_code |= ARM_EXCEPTION_IL;
+	}
+
+	return __fixup_guest_exit(vcpu, exit_code, handlers);
 }
 
 static inline bool fixup_guest_exit(struct kvm_vcpu *vcpu, u64 *exit_code)

@@ -2225,6 +2225,7 @@ static const struct of_device_id __maybe_unused qcom_smmu_impl_of_match[] = {
 	{ .compatible = "qcom,sc8180x-smmu-500", .data = &qcom_smmu_500_impl0_data },
 	{ .compatible = "qcom,sc8280xp-smmu-500", .data = &qcom_smmu_500_impl0_data },
 	{ .compatible = "qcom,sdm630-smmu-v2", .data = &qcom_smmu_v2_data },
+	{ .compatible = "qcom,sdm670-smmu-v2", .data = &qcom_smmu_v2_data },
 	{ .compatible = "qcom,sdm845-smmu-v2", .data = &qcom_smmu_v2_data },
 	{ .compatible = "qcom,sdm845-smmu-500", .data = &sdm845_smmu_500_data },
 	{ .compatible = "qcom,sm6115-smmu-500", .data = &qcom_smmu_500_impl0_data},
@@ -2312,7 +2313,6 @@ struct arm_smmu_device *qcom_smmu_impl_init(struct arm_smmu_device *smmu)
 	return smmu;
 }
 
-<<<<<<< HEAD
 struct arm_smmu_device *qsmmuv2_impl_init(struct arm_smmu_device *smmu)
 {
 	struct device *dev = smmu->dev;
@@ -2338,7 +2338,6 @@ struct arm_smmu_device *qsmmuv2_impl_init(struct arm_smmu_device *smmu)
 		return ERR_PTR(ret);
 
 	return &data->smmu;
-=======
 int __init qcom_smmu_module_init(void)
 {
 	return platform_driver_register(&qcom_smmu_tbu_driver);
@@ -2347,5 +2346,4 @@ int __init qcom_smmu_module_init(void)
 void __exit qcom_smmu_module_exit(void)
 {
 	platform_driver_unregister(&qcom_smmu_tbu_driver);
->>>>>>> 121f787e740d (iommu/arm-smmu-qcom: do not register driver in probe())
 }

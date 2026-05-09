@@ -1658,6 +1658,17 @@ void fpsimd_preserve_current_state(void)
 }
 
 /*
+ * Like fpsimd_preserve_current_state(), but ensure that
+ * current->thread.uw.fpsimd_state is updated so that it can be copied to
+ * the signal frame.
+ */
+void fpsimd_signal_preserve_current_state(void)
+{
+	fpsimd_preserve_current_state();
+	if (current->thread.fp_type == FP_STATE_SVE)
+		sve_to_fpsimd(current);
+}
+/*
  * Associate current's FPSIMD context with this cpu
  * The caller must have ownership of the cpu FPSIMD context before calling
  * this function.

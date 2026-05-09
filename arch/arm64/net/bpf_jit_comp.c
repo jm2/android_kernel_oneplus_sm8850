@@ -18,11 +18,8 @@
 #include <asm/asm-extable.h>
 #include <asm/byteorder.h>
 #include <asm/cacheflush.h>
-<<<<<<< HEAD
 #include <asm/cfi.h>
-=======
 #include <asm/cpufeature.h>
->>>>>>> 38c345fd54af (arm64: bpf: Add BHB mitigation to the epilogue for cBPF programs)
 #include <asm/debug-monitors.h>
 #include <asm/insn.h>
 #include <asm/patching.h>

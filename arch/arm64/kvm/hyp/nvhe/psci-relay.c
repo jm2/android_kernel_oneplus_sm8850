@@ -247,15 +247,11 @@ asmlinkage void __noreturn __kvm_host_psci_cpu_entry(bool is_cpu_on)
 	if (is_cpu_on)
 		release_boot_args(boot_args);
 
-<<<<<<< HEAD
+	write_sysreg_el1(INIT_SCTLR_EL1_MMU_OFF, SYS_SCTLR);
+	write_sysreg(INIT_PSTATE_EL1, SPSR_EL2);
 	pkvm_psci_notify(PKVM_PSCI_CPU_ENTRY, host_ctxt);
 	__hyp_exit();
 	hyp_ftrace_ret_flush();
-=======
-	write_sysreg_el1(INIT_SCTLR_EL1_MMU_OFF, SYS_SCTLR);
-	write_sysreg(INIT_PSTATE_EL1, SPSR_EL2);
-
->>>>>>> 84e5006115cb (KVM: arm64: Initialize SCTLR_EL1 in __kvm_hyp_init_cpu())
 	__host_enter(host_ctxt);
 }
 

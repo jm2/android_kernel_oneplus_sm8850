@@ -61,6 +61,30 @@
 
 static ffa_fn *invoke_ffa_fn;
 
+static const int ffa_linux_errmap[] = {
+	/* better than switch case as long as return value is continuous */
+	0,		/* FFA_RET_SUCCESS */
+	-EOPNOTSUPP,	/* FFA_RET_NOT_SUPPORTED */
+	-EINVAL,	/* FFA_RET_INVALID_PARAMETERS */
+	-ENOMEM,	/* FFA_RET_NO_MEMORY */
+	-EBUSY,		/* FFA_RET_BUSY */
+	-EINTR,		/* FFA_RET_INTERRUPTED */
+	-EACCES,	/* FFA_RET_DENIED */
+	-EAGAIN,	/* FFA_RET_RETRY */
+	-ECANCELED,	/* FFA_RET_ABORTED */
+	-ENODATA,	/* FFA_RET_NO_DATA */
+	-EAGAIN,	/* FFA_RET_NOT_READY */
+};
+
+static inline int ffa_to_linux_errno(int errno)
+{
+	int err_idx = -errno;
+
+	if (err_idx >= 0 && err_idx < ARRAY_SIZE(ffa_linux_errmap))
+		return ffa_linux_errmap[err_idx];
+	return -EINVAL;
+}
+
 struct ffa_pcpu_irq {
 	struct ffa_drv_info *info;
 };
@@ -200,6 +224,29 @@ static int ffa_features(u32 func_feat_id, u32 input_props,
 			u32 *if_props_1, u32 *if_props_2)
 {
 	ffa_value_t id;
+
+	if (!ARM_SMCCC_IS_FAST_CALL(func_feat_id) && input_props) {
+		pr_err("%s: Invalid Parameters: %x, %x", __func__,
+		       func_feat_id, input_props);
+		return ffa_to_linux_errno(FFA_RET_INVALID_PARAMETERS);
+	}
+
+	invoke_ffa_fn((ffa_value_t){
+		.a0 = FFA_FEATURES, .a1 = func_feat_id, .a2 = input_props,
+		}, &id);
+
+	if (id.a0 == FFA_ERROR)
+		return ffa_to_linux_errno((int)id.a2);
+
+	if (if_props_1)
+		*if_props_1 = id.a2;
+	if (if_props_2)
+		*if_props_2 = id.a3;
+
+	return 0;
+}
+
+#define PARTITION_INFO_GET_RETURN_COUNT_ONLY	BIT(0)
 
 	if (!ARM_SMCCC_IS_FAST_CALL(func_feat_id) && input_props) {
 		pr_err("%s: Invalid Parameters: %x, %x", __func__,

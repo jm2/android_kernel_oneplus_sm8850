@@ -108,13 +108,10 @@ static bool sugov_should_update_freq(struct sugov_policy *sg_policy, u64 time)
 static bool sugov_update_next_freq(struct sugov_policy *sg_policy, u64 time,
 				   unsigned int next_freq)
 {
-<<<<<<< HEAD
 	bool should_update = true;
 
 	if (sg_policy->need_freq_update)
-=======
 	if (sg_policy->need_freq_update) {
->>>>>>> 00a1bdb15791 (cpufreq/sched: Fix the usage of CPUFREQ_NEED_UPDATE_LIMITS)
 		sg_policy->need_freq_update = false;
 		/*
 		 * The policy limits have changed, but if the return value of

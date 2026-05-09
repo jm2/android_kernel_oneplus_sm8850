@@ -174,12 +174,9 @@ static struct work_struct qrtr_backup_work;
  * @ep: endpoint
  * @ref: reference count for node
  * @nid: node id
-<<<<<<< HEAD
  * @net_id: network cluster identifer
  * @qrtr_tx_flow: tree of qrtr_tx_flow, keyed by node << 32 | port
-=======
  * @qrtr_tx_flow: xarray of qrtr_tx_flow, keyed by node << 32 | port
->>>>>>> 69402908e277 (net: qrtr: replace qrtr_tx_flow radix_tree with xarray to fix memory leak)
  * @qrtr_tx_lock: lock for qrtr_tx_flow inserts
  * @hello_sent: hello packet sent to endpoint
  * @hello_rcvd: hello packet received from endpoint
@@ -496,7 +493,6 @@ static void __qrtr_node_release(struct kref *kref)
 	xa_destroy(&node->no_wake_svc);
 
 	/* Free tx flow counters */
-<<<<<<< HEAD
 	mutex_lock(&node->qrtr_tx_lock);
 	radix_tree_for_each_slot(slot, &node->qrtr_tx_flow, &iter, 0) {
 		flow = *slot;
@@ -510,11 +506,9 @@ static void __qrtr_node_release(struct kref *kref)
 	}
 	mutex_unlock(&node->qrtr_tx_lock);
 
-=======
 	xa_for_each(&node->qrtr_tx_flow, index, flow)
 		kfree(flow);
 	xa_destroy(&node->qrtr_tx_flow);
->>>>>>> 69402908e277 (net: qrtr: replace qrtr_tx_flow radix_tree with xarray to fix memory leak)
 	kfree(node);
 }
 
@@ -555,7 +549,6 @@ static void qrtr_tx_resume(struct qrtr_node *node, struct sk_buff *skb)
 	if (le32_to_cpu(pkt.cmd) != QRTR_TYPE_RESUME_TX)
 		return;
 
-<<<<<<< HEAD
 	src.sq_family = AF_QIPCRTR;
 	src.sq_node = le32_to_cpu(pkt.client.node);
 	src.sq_port = le32_to_cpu(pkt.client.port);
@@ -582,14 +575,12 @@ static void qrtr_tx_resume(struct qrtr_node *node, struct sk_buff *skb)
 		}
 		sock_put(waiter->sk);
 		kfree(waiter);
-=======
 	flow = xa_load(&node->qrtr_tx_flow, key);
 	if (flow) {
 		spin_lock(&flow->resume_tx.lock);
 		flow->pending = 0;
 		spin_unlock(&flow->resume_tx.lock);
 		wake_up_interruptible_all(&flow->resume_tx);
->>>>>>> 69402908e277 (net: qrtr: replace qrtr_tx_flow radix_tree with xarray to fix memory leak)
 	}
 	spin_unlock_irqrestore(&flow->lock, flags);
 
@@ -635,13 +626,10 @@ static int qrtr_tx_wait(struct qrtr_node *node, struct sockaddr_qrtr *to,
 		if (flow) {
 			INIT_LIST_HEAD(&flow->waiters);
 			init_waitqueue_head(&flow->resume_tx);
-<<<<<<< HEAD
 			spin_lock_init(&flow->lock);
 			if (radix_tree_insert(&node->qrtr_tx_flow, key, flow)) {
-=======
 			if (xa_err(xa_store(&node->qrtr_tx_flow, key, flow,
 					    GFP_KERNEL))) {
->>>>>>> 69402908e277 (net: qrtr: replace qrtr_tx_flow radix_tree with xarray to fix memory leak)
 				kfree(flow);
 				flow = NULL;
 			}
@@ -716,13 +704,10 @@ static void qrtr_tx_flow_failed(struct qrtr_node *node, int dest_node,
 	unsigned long key = (u64)dest_node << 32 | dest_port;
 	struct qrtr_tx_flow *flow;
 
-<<<<<<< HEAD
 	mutex_lock(&node->qrtr_tx_lock);
 	flow = radix_tree_lookup(&node->qrtr_tx_flow, key);
 	mutex_unlock(&node->qrtr_tx_lock);
-=======
 	flow = xa_load(&node->qrtr_tx_flow, key);
->>>>>>> 69402908e277 (net: qrtr: replace qrtr_tx_flow radix_tree with xarray to fix memory leak)
 	if (flow) {
 		spin_lock_irq(&flow->lock);
 		flow->tx_failed = 1;

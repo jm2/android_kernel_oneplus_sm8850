@@ -829,11 +829,8 @@ static int do_sea(unsigned long far, unsigned long esr, struct pt_regs *regs)
 		 */
 		siaddr  = untagged_addr(far);
 	}
-<<<<<<< HEAD
 	trace_android_rvh_do_sea(siaddr, esr, regs);
-=======
 	add_taint(TAINT_MACHINE_CHECK, LOCKDEP_STILL_OK);
->>>>>>> 3d03c85f850b (arm64: Mark kernel as tainted on SAE and SError panic)
 	arm64_notify_die(inf->name, regs, inf->sig, inf->code, siaddr, esr);
 
 	return 0;

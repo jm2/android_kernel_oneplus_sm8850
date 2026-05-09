@@ -1200,24 +1200,18 @@ extern int send_sigurg(struct file *file);
 #define SB_NOUSER       BIT(31)
 
 /* These flags relate to encoding and casefolding */
-<<<<<<< HEAD
 #define SB_ENC_STRICT_MODE_FL          (1 << 0)
 #define SB_ENC_NO_COMPAT_FALLBACK_FL   (1 << 1)
-=======
 #define SB_ENC_STRICT_MODE_FL		(1 << 0)
 #define SB_ENC_NO_COMPAT_FALLBACK_FL	(1 << 1)
->>>>>>> aa66603ddf1b (ext4: introduce linear search for dentries)
 
 #define sb_has_strict_encoding(sb) \
 	(sb->s_encoding_flags & SB_ENC_STRICT_MODE_FL)
 
 #if IS_ENABLED(CONFIG_UNICODE)
 #define sb_no_casefold_compat_fallback(sb) \
-<<<<<<< HEAD
        (sb->s_encoding_flags & SB_ENC_NO_COMPAT_FALLBACK_FL)
-=======
 	(sb->s_encoding_flags & SB_ENC_NO_COMPAT_FALLBACK_FL)
->>>>>>> aa66603ddf1b (ext4: introduce linear search for dentries)
 #else
 #define sb_no_casefold_compat_fallback(sb) (1)
 #endif

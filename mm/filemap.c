@@ -3708,12 +3708,9 @@ vm_fault_t filemap_map_pages(struct vm_fault *vmf,
 	vm_fault_t ret = 0;
 	unsigned long rss = 0;
 	unsigned int nr_pages = 0, mmap_miss = 0, mmap_miss_saved, folio_type;
-<<<<<<< HEAD
 	pgoff_t first_pgoff = 0;
 	pgoff_t orig_start_pgoff = start_pgoff;
-=======
 	bool can_map_large;
->>>>>>> c4476fac0c6c (mm/memory: do not populate page table entries beyond i_size)
 
 	/*
 	 * Recalculate end_pgoff based on file_end before calling

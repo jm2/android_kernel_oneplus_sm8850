@@ -473,15 +473,12 @@ $(obj)/compiler_builtins.o: private rustc_objcopy = -w -W '__*'
 $(obj)/compiler_builtins.o: $(src)/compiler_builtins.rs $(obj)/core.o FORCE
 	+$(call if_changed_rule,rustc_library)
 
-<<<<<<< HEAD
 
 $(obj)/build_error.o: private skip_gendwarfksyms = 1
-=======
 # Even if normally `build_error` is not a kernel object, it should still be
 # treated as such so that we pass the same flags. Otherwise, for instance,
 # `rustc` will complain about missing sanitizer flags causing an ABI mismatch.
 $(obj)/build_error.o: private is-kernel-object := y
->>>>>>> 3b987ebe6c4b (rust: kbuild: treat `build_error` and `rustdoc` as kernel objects)
 $(obj)/build_error.o: $(src)/build_error.rs $(obj)/compiler_builtins.o FORCE
 	+$(call if_changed_rule,rustc_library)
 

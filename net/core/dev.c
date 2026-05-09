@@ -1039,6 +1039,12 @@ static bool dev_addr_cmp(struct net_device *dev, unsigned short type,
 	return dev->type == type && !memcmp(dev->dev_addr, ha, dev->addr_len);
 }
 
+static bool dev_addr_cmp(struct net_device *dev, unsigned short type,
+			 const char *ha)
+{
+	return dev->type == type && !memcmp(dev->dev_addr, ha, dev->addr_len);
+}
+
 /**
  *	dev_getbyhwaddr_rcu - find a device by its hardware address
  *	@net: the applicable net namespace

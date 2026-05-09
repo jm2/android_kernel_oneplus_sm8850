@@ -2010,17 +2010,13 @@ static int find_lowest_rq(struct task_struct *sched_ctx, struct task_struct *exe
 
 static struct task_struct *pick_next_pushable_task(struct rq *rq)
 {
-<<<<<<< HEAD
 	struct plist_head *head = &rq->rt.pushable_tasks;
 	struct task_struct *p, *push_task = NULL;
-=======
 	struct task_struct *p;
->>>>>>> debfbc047196 (sched/rt: Fix race in push_rt_task)
 
 	if (!has_pushable_tasks(rq))
 		return NULL;
 
-<<<<<<< HEAD
 	plist_for_each_entry(p, head, pushable_tasks) {
 		if (task_is_pushable(rq, p, 0)) {
 			push_task = p;
@@ -2144,7 +2140,6 @@ static inline bool rt_revalidate_rq_state(struct task_struct *task, struct rq *r
 	}
 
 	return true;
-=======
 	p = plist_first_entry(&rq->rt.pushable_tasks,
 			      struct task_struct, pushable_tasks);
 
@@ -2156,7 +2151,6 @@ static inline bool rt_revalidate_rq_state(struct task_struct *task, struct rq *r
 	BUG_ON(!rt_task(p));
 
 	return p;
->>>>>>> debfbc047196 (sched/rt: Fix race in push_rt_task)
 }
 
 /* Will lock the rq it finds */

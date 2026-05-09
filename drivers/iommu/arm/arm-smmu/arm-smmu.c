@@ -808,7 +808,7 @@ void arm_smmu_read_context_fault_info(struct arm_smmu_device *smmu, int idx,
 void arm_smmu_print_context_fault_info(struct arm_smmu_device *smmu, int idx,
 				       const struct arm_smmu_context_fault_info *cfi)
 {
-	dev_dbg(smmu->dev,
+	dev_err(smmu->dev,
 		"Unhandled context fault: fsr=0x%x, iova=0x%08lx, fsynr=0x%x, cbfrsynra=0x%x, cb=%d\n",
 		cfi->fsr, cfi->iova, cfi->fsynr, cfi->cbfrsynra, idx);
 
@@ -3853,7 +3853,6 @@ static struct platform_driver arm_smmu_driver = {
 static int __init arm_smmu_init(void)
 {
 	int ret;
-<<<<<<< HEAD
 	ktime_t cur;
 
 	cur = ktime_get();
@@ -3876,7 +3875,6 @@ static void __exit arm_smmu_exit(void)
 {
 	platform_driver_unregister(&arm_smmu_driver);
 	platform_driver_unregister(&qsmmuv500_tbu_driver);
-=======
 
 	ret = platform_driver_register(&arm_smmu_driver);
 	if (ret)
@@ -3894,7 +3892,6 @@ static void __exit arm_smmu_exit(void)
 {
 	arm_smmu_impl_module_exit();
 	platform_driver_unregister(&arm_smmu_driver);
->>>>>>> 121f787e740d (iommu/arm-smmu-qcom: do not register driver in probe())
 }
 module_exit(arm_smmu_exit);
 

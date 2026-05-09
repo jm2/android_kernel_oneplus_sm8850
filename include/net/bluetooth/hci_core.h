@@ -29,15 +29,9 @@
 #include <linux/idr.h>
 #include <linux/leds.h>
 #include <linux/rculist.h>
-<<<<<<< HEAD
-<<<<<<< HEAD
 #include <linux/android_kabi.h>
-=======
-=======
 #include <linux/spinlock.h>
->>>>>>> 16852eccbdfa (Bluetooth: hci_sync: fix double free in 'hci_discovery_filter_clear()')
 #include <linux/srcu.h>
->>>>>>> ce23b73f0f27 (Bluetooth: hci_core: Fix use-after-free in vhci_flush())
 
 #include <net/bluetooth/hci.h>
 #include <net/bluetooth/hci_drv.h>

@@ -791,5 +791,4 @@ static inline void blk_unfreeze_release_lock(struct request_queue *q)
 {
 }
 #endif
-
 #endif /* BLK_INTERNAL_H */

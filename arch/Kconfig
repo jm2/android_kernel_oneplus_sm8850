@@ -888,7 +888,6 @@ config HAVE_CFI_ICALL_NORMALIZE_INTEGERS_RUSTC
 	# ANDROID: This version number has been changed due to backports in Android's compiler.
 	depends on (RUSTC_LLVM_VERSION >= 190001 && RUSTC_VERSION >= 108200) || \
 		(!GCOV_KERNEL && !KASAN_GENERIC && !KASAN_SW_TAGS)
-
 config CFI_PERMISSIVE
 	bool "Use CFI in permissive mode"
 	depends on CFI_CLANG

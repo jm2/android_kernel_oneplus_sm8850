@@ -41,6 +41,11 @@ unsigned int kvm_host_sve_max_vl;
  * protected KVM is enabled, but for both protected and non-protected VMs.
  */
 static DEFINE_PER_CPU(struct pkvm_hyp_vcpu *, loaded_hyp_vcpu);
+static void pvm_init_traps_aa64pfr0(struct kvm_vcpu *vcpu)
+{
+	const u64 feature_ids = pvm_read_id_reg(vcpu, SYS_ID_AA64PFR0_EL1);
+	u64 hcr_set = HCR_RW;
+	u64 hcr_clear = 0;
 
 static LIST_HEAD(running_vms);
 struct ffa_mem_transfer *find_transfer_by_handle(u64 ffa_handle, struct kvm_ffa_buffers *buf);
@@ -62,6 +67,11 @@ static void pkvm_vcpu_reset_hcr(struct kvm_vcpu *vcpu)
 	if (cpus_have_final_cap(ARM64_HAS_STAGE2_FWB))
 		vcpu->arch.hcr_el2 |= HCR_FWB;
 
+	/* Trap AMU */
+	if (!FIELD_GET(ARM64_FEATURE_MASK(ID_AA64PFR0_EL1_AMU), feature_ids)) {
+		hcr_clear |= HCR_AMVOFFEN;
+	}
+
 	if (cpus_have_final_cap(ARM64_HAS_EVT) &&
 	    !cpus_have_final_cap(ARM64_MISMATCHED_CACHE_TYPE))
 		vcpu->arch.hcr_el2 |= HCR_TID4;
@@ -73,6 +83,9 @@ static void pkvm_vcpu_reset_hcr(struct kvm_vcpu *vcpu)
 
 	if (kvm_has_mte(vcpu->kvm))
 		vcpu->arch.hcr_el2 |= HCR_ATA;
+
+	vcpu->arch.hcr_el2 |= hcr_set;
+	vcpu->arch.hcr_el2 &= ~hcr_clear;
 }
 
 static void pkvm_vcpu_reset_hcrx(struct pkvm_hyp_vcpu *hyp_vcpu)
@@ -101,6 +114,9 @@ static void pkvm_vcpu_reset_hcrx(struct pkvm_hyp_vcpu *hyp_vcpu)
 
 static void pvm_init_traps_hcr(struct kvm_vcpu *vcpu)
 {
+	const u64 feature_ids = pvm_read_id_reg(vcpu, SYS_ID_AA64DFR0_EL1);
+	u64 mdcr_set = 0;
+	u64 mdcr_clear = 0;
 	struct kvm *kvm = vcpu->kvm;
 	u64 val = vcpu->arch.hcr_el2;
 
@@ -122,6 +138,10 @@ static void pvm_init_traps_hcr(struct kvm_vcpu *vcpu)
 	if (!kvm_has_feat(kvm, ID_AA64PFR0_EL1, AMU, IMP))
 		val &= ~(HCR_AMVOFFEN);
 
+	/* Trap External Trace */
+	if (!FIELD_GET(ARM64_FEATURE_MASK(ID_AA64DFR0_EL1_ExtTrcBuff), feature_ids))
+		mdcr_clear |= MDCR_EL2_E2TB_MASK << MDCR_EL2_E2TB_SHIFT;
+
 	if (!kvm_has_feat(kvm, ID_AA64PFR1_EL1, MTE, IMP)) {
 		val |= HCR_TID5;
 		val &= ~(HCR_DCT | HCR_ATA);
@@ -130,6 +150,8 @@ static void pvm_init_traps_hcr(struct kvm_vcpu *vcpu)
 	if (!kvm_has_feat(kvm, ID_AA64MMFR1_EL1, LO, IMP))
 		val |= HCR_TLOR;
 
+	vcpu->arch.mdcr_el2 |= mdcr_set;
+	vcpu->arch.mdcr_el2 &= ~mdcr_clear;
 	vcpu->arch.hcr_el2 = val;
 }
 
@@ -207,6 +229,10 @@ static int pkvm_check_pvm_cpu_features(struct kvm_vcpu *vcpu)
 	if (!kvm_has_feat(kvm, ID_AA64PFR0_EL1, FP, IMP) ||
 	    !kvm_has_feat(kvm, ID_AA64PFR0_EL1, AdvSIMD, IMP))
 		return -EINVAL;
+
+	/* Clear res0 and set res1 bits to trap potential new features. */
+	vcpu->arch.hcr_el2 &= ~(HCR_RES0);
+	vcpu->arch.mdcr_el2 &= ~(MDCR_EL2_RES0);
 
 	/* No SME support in KVM right now. Check to catch if it changes. */
 	if (kvm_has_feat(kvm, ID_AA64PFR1_EL1, SME, IMP))
@@ -932,6 +958,11 @@ int __pkvm_init_vcpu(pkvm_handle_t handle, struct kvm_vcpu *host_vcpu)
 	 * the vCPU-load path via 'hyp_vm->vcpus[]'.
 	 */
 	smp_store_release(&hyp_vm->vcpus[idx], hyp_vcpu);
+
+	if (ret) {
+		unmap_donated_memory(hyp_vcpu, sizeof(*hyp_vcpu));
+		return ret;
+	}
 
 unlock_vcpus:
 	hyp_spin_unlock(&hyp_vm->vcpus_lock);

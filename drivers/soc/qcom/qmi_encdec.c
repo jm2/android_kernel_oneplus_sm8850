@@ -551,13 +551,11 @@ static int qmi_decode_string_elem(const struct qmi_elem_info *ei_array,
 	} else {
 		string_len_sz = temp_ei->elem_len <= U8_MAX ?
 				sizeof(u8) : sizeof(u16);
-<<<<<<< HEAD
 		rc = qmi_decode_basic_elem(&string_len, buf_src,
 					   1, string_len_sz, src_len);
 		if (rc < 0)
 			return rc;
 
-=======
 		if (string_len_sz == sizeof(u8)) {
 			rc = qmi_decode_basic_elem(&val8, buf_src,
 						   1, string_len_sz);
@@ -567,7 +565,6 @@ static int qmi_decode_string_elem(const struct qmi_elem_info *ei_array,
 						   1, string_len_sz);
 			string_len = (u32)val16;
 		}
->>>>>>> 04e7717dddc0 (soc: qcom: QMI encoding/decoding for big endian)
 		decoded_bytes += rc;
 	}
 
@@ -689,7 +686,6 @@ static int qmi_decode(const struct qmi_elem_info *ei_array, void *out_c_struct,
 		if (temp_ei->data_type == QMI_DATA_LEN) {
 			data_len_sz = temp_ei->elem_size == sizeof(u8) ?
 					sizeof(u8) : sizeof(u16);
-<<<<<<< HEAD
 			rc = qmi_decode_basic_elem(&data_len_value, buf_src,
 						   1, data_len_sz,
 						   in_buf_len - decoded_bytes);
@@ -697,7 +693,6 @@ static int qmi_decode(const struct qmi_elem_info *ei_array, void *out_c_struct,
 				return rc;
 
 			memcpy(buf_dst, &data_len_value, sizeof(u32));
-=======
 			if (data_len_sz == sizeof(u8)) {
 				rc = qmi_decode_basic_elem(&val8, buf_src,
 							   1, data_len_sz);
@@ -709,7 +704,6 @@ static int qmi_decode(const struct qmi_elem_info *ei_array, void *out_c_struct,
 			}
 			val32 = cpu_to_le32(data_len_value);
 			memcpy(buf_dst, &val32, sizeof(u32));
->>>>>>> 04e7717dddc0 (soc: qcom: QMI encoding/decoding for big endian)
 			temp_ei = temp_ei + 1;
 			buf_dst = out_c_struct + temp_ei->offset;
 			tlv_len -= data_len_sz;

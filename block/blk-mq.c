@@ -178,7 +178,6 @@ bool __blk_freeze_queue_start(struct request_queue *q,
 			      struct task_struct *owner)
 {
 	bool freeze;
-
 	mutex_lock(&q->mq_freeze_lock);
 	freeze = blk_freeze_set_owner(q, owner);
 	if (++q->mq_freeze_depth == 1) {
@@ -196,7 +195,7 @@ bool __blk_freeze_queue_start(struct request_queue *q,
 void blk_freeze_queue_start(struct request_queue *q)
 {
 	if (__blk_freeze_queue_start(q, current))
-		blk_freeze_acquire_lock(q);
+		blk_freeze_acquire_lock(q, false, false);
 }
 EXPORT_SYMBOL_GPL(blk_freeze_queue_start);
 
@@ -264,7 +263,7 @@ bool __blk_mq_unfreeze_queue(struct request_queue *q, bool force_atomic)
 void blk_mq_unfreeze_queue(struct request_queue *q)
 {
 	if (__blk_mq_unfreeze_queue(q, false))
-		blk_unfreeze_release_lock(q);
+		blk_unfreeze_release_lock(q, false, false);
 }
 EXPORT_SYMBOL_GPL(blk_mq_unfreeze_queue);
 
@@ -1393,15 +1392,7 @@ static void blk_add_rq_to_plug(struct blk_plug *plug, struct request *rq)
 	 */
 	if (!plug->has_elevator && (rq->rq_flags & RQF_SCHED_TAGS))
 		plug->has_elevator = true;
-<<<<<<< HEAD
-<<<<<<< HEAD
 	rq_list_add_tail(&plug->mq_list, rq);
-=======
-	rq_list_add_head(&plug->mq_list, rq);
->>>>>>> 2ad0f19a4e99 (block: add a rq_list type)
-=======
-	rq_list_add_tail(&plug->mq_list, rq);
->>>>>>> 7e2d22493939 (block: don't reorder requests in blk_add_rq_to_plug)
 	plug->rq_count++;
 }
 

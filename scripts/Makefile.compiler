@@ -53,17 +53,13 @@ cc-option = $(call __cc-option, $(CC),\
 
 # cc-option-yn
 # Usage: flag := $(call cc-option-yn,-march=winchip-c6)
-cc-option-yn = $(call try-run,\
-	$(CC) -Werror $(KBUILD_CPPFLAGS) $(KBUILD_CFLAGS) $(1) -c -x c /dev/null -o "$$TMP",y,n)
+cc-option-yn = $(if $(call cc-option,$1),y,n)
 
 # cc-disable-warning
 # Usage: cflags-y += $(call cc-disable-warning,unused-but-set-variable)
-<<<<<<< HEAD
 cc-disable-warning = $(call try-run,\
 	$(CC) -Werror $(KBUILD_CPPFLAGS) $(KBUILD_CFLAGS) -W$(strip $(1)) -c -x c /dev/null -o "$$TMP",-Wno-$(strip $(1)))
-=======
 cc-disable-warning = $(call cc-option,-Wno-$(strip $1))
->>>>>>> 8975b40c0750 (Make 'cc-option' work correctly for the -Wno-xyzzy pattern)
 
 # gcc-min-version
 # Usage: cflags-$(call gcc-min-version, 70100) += -foo

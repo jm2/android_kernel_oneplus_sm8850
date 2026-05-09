@@ -2850,17 +2850,13 @@ static int find_later_rq(struct task_struct *sched_ctx, struct task_struct *exec
 
 static struct task_struct *pick_next_pushable_dl_task(struct rq *rq)
 {
-<<<<<<< HEAD
 	struct task_struct *p = NULL;
 	struct rb_node *next_node;
-=======
 	struct task_struct *p;
->>>>>>> 305b1a39f3bb (sched/deadline: Fix race in push_dl_task())
 
 	if (!has_pushable_dl_tasks(rq))
 		return NULL;
 
-<<<<<<< HEAD
 	next_node = rb_first_cached(&rq->dl.pushable_dl_tasks_root);
 	while (next_node) {
 		p = __node_2_pdl(next_node);
@@ -2878,9 +2874,7 @@ static struct task_struct *pick_next_pushable_dl_task(struct rq *rq)
 
 	if (!p)
 		return NULL;
-=======
 	p = __node_2_pdl(rb_first_cached(&rq->dl.pushable_dl_tasks_root));
->>>>>>> 305b1a39f3bb (sched/deadline: Fix race in push_dl_task())
 
 	WARN_ON_ONCE(rq->cpu != task_cpu(p));
 	WARN_ON_ONCE(task_current(rq, p));
@@ -2892,7 +2886,6 @@ static struct task_struct *pick_next_pushable_dl_task(struct rq *rq)
 	return p;
 }
 
-<<<<<<< HEAD
 static inline bool __dl_revalidate_rq_state(struct task_struct *task, struct rq *rq,
 					    struct rq *later, bool *retry)
 {
@@ -2946,8 +2939,6 @@ static inline bool dl_revalidate_rq_state(struct task_struct *task, struct rq *r
 	return true;
 }
 
-=======
->>>>>>> 305b1a39f3bb (sched/deadline: Fix race in push_dl_task())
 /* Locks the rq it finds */
 static struct rq *find_lock_later_rq(struct task_struct *task, struct rq *rq)
 {
@@ -2981,9 +2972,7 @@ static struct rq *find_lock_later_rq(struct task_struct *task, struct rq *rq)
 
 		/* Retry if something changed. */
 		if (double_lock_balance(rq, later_rq)) {
-<<<<<<< HEAD
 			if (unlikely(!dl_revalidate_rq_state(task, rq, later_rq, &retry))) {
-=======
 			/*
 			 * double_lock_balance had to release rq->lock, in the
 			 * meantime, task may no longer be fit to be migrated.
@@ -3015,7 +3004,6 @@ static struct rq *find_lock_later_rq(struct task_struct *task, struct rq *rq)
 				     (!task->dl.dl_throttled &&
 				      task != pick_next_pushable_dl_task(rq)))) {
 
->>>>>>> 305b1a39f3bb (sched/deadline: Fix race in push_dl_task())
 				double_unlock_balance(rq, later_rq);
 				later_rq = NULL;
 				break;

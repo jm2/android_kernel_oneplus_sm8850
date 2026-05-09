@@ -1802,7 +1802,6 @@ static void init_clone_info(struct clone_info *ci, struct dm_io *io,
 static inline bool dm_zone_bio_needs_split(struct bio *bio)
 {
 	/*
-<<<<<<< HEAD
 	 * For a mapped device that needs zone append emulation, we must
 	 * split any large BIO that straddles zone boundaries. Additionally,
 	 * split sequential zoned writes to prevent that splitting lower in the
@@ -1811,7 +1810,6 @@ static inline bool dm_zone_bio_needs_split(struct bio *bio)
 	return ((dm_emulate_zone_append(md) && bio_straddles_zones(bio)) ||
 		(bio_op(bio) == REQ_OP_WRITE && bdev_is_zoned(bio->bi_bdev))) &&
 	       !bio_flagged(bio, BIO_ZONE_WRITE_PLUGGING);
-=======
 	 * Special case the zone operations that cannot or should not be split.
 	 */
 	switch (bio_op(bio)) {
@@ -1831,7 +1829,6 @@ static inline bool dm_zone_bio_needs_split(struct bio *bio)
 	 * queue freeze operations.
 	 */
 	return bio_needs_zone_write_plugging(bio) || bio_straddles_zones(bio);
->>>>>>> d10bf66d9f93 (dm: Always split write BIOs to zoned device limits)
 }
 
 static inline bool dm_zone_plug_bio(struct mapped_device *md, struct bio *bio)

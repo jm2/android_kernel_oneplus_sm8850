@@ -629,6 +629,8 @@ static int smp2p_update_bits(void *data, u32 mask, u32 value)
 	SMP2P_INFO("%d: %s: orig:0x%0x new:0x%0x\n",
 		   entry->smp2p->remote_pid, entry->name, orig, val);
 
+	trace_smp2p_update_bits(entry, orig, val);
+
 	if (val != orig)
 		qcom_smp2p_kick(entry->smp2p);
 
@@ -809,7 +811,6 @@ static int qcom_smp2p_probe(struct platform_device *pdev)
 		entry = kzalloc(sizeof(*entry), GFP_KERNEL);
 		if (!entry) {
 			ret = -ENOMEM;
-			of_node_put(node);
 			goto unwind_interfaces;
 		}
 
@@ -817,25 +818,19 @@ static int qcom_smp2p_probe(struct platform_device *pdev)
 		spin_lock_init(&entry->lock);
 
 		ret = of_property_read_string(node, "qcom,entry-name", &entry->name);
-		if (ret < 0) {
-			of_node_put(node);
+		if (ret < 0)
 			goto unwind_interfaces;
-		}
 
 		if (of_property_read_bool(node, "interrupt-controller")) {
 			ret = qcom_smp2p_inbound_entry(smp2p, entry, node);
-			if (ret < 0) {
-				of_node_put(node);
+			if (ret < 0)
 				goto unwind_interfaces;
-			}
 
 			list_add(&entry->node, &smp2p->inbound);
 		} else  {
 			ret = qcom_smp2p_outbound_entry(smp2p, entry, node);
-			if (ret < 0) {
-				of_node_put(node);
+			if (ret < 0)
 				goto unwind_interfaces;
-			}
 
 			list_add(&entry->node, &smp2p->outbound);
 		}

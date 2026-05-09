@@ -549,7 +549,6 @@ struct sock {
 	netns_tracker		ns_tracker;
 	struct xarray		sk_user_frags;
 
-<<<<<<< HEAD
 	ANDROID_KABI_RESERVE(1);
 	ANDROID_KABI_RESERVE(2);
 	ANDROID_KABI_RESERVE(3);
@@ -559,11 +558,9 @@ struct sock {
 	ANDROID_KABI_RESERVE(7);
 	ANDROID_KABI_RESERVE(8);
 	ANDROID_OEM_DATA(1);
-=======
 #if IS_ENABLED(CONFIG_PROVE_LOCKING) && IS_ENABLED(CONFIG_MODULES)
 	struct module		*sk_owner;
 #endif
->>>>>>> 5f7f6abd92b6 (net: Fix null-ptr-deref by sock_lock_init_class_and_name() and rmmod.)
 };
 
 struct sock_bh_locked {

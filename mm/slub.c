@@ -1191,15 +1191,9 @@ static __printf(3, 4) void slab_err(struct kmem_cache *s, struct slab *slab,
 	va_start(args, fmt);
 	__slab_bug(s, fmt, args);
 	va_end(args);
-<<<<<<< HEAD
-<<<<<<< HEAD
 
-=======
 	slab_bug(s, "%s", buf);
->>>>>>> d06b739f41dc (mm: slub: call WARN() when detecting a slab corruption)
-=======
 
->>>>>>> 9cd3206f0126 (mm, slab: cleanup slab_bug() parameters)
 	__slab_err(slab);
 }
 
@@ -1252,15 +1246,9 @@ static void restore_bytes(struct kmem_cache *s, const char *message, u8 data,
 
 static pad_check_attributes int
 check_bytes_and_report(struct kmem_cache *s, struct slab *slab,
-<<<<<<< HEAD
-<<<<<<< HEAD
 		       u8 *object, const char *what, u8 *start, unsigned int value,
-=======
 		       u8 *object, char *what, u8 *start, unsigned int value,
->>>>>>> 20a54a8db4dd (mm: slub: Print the broken data before restoring them)
-=======
 		       u8 *object, const char *what, u8 *start, unsigned int value,
->>>>>>> 9cd3206f0126 (mm, slab: cleanup slab_bug() parameters)
 		       unsigned int bytes, bool slab_obj_print)
 {
 	u8 *fault;
@@ -2169,12 +2157,9 @@ prepare_slab_obj_exts_hook(struct kmem_cache *s, gfp_t flags, void *p)
 static noinline void
 __alloc_tagging_slab_alloc_hook(struct kmem_cache *s, void *object, gfp_t flags)
 {
-<<<<<<< HEAD
 	struct slabobj_ext *obj_exts;
-=======
 	if (mem_alloc_profiling_enabled()) {
 		struct slabobj_ext *obj_exts;
->>>>>>> dab2a13059a4 (mm, slab: clean up slab->obj_exts always)
 
 	obj_exts = prepare_slab_obj_exts_hook(s, flags, object);
 	/*

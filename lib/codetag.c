@@ -318,6 +318,9 @@ void codetag_unload_module(struct module *mod)
 	/* await any module's kfree_rcu() operations to complete */
 	kvfree_rcu_barrier();
 
+	/* await any module's kfree_rcu() operations to complete */
+	kvfree_rcu_barrier();
+
 	mutex_lock(&codetag_lock);
 	list_for_each_entry(cttype, &codetag_types, link) {
 		struct codetag_module *found = NULL;

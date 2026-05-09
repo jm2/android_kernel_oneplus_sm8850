@@ -5076,14 +5076,11 @@ static int vmalloc_info_show(struct seq_file *m, void *p)
 			if (is_vmalloc_addr(v->pages))
 				seq_puts(m, " vpages");
 
-<<<<<<< HEAD
 			show_numa_info(m, v);
 			trace_android_vh_show_stack_hash(m, v);
-=======
 			if (IS_ENABLED(CONFIG_NUMA))
 				show_numa_info(m, v, counters);
 
->>>>>>> ead91de35d9c (mm/vmalloc: fix data race in show_numa_info())
 			seq_putc(m, '\n');
 		}
 		spin_unlock(&vn->busy.lock);

@@ -34,12 +34,9 @@
 #include <ctype.h>
 #include <fcntl.h>
 #include <unistd.h>
-<<<<<<< HEAD
 #ifndef __ANDROID__
 #include <bits/wordsize.h>
 #endif
-=======
->>>>>>> 5f58cae7ccf9 (selftests/net: Replace non-standard __WORDSIZE with sizeof(long) * 8)
 #include <net/ethernet.h>
 #include <netinet/ip.h>
 #include <arpa/inet.h>

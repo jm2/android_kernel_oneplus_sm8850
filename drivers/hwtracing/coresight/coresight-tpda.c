@@ -93,7 +93,6 @@ static int tpdm_read_element_size(struct tpda_drvdata *drvdata,
 				"qcom,cmb-element-bits", &drvdata->cmb_esize);
 	}
 
-<<<<<<< HEAD
 	if (is_static_tpdm(csdev)) {
 		fwnode_property_read_u32(dev_fwnode(csdev->dev.parent),
 				"qcom,dsb-element-bits", &drvdata->dsb_esize);
@@ -103,9 +102,7 @@ static int tpdm_read_element_size(struct tpda_drvdata *drvdata,
 			rc = 0;
 	}
 
-=======
 out:
->>>>>>> af8286832855 (coresight: tpda: fix the logic to setup the element size)
 	if (rc)
 		dev_warn_once(&csdev->dev,
 			"Failed to read TPDM Element size: %d\n", rc);

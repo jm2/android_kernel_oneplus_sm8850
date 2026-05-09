@@ -62,11 +62,8 @@ struct vm_struct {
 	unsigned int		nr_pages;
 	phys_addr_t		phys_addr;
 	const void		*caller;
-<<<<<<< HEAD
 	ANDROID_OEM_DATA(1);
-=======
 	unsigned long		requested_size;
->>>>>>> 2910019b04eb (mm: vmalloc: support more granular vrealloc() sizing)
 };
 
 struct vmap_area {

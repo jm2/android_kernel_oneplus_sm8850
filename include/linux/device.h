@@ -734,7 +734,6 @@ struct device {
 #ifdef CONFIG_IOMMU_DMA
 	bool			dma_iommu:1;
 #endif
-<<<<<<< HEAD
 	ANDROID_KABI_RESERVE(1);
 	ANDROID_KABI_RESERVE(2);
 	ANDROID_KABI_RESERVE(3);
@@ -743,10 +742,8 @@ struct device {
 	ANDROID_KABI_RESERVE(6);
 	ANDROID_KABI_RESERVE(7);
 	ANDROID_KABI_RESERVE(8);
-=======
 
 	DECLARE_BITMAP(flags, DEV_FLAG_COUNT);
->>>>>>> 88e338bd9b6e (driver core: Don't let a device probe until it's ready)
 };
 
 #define __create_dev_flag_accessors(accessor_name, flag_name) \
