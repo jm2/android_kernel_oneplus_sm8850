@@ -66,8 +66,6 @@
  * PG_referenced, PG_reclaim are used for page reclaim for anonymous and
  * file-backed pagecache (see mm/vmscan.c).
  *
- * PG_error is set to indicate that an I/O error occurred on this page.
- *
  * PG_arch_1 is an architecture specific page state bit.  The generic code
  * guarantees that this bit is cleared for a page when it first is entered into
  * the page cache.
@@ -193,7 +191,7 @@ enum pageflags {
 	 */
 
 	/* At least one page in this folio has the hwpoison flag set */
-	PG_has_hwpoisoned = PG_error,
+	PG_has_hwpoisoned = PG_active,
 	PG_large_rmappable = PG_workingset, /* anon or file-backed */
 	PG_partially_mapped = PG_reclaim, /* was identified to be partially mapped */
 };
@@ -517,7 +515,6 @@ static inline int TestClearPage##uname(struct page *page) { return 0; }
 
 __PAGEFLAG(Locked, locked, PF_NO_TAIL)
 FOLIO_FLAG(waiters, FOLIO_HEAD_PAGE)
-PAGEFLAG(Error, error, PF_NO_TAIL) TESTCLEARFLAG(Error, error, PF_NO_TAIL)
 FOLIO_FLAG(referenced, FOLIO_HEAD_PAGE)
 	FOLIO_TEST_CLEAR_FLAG(referenced, FOLIO_HEAD_PAGE)
 	__FOLIO_SET_FLAG(referenced, FOLIO_HEAD_PAGE)
@@ -581,6 +578,13 @@ FOLIO_FLAG(readahead, FOLIO_HEAD_PAGE)
 #define folio_test_highmem(__f)	is_highmem_idx(folio_zonenum(__f))
 #else
 PAGEFLAG_FALSE(HighMem, highmem)
+#endif
+
+/* Does kmap_local_folio() only allow access to one page of the folio? */
+#ifdef CONFIG_DEBUG_KMAP_LOCAL_FORCE_MAP
+#define folio_test_partial_kmap(f)	true
+#else
+#define folio_test_partial_kmap(f)	folio_test_highmem(f)
 #endif
 
 #ifdef CONFIG_SWAP
@@ -1119,6 +1123,12 @@ static inline bool is_page_hwpoison(const struct page *page)
 		return true;
 	folio = page_folio(page);
 	return folio_test_hugetlb(folio) && PageHWPoison(&folio->page);
+}
+
+static inline bool folio_contain_hwpoisoned_page(struct folio *folio)
+{
+	return folio_test_hwpoison(folio) ||
+	    (folio_test_large(folio) && folio_test_has_hwpoisoned(folio));
 }
 
 bool is_free_buddy_page(const struct page *page);

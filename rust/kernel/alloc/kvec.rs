@@ -2,6 +2,9 @@
 
 //! Implementation of [`Vec`].
 
+// May not be needed in Rust 1.87.0 (pending beta backport).
+#![allow(clippy::ptr_eq)]
+
 use super::{
     allocator::{KVmalloc, Kmalloc, Vmalloc},
     layout::ArrayLayout,
@@ -195,31 +198,12 @@ where
     /// - `additional` must be less than or equal to `self.capacity - self.len`.
     /// - All elements within the interval [`self.len`,`self.len + additional`) must be initialized.
     #[inline]
-    pub unsafe fn inc_len(&mut self, additional: usize) {
-        // Guaranteed by the type invariant to never underflow.
-        debug_assert!(additional <= self.capacity() - self.len());
-        // INVARIANT: By the safety requirements of this method this represents the exact number of
-        // elements stored within `self`.
-        self.len += additional;
-    }
+    pub unsafe fn set_len(&mut self, new_len: usize) {
+        debug_assert!(new_len <= self.capacity());
 
-    /// Decreases `self.len` by `count`.
-    ///
-    /// Returns a mutable slice to the elements forgotten by the vector. It is the caller's
-    /// responsibility to drop these elements if necessary.
-    ///
-    /// # Safety
-    ///
-    /// - `count` must be less than or equal to `self.len`.
-    unsafe fn dec_len(&mut self, count: usize) -> &mut [T] {
-        debug_assert!(count <= self.len());
-        // INVARIANT: We relinquish ownership of the elements within the range `[self.len - count,
-        // self.len)`, hence the updated value of `set.len` represents the exact number of elements
-        // stored within `self`.
-        self.len -= count;
-        // SAFETY: The memory after `self.len()` is guaranteed to contain `count` initialized
-        // elements of type `T`.
-        unsafe { slice::from_raw_parts_mut(self.as_mut_ptr().add(self.len), count) }
+        // INVARIANT: By the safety requirements of this method `new_len` represents the exact
+        // number of elements stored within `self`.
+        self.len = new_len;
     }
 
     /// Returns a slice of the entire vector.

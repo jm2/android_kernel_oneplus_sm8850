@@ -323,6 +323,9 @@ Several Subdirectories
 UAPI Headers Installation
 -------------------------
 
+Module Installation
+===================
+
 	External modules may export headers to userspace in a similar
 	fashion to the in-tree counterpart drivers. kbuild supports
 	running headers_install target in an out-of-tree. The location
@@ -410,6 +413,9 @@ Symbols From the Kernel (vmlinux + modules)
 
 	1) It lists all exported symbols from vmlinux and all modules.
 	2) It lists the CRC if CONFIG_MODVERSIONS is enabled.
+
+Symbols and External Modules
+----------------------------
 
 Version Information Formats
 ---------------------------

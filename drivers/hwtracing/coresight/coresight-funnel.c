@@ -698,6 +698,8 @@ static int __init funnel_init(void)
 pm_clear:
 	funnel_pm_clear();
 	return ret;
+	return coresight_init_driver("funnel", &dynamic_funnel_driver, &funnel_driver,
+				     THIS_MODULE);
 }
 
 static void __exit funnel_exit(void)

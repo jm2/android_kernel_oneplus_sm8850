@@ -759,6 +759,8 @@ static int __init replicator_init(void)
 clear_pm:
 	replicator_pm_clear();
 	return ret;
+	return coresight_init_driver("replicator", &dynamic_replicator_driver, &replicator_driver,
+				     THIS_MODULE);
 }
 
 static void __exit replicator_exit(void)

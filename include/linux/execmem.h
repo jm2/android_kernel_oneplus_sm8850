@@ -4,6 +4,7 @@
 
 #include <linux/types.h>
 #include <linux/moduleloader.h>
+#include <linux/cleanup.h>
 
 #if (defined(CONFIG_KASAN_GENERIC) || defined(CONFIG_KASAN_SW_TAGS)) && \
 		!defined(CONFIG_KASAN_VMALLOC)
@@ -134,6 +135,7 @@ void execmem_free(void *ptr);
  */
 struct vm_struct *execmem_vmap(size_t size);
 #endif
+DEFINE_FREE(execmem, void *, if (_T) execmem_free(_T));
 
 #if defined(CONFIG_EXECMEM) && !defined(CONFIG_ARCH_WANTS_EXECMEM_LATE)
 void execmem_init(void);

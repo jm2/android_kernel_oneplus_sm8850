@@ -1149,7 +1149,6 @@ config SM_GPUCC_4450
 	  Support for the graphics clock controller on SM4450 devices.
 	  Say Y if you want to support graphics controller devices and
 	  functionality such as 3D graphics.
-
 config SM_GPUCC_6115
 	tristate "SM6115 Graphics Clock Controller"
 	select SM_GCC_6115

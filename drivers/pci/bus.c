@@ -358,6 +358,8 @@ void pci_bus_add_device(struct pci_dev *dev)
 			pci_err(dev, "failed to add device link to power control device %s\n",
 				pdev->name);
 	}
+	/* Save config space for error recoverability */
+	pci_save_state(dev);
 
 	dev->match_driver = !dn || of_device_is_available(dn);
 	retval = device_attach(&dev->dev);

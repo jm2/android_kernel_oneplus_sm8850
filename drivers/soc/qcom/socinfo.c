@@ -622,6 +622,7 @@ static const struct soc_id soc_id[] = {
 	{ qcom_board_id(SA8540P) },
 	{ qcom_board_id(QCM4290) },
 	{ qcom_board_id(QCS4290) },
+	{ qcom_board_id(SM7325) },
 	{ qcom_board_id_named(SM8450_2, "SM8450") },
 	{ qcom_board_id_named(SM8450_3, "SM8450") },
 	{ qcom_board_id(MONACO) },
@@ -1762,10 +1763,16 @@ static int qcom_socinfo_probe(struct platform_device *pdev)
 	qs->attr.revision = devm_kasprintf(&pdev->dev, GFP_KERNEL, "%u.%u",
 					   SOCINFO_MAJOR(le32_to_cpu(info->ver)),
 					   SOCINFO_MINOR(le32_to_cpu(info->ver)));
-	if (offsetof(struct socinfo, serial_num) <= item_size)
+	if (!qs->attr.soc_id || !qs->attr.revision)
+		return -ENOMEM;
+
+	if (offsetofend(struct socinfo, serial_num) <= item_size) {
 		qs->attr.serial_number = devm_kasprintf(&pdev->dev, GFP_KERNEL,
 							"%u",
 							le32_to_cpu(info->serial_num));
+		if (!qs->attr.serial_number)
+			return -ENOMEM;
+	}
 
 	if (socinfo_format >= SOCINFO_VERSION(0, 16)) {
 		socinfo_enumerate_partinfo_details();
@@ -1801,7 +1808,7 @@ static void qcom_socinfo_remove(struct platform_device *pdev)
 
 static struct platform_driver qcom_socinfo_driver = {
 	.probe = qcom_socinfo_probe,
-	.remove_new = qcom_socinfo_remove,
+	.remove = qcom_socinfo_remove,
 	.driver  = {
 		.name = "qcom-socinfo",
 	},

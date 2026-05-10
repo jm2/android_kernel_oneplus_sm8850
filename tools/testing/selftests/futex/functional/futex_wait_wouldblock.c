@@ -107,6 +107,11 @@ int main(int argc, char *argv[])
 					      res ? strerror(errno) : "");
 			ret = RET_FAIL;
 		}
+		ksft_test_result_fail("futex_waitv returned: %d %s\n",
+				      res ? errno : res,
+				      res ? strerror(errno) : "");
+		ret = RET_FAIL;
+
 	} else {
 		ksft_test_result_pass("futex_waitv\n");
 	}
