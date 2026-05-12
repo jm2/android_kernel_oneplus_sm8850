@@ -956,4 +956,23 @@ config INPUT_STPMIC1_ONKEY
 	  To compile this driver as a module, choose M here: the
 	  module will be called stpmic1_onkey.
 
+config INPUT_QCOM_HV_HAPTICS
+	tristate "Qualcomm HV haptics driver"
+	depends on OF
+	depends on REGMAP
+	help
+	  This driver provides support for Qualcomm's High-Voltage (HV)
+	  haptics complex found on recent PMICs. Drives the haptics
+	  actuator via a dedicated boost stage (hboost) coordinated with
+	  the battery charger, supports pattern playback (FF effects),
+	  brakedown, and reports state via input-event devices.
+
+	  Coordinates with the QTI Glink battery charger
+	  (qti_battery_charger) via register_hboost_event_notifier /
+	  unregister_hboost_event_notifier so the haptics driver can
+	  pause / resume around charge-boost transitions.
+
+	  Say M here to build as a module: the module will be called
+	  qcom-hv-haptics.
+
 endif

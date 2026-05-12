@@ -1018,4 +1018,21 @@ config FUEL_GAUGE_MM8013
 	  the state of charge, temperature, cycle count, actual and design
 	  capacity, etc.
 
+config QTI_BATTERY_CHARGER
+	tristate "QTI Glink battery charger driver"
+	depends on OF
+	depends on QTI_PMIC_GLINK
+	help
+	  This is the QTI battery-charger driver that talks to the Glink-based
+	  PMIC firmware to manage charging, expose the battery class, and bridge
+	  haptics-boost (hboost) events to the haptics driver via
+	  register_hboost_event_notifier / unregister_hboost_event_notifier
+	  (consumed by qcom-hv-haptics) and the qti_battery_charger_get_prop
+	  IIO surface. Single-source module; foundation deps (panel_event_notifier,
+	  qti_pmic_glink, pdr_interface, etc.) are wired in-tree from earlier
+	  phases.
+
+	  Say M here to build as a module: the module will be called
+	  qti_battery_charger.
+
 endif # POWER_SUPPLY
