@@ -1052,6 +1052,34 @@ config REGULATOR_QCOM_PM8008
 	  Select this option to enable support for the voltage regulators in
 	  Qualcomm PM8008 PMICs.
 
+config REGULATOR_QCOM_AMOLED
+	tristate "Qualcomm AMOLED panel regulator driver"
+	depends on OF
+	depends on REGMAP
+	select REGULATOR_DEBUG_CONTROL
+	help
+	  This driver supports the on-PMIC AMOLED regulator complex
+	  (positive rail + negative rail + LAB/IBB boost stages) used by
+	  Qualcomm PMICs to drive AMOLED display panels. Selects
+	  REGULATOR_DEBUG_CONTROL automatically because qcom-amoled-regulator
+	  registers debug interfaces via devm_regulator_debug_register().
+
+	  Say M here if you want to include support for this regulator as
+	  a module. The module will be called qcom-amoled-regulator.
+
+config REGULATOR_DEBUG_CONTROL
+	tristate "QTI Regulator debug control framework"
+	depends on OF
+	help
+	  This framework provides the devm_regulator_debug_register() /
+	  regulator_debug_register() interfaces used by Qualcomm regulator
+	  drivers to expose their internal state via debugfs (voltage
+	  selectors, mode, current limits). Auto-selected by drivers that
+	  call into the debug-register API; rarely set directly.
+
+	  Say M here if a consumer driver requires it but isn't itself
+	  in your build. The module will be called debug-regulator.
+
 config REGULATOR_QCOM_REFGEN
 	tristate "Qualcomm REFGEN regulator driver"
 	depends on ARCH_QCOM || COMPILE_TEST
