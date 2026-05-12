@@ -34,13 +34,13 @@
 static struct seq_buf *md_meminfo_seq_buf;
 
 /* Slabinfo */
-static struct seq_buf *md_slabinfo_seq_buf;
+static __maybe_unused struct seq_buf *md_slabinfo_seq_buf;
 
 static size_t md_pageowner_dump_size = SZ_2M;
 static char *md_pageowner_dump_addr;
 
-static size_t md_slabowner_dump_size = SZ_2M;
-static char *md_slabowner_dump_addr;
+static __maybe_unused size_t md_slabowner_dump_size = SZ_2M;
+static __maybe_unused char *md_slabowner_dump_addr;
 
 static size_t md_dma_buf_info_size = SZ_256K;
 static char *md_dma_buf_info_addr;
@@ -382,7 +382,8 @@ static void update_dump_size(char *name, size_t size, char **addr, size_t *dump_
 #ifdef CONFIG_PAGE_OWNER
 static unsigned long page_owner_filter = 0xF;
 static unsigned long page_owner_handles_size =  SZ_16K;
-static int nr_page_owner_handles, nr_slab_owner_handles;
+static int nr_page_owner_handles;
+static int __maybe_unused nr_slab_owner_handles;
 static LIST_HEAD(accounted_call_site_list);
 static DEFINE_SPINLOCK(accounted_call_site_lock);
 struct accounted_call_site {
@@ -1446,16 +1447,20 @@ void md_dump_memory(void)
 	if (md_meminfo_seq_buf)
 		md_dump_meminfo(md_meminfo_seq_buf);
 
+#ifdef CONFIG_SLUB_DEBUG
 	if (md_slabinfo_seq_buf)
 		md_dump_slabinfo(md_slabinfo_seq_buf);
+#endif
 
 	if (md_pageowner_dump_addr)
 		md_dump_pageowner(md_pageowner_dump_addr,
 				  md_pageowner_dump_size - page_owner_handles_size);
 
+#ifdef CONFIG_SLUB_DEBUG
 	if (md_slabowner_dump_addr)
 		md_dump_slabowner(md_slabowner_dump_addr,
 				  md_slabowner_dump_size - slab_owner_handles_size);
+#endif
 
 	if (md_dma_buf_info_addr)
 		md_dma_buf_info(md_dma_buf_info_addr, md_dma_buf_info_size);
