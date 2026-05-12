@@ -44,6 +44,8 @@ config CPU_IDLE_GOV_HALTPOLL
 
 	  Some virtualized workloads benefit from using it.
 
+source "drivers/cpuidle/governors/Kconfig"
+
 config DT_IDLE_STATES
 	bool
 

@@ -1051,7 +1051,18 @@ config PALMAS_GPADC
 	  general purpose ADC.
 
 config QCOM_VADC_COMMON
-	tristate
+	tristate "Qualcomm VADC common helper library"
+	help
+	  Common helper functions shared by Qualcomm VADC drivers
+	  (qcom-spmi-vadc, qcom-spmi-adc5, qcom-spmi-adc5-gen3,
+	  qcom-pm8xxx-xoadc). Selected automatically by those drivers;
+	  ships as a standalone .ko when built as a module so that
+	  out-of-tree consumers (e.g., charger drivers that read PMIC
+	  voltage ADCs directly) can also use it without pulling in a
+	  specific ADC chip driver.
+
+	  To compile as a module, choose M here: the module will be
+	  called qcom-vadc-common.
 
 config QCOM_PM8XXX_XOADC
 	tristate "Qualcomm SSBI PM8xxx PMIC XOADCs"
@@ -1124,6 +1135,25 @@ config QCOM_SPMI_ADC5
 
 	  To compile this driver as a module, choose M here: the module will
 	  be called qcom-spmi-adc5.
+
+config QCOM_SPMI_ADC5_GEN3
+	tristate "Qualcomm Technologies Inc. SPMI PMIC5 Gen3 ADC"
+	depends on SPMI
+	select REGMAP_SPMI
+	select QCOM_VADC_COMMON
+	help
+	  This is the IIO Voltage PMIC5 Gen3 ADC driver for Qualcomm
+	  Technologies Inc. PMIC5 Gen3 PMICs.
+
+	  The driver supports multiple channels read. The Gen3 ADC adds
+	  hardware-side improvements over the original PMIC5 ADC: better
+	  calibration, support for additional channel types, and improved
+	  thermal compensation. Clients are the same shape as for
+	  qcom-spmi-adc5: PMIC die temperature, battery thermistors, USB
+	  voltage, etc.
+
+	  To compile this driver as a module, choose M here: the module will
+	  be called qcom-spmi-adc5-gen3.
 
 config RCAR_GYRO_ADC
 	tristate "Renesas R-Car GyroADC driver"

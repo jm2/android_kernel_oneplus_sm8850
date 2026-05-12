@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# CPU Idle governors — vendor extensions
+
+config CPU_IDLE_GOV_QCOM_LPM
+	tristate "Qualcomm Technologies, Inc. cpuidle LPM governor"
+	depends on CPU_IDLE
+	depends on SCHED_WALT
+	help
+	  This is the Qualcomm cpuidle low-power-mode governor that
+	  selects the best CPU idle state based on WALT scheduler input
+	  (window-assisted load tracking) plus per-cluster LPM constraints.
+	  Targets sm8xxx PMIC-tier idle hierarchies including cluster-level
+	  C-states beyond what mainline menu/teo governors expose.
+
+	  The bundle compiles three source files into qcom_lpm.ko:
+	  qcom-lpm.c (the governor itself), qcom-cluster-lpm.c (cluster-
+	  level idle), and qcom-lpm-sysfs.c (debugfs/sysfs surface).
+
+	  To compile as a module, choose M here: the module will be called
+	  qcom_lpm.
